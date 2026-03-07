@@ -197,9 +197,10 @@ pub fn run(n_x: usize, n_y: usize, n_iterations: usize) { //args: &[String]
 }
 
 
+// #[pyo3(name = "sim")]
+
 /// Python module implemented in Rust.
 #[pymodule]
-// #[pyo3(name = "life")]
 mod sim {
     use super::*;
     #[pyfunction]
