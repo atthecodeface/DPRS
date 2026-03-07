@@ -10,26 +10,25 @@ Create a mixed Rust-Python project:
 
     maturin new dprs -b pyo3
 
-and then, if you want, rename the folder `dprs/`, to e.g. `DPRS/` (which will become your GitHub repo name). 
-
+and then, if you want, rename the directory `dprs/`, to e.g. `DPRS/`. In principle, this will become the name of your `pip` package.
 Enter this directory, `cd DPRS/`.
 
-Set up the Python virtual environment using `uv`:
+Create a Python virtual environment using `uv`, activate it, and install whatever Python libraries are going to be needed:
 
     uv venv --python=3.14
     source .venv/bin/activate
     uv pip install maturin ipython numpy
 
-Set up a minimal Python package:
+Set up the minimal elements of a Python package:
 
     mkdir -p python/dprs
     touch python/dprs/__init__.py
 
-Add requisite Rust packages, e.g.,
+Add the requisite Rust packages, e.g.,
     
     cargo add rayon rand
 
-Check `Cargo.toml`  to ensure these crate dependencies have been added (see [https://www.maturin.rs/tutorial.html]()):
+Check `Cargo.toml`  to ensure that these crate dependencies have been added (see [https://www.maturin.rs/tutorial.html]()):
 
     [dependencies]
     pyo3 = "0.27.0"
