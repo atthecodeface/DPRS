@@ -9,7 +9,7 @@ use rayon::prelude::*;
 /// the boolean lattice (true=alive) stored as a linear vector; 
 /// birth and surival rules as length-1 and length-2 vectors.
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct Domain<
+pub struct LatticeModel<
     const MIN_BORN: usize,
     const MAX_BORN: usize,
     const MIN_SURVIVE: usize,
@@ -26,7 +26,7 @@ impl<
     const MAX_BORN: usize,
     const MIN_SURVIVE: usize,
     const MAX_SURVIVE: usize,
-> Domain<MIN_BORN, MAX_BORN, MIN_SURVIVE, MAX_SURVIVE>
+> LatticeModel<MIN_BORN, MAX_BORN, MIN_SURVIVE, MAX_SURVIVE>
 {
     /// Create a fresh grid (vector of booleans) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
@@ -149,7 +149,7 @@ impl<
 /// Minimal testing.
 #[test]
 fn test_dp() {
-    let mut grid1 = Domain::<2, 2, 2, 3>::initialize(200, 200).randomize();
+    let mut grid1 = LatticeModel::<2, 2, 2, 3>::initialize(200, 200).randomize();
     let mut grid2 = grid1.clone();
 
     for _ in 0..100 {

@@ -1,13 +1,13 @@
-mod domain;
+mod lattice_model;
 mod compute;
 mod monitor;
 
-use domain::Domain;
+use lattice_model::LatticeModel;
 use compute::{compute_serial, compute_parallel};
 use monitor::monitor;
 
 /// Entry point to this module.
-pub fn sim_dp(n_x: usize, n_y: usize, n_iterations: usize) { //args: &[String]
+pub fn sim_dp(n_x: usize, n_y: usize, n_iterations: usize) {
     println!();
     println!("Grid width:  x={n_x}");
     println!("Grid height: y={n_y}");
