@@ -97,6 +97,6 @@ Put at least the following into `demo.py`:
 
     sim.dp(n_x, n_y, n_iterations)
 
-The `DPRS` folder tree should now look like this:
+The `DPRS` folder tree should now look like this, more or less:
 
 ![alt text](tree.jpg)
