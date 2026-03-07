@@ -31,19 +31,15 @@ impl<
     /// Create a fresh grid (vector of booleans) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn initialize(n_x: usize, n_y: usize,) -> Self {
-        let new_lattice = repeat(false).take(n_x * n_y).collect();
-
         Self {
             n_x,
             n_y,
-            lattice: new_lattice,
+            lattice: repeat(false).take(n_x * n_y).collect(),
         }
     }
 
     /// Count the total number of cells in the grid.
-    fn n_cells(&self) -> usize {
-        self.n_x * self.n_y
-    }
+    fn n_cells(&self) -> usize { self.n_x * self.n_y }
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
