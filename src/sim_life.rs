@@ -14,7 +14,7 @@ pub fn sim_life(n_x: usize, n_y: usize, n_iterations: usize) -> Vec<bool> {
     println!("Iterations:  n={n_iterations}\n");
 
     let (t_serial_computation, _,) = monitor(
-        compute_serial, n_x, n_y, n_iterations, 10,
+        compute_serial, n_x, n_y, n_iterations, 1,
     );
     println!("Serial:   {:4.3}s", t_serial_computation);
     let (t_parallel_computation, lattice,) = monitor(
