@@ -52,9 +52,9 @@ mod sim {
             n_y: 1,
             n_z: 1,
             p: 0.5,
-            n_iterations: 100,
+            n_iterations: 1,
             serial_skip: 1,
-            n_threads: 16,
+            n_threads: 1,
         };
 
         // Need to implement some validation, error handling here.
