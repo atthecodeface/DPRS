@@ -1,6 +1,7 @@
 use rand::distr::StandardUniform;
 use rand::{RngExt, rng};
 use rayon::prelude::*;
+use std::iter::repeat_n;
 
 /// Model in 2d.
 /// 
@@ -31,7 +32,7 @@ impl Model2D {
             n_y,
             n_z,
             // n_iterations,
-            lattice: std::iter::repeat_n(false, n_x * n_y).collect(),
+            lattice: repeat_n(false, n_x * n_y).collect(),
         }
     }
 
