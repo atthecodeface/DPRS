@@ -52,22 +52,23 @@ mod sim {
                 // This should probably be done using a hashmap.
                 // Also: only unsigned integers are handled for now,
                 // which obviously needs to change.
-                let value_: usize = value.to_string().as_str().parse().unwrap();
+                let value: usize = value.to_string().as_str().parse().unwrap();
+                // value shadows value...
                 match key.to_string().as_str() {
-                    "n_x" => p.n_x = value_,
+                    "n_x" => p.n_x = value,
                     "n_y" => {
-                        p.n_y = value_;
+                        p.n_y = value;
                         if p.dim==Dimension::D1 {
                             p.dim = Dimension::D2;
                         }
                     },
                     "n_z" => {
-                        p.n_z = value_;
+                        p.n_z = value;
                         p.dim = Dimension::D3;
                     },
-                    "n_iterations" => p.n_iterations = value_,
-                    "serial_skip" => p.serial_skip = value_,
-                    "n_threads" => p.n_threads = value_,
+                    "n_iterations" => p.n_iterations = value,
+                    "serial_skip" => p.serial_skip = value,
+                    "n_threads" => p.n_threads = value,
                     _ => {},
                 }
             }
