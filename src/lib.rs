@@ -16,6 +16,7 @@ pub struct Parameters {
     pub n_x: usize,
     pub n_y: usize,
     pub n_z: usize,
+    pub p: f64,
     pub n_iterations: usize,
     pub serial_skip: usize,
     pub n_threads: usize,
@@ -24,6 +25,16 @@ pub struct Parameters {
 /// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
 #[derive(PartialEq, Debug, Clone)]
 pub enum Dimension { D1, D2, D3, }
+
+// use std::str::FromStr;
+// use std::fmt::Debug;
+// fn parse_and_unwrap<T>(s: &str) -> T
+// where
+//     T: FromStr,
+//     T::Err: Debug,
+// {
+//     s.parse::<T>().unwrap() 
+// }
 
 /// Python wrapping around DP, "Game of Life" lattice models.
 #[pymodule]
@@ -35,11 +46,12 @@ mod sim {
     #[pyo3(signature = (**kwargs))]
     fn dp(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<Vec<bool>> {
         // Set parameter defaults.
-        let mut p = Parameters {
+        let mut params = Parameters {
             dim: Dimension::D1,
             n_x: 1,
             n_y: 1,
             n_z: 1,
+            p: 0.5,
             n_iterations: 100,
             serial_skip: 1,
             n_threads: 16,
@@ -48,30 +60,36 @@ mod sim {
         // Need to implement some validation, error handling here.
         if let Some(dict) = kwargs {
             for (key, value) in dict {
-                // Override parameter defaults per Py kwargs dict.
+                // Override parameter defaults per Py kwargs dict
                 // This should probably be done using a hashmap.
-                // Also: only unsigned integers are handled for now,
-                // which obviously needs to change.
-                let value: usize = value.to_string().as_str().parse().unwrap();
-                // value shadows value...
+                let v_float = 
+                    value.to_string().as_str().parse::<f64>().unwrap_or(0.0);
+                let v_uint = 
+                    value.to_string().as_str().parse::<usize>().unwrap_or(0);
                 match key.to_string().as_str() {
-                    "n_x" => p.n_x = value,
+                    "n_x" => params.n_x = v_uint,
                     "n_y" => {
-                        p.n_y = value;
-                        if p.dim==Dimension::D1 { p.dim = Dimension::D2; }
+                        params.n_y = v_uint;
+                        if params.dim==Dimension::D1 { 
+                            params.dim = Dimension::D2; 
+                        }
                     },
                     "n_z" => {
-                        p.n_z = value;
-                        p.dim = Dimension::D3;
+                        params.n_z = v_uint;
+                        params.dim = Dimension::D3;
                     },
-                    "n_iterations" => p.n_iterations = value,
-                    "serial_skip" => p.serial_skip = value,
-                    "n_threads" => p.n_threads = value,
+                    "p" => params.p = v_float,
+                    "n_iterations" => params.n_iterations = v_uint,
+                    "serial_skip" => {
+                        // Should flag an error if this value is zero.
+                        params.serial_skip = v_uint
+                    },
+                    "n_threads" => params.n_threads = v_uint,
                     _ => {},
                 }
             }
         }
-        let lattice = sim_dp(p);
+        let lattice = sim_dp(params);
 
         Ok(lattice)
     }

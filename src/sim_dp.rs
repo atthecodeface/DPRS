@@ -4,18 +4,19 @@ use lattice_model_2d::LatticeModel2D;
 use crate::Parameters;
 
 /// Entry point to this module.
-pub fn sim_dp(p: Parameters) -> Vec<bool> {
+pub fn sim_dp(params: Parameters) -> Vec<bool> {
     println!();
-    println!("Dimension:   {:?}", p.dim);
-    println!("Grid shape:  {:?}", (p.n_x, p.n_y, p.n_z));
-    println!("Iterations:  {}", p.n_iterations);
-    println!("Serial skip: {}", p.serial_skip);
-    println!("Threads:     {}\n", p.n_threads);
+    println!("Dimension:   {:?}", params.dim);
+    println!("Grid shape:  {:?}", (params.n_x, params.n_y, params.n_z));
+    println!("Probability: {}", params.p);
+    println!("Iterations:  {}", params.n_iterations);
+    println!("Serial skip: {}", params.serial_skip);
+    println!("Threads:     {}\n", params.n_threads);
 
-    let (t_serial, _,) = run_simulation(&p, false,);
+    let (t_serial, _,) = run_simulation(&params, false,);
     println!("Serial:   {:4.3}s", t_serial);
 
-    let (t_parallel, lattice,) = run_simulation(&p, true);
+    let (t_parallel, lattice,) = run_simulation(&params, true);
     println!("Parallel: {:4.3}s", t_parallel);
 
     println!("Speedup => {:.2}x", t_serial/t_parallel);
@@ -25,17 +26,17 @@ pub fn sim_dp(p: Parameters) -> Vec<bool> {
 }
 
 /// Run a simulation and record how long the computation takes.
-fn run_simulation(p: &Parameters, do_parallel: bool,) -> (f64, Vec<bool>) {
-    let grid = LatticeModel2D::initialize(p.n_x, p.n_y).randomize();
+fn run_simulation(params: &Parameters, do_parallel: bool,) -> (f64, Vec<bool>) {
+    let grid = LatticeModel2D::initialize(params.n_x, params.n_y).randomize();
     let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(p.n_threads)
+        .num_threads(params.n_threads)
         .build()
         .unwrap();
     let time = Instant::now();
     let lattice = pool.install(
-        || compute(grid, p.n_iterations/p.serial_skip, do_parallel,)
+        || compute(grid, params.n_iterations/params.serial_skip, do_parallel,)
     );
-    let duration = time.elapsed().as_secs_f64() * (p.serial_skip as f64);
+    let duration = time.elapsed().as_secs_f64() * (params.serial_skip as f64);
 
     (duration, lattice)
 }
