@@ -10,6 +10,7 @@ use sim_life::sim_life;
 mod sim_dp;
 use sim_dp::sim_dp;
 
+/// Python wrapping around DP, "Game of Life" lattice models.
 #[pymodule]
 mod sim {
     use super::*;
@@ -29,6 +30,7 @@ mod sim {
             n_threads: 16,
         };
 
+        // Need to implement some validation, error handling here
         if let Some(dict) = kwargs {
             for (key, value) in dict {
                 let value_: usize = value.to_string().as_str().parse().unwrap();
