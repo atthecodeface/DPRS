@@ -5,15 +5,18 @@ use rayon::prelude::*;
 
 /// Model in 2d.
 /// 
-/// Contains: grid size as width n_x and height n_y;
-/// the boolean lattice (true=alive) stored as a linear vector; 
-/// birth and survival rules as a set of constants.
+/// Contains: 
+///    - grid size as width n_x and height n_y;
+///    - the boolean lattice stored as a linear vector.
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Model2D {
     n_x: usize,
     n_y: usize,
+    n_z: usize,  // not going to be used
     pub lattice: Vec<bool>,
-    // pub lattices: Vec<Vec<bool>>,
+    // n_iterations: usize,
+    // record_rate: usize,
+    // i_iteration: usize,
 }
 
 // let mut lattice_model_history: Vec<Vec<bool>> 
@@ -24,16 +27,21 @@ pub struct Model2D {
 impl Model2D {
     /// Create a fresh grid (vector of booleans) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
-    pub fn initialize(n_x: usize, n_y: usize,) -> Self {
+    pub fn initialize(
+        n_x: usize, n_y: usize, n_z: usize, 
+        // n_iterations: usize,
+    ) -> Self {
         Self {
             n_x,
             n_y,
+            n_z,
+            // n_iterations,
             lattice: repeat(false).take(n_x * n_y).collect(),
         }
     }
 
     /// Count the total number of cells in the grid.
-    fn n_cells(&self) -> usize { self.n_x * self.n_y }
+    pub fn n_cells(&self) -> usize { self.n_x * self.n_y }
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
@@ -50,30 +58,18 @@ impl Model2D {
     pub fn next_iteration_serial(&self) -> Self {
         let new_lattice = (0..self.n_cells())
             .map(|i_cell| self.is_successor_cell(i_cell))
+            // .map(|i_cell| !self.lattice[i_cell])
             .collect();
 
         self.next_grid(new_lattice)
     }
-
-    // /// Evolve the grid by one iteration using parallel processing.
-    // pub fn next_iteration_parallel(&self) -> Self {
-    //     let mut new_lattice = vec![false; self.lattice.len()];
-    //     new_lattice
-    //         .par_chunks_mut(self.n_x)
-    //         .enumerate()
-    //         .for_each(|(r, l)| {
-    //             for (c, lc) in l.iter_mut().enumerate() {
-    //                 *lc = self.will_succeed(r, c);
-    //             }
-    //         });
-    //     self.next_grid(new_lattice)
-    // }
 
     /// Evolve the grid by one iteration using parallel processing.
     pub fn next_iteration_parallel(&self) -> Self {
         let new_lattice = (0..self.n_cells())
             .into_par_iter()
             .map(|i_cell| self.is_successor_cell(i_cell))
+            // .map(|i_cell| !self.lattice[i_cell])
             .collect();
 
         self.next_grid(new_lattice)
@@ -86,6 +82,8 @@ impl Model2D {
         Self {
             n_x: self.n_x,
             n_y: self.n_y,
+            n_z: self.n_z,
+            // n_iterations: self.n_iterations,
             lattice: new_lattice,
         }
     }
@@ -139,7 +137,7 @@ impl Model2D {
 /// Minimal testing.
 #[test]
 fn test_dp() {
-    let mut model1 = Model2D::initialize(200, 200).randomize();
+    let mut model1 = Model2D::initialize(200, 200, 1,).randomize();
     let mut model2 = model1.clone();
 
     for _ in 0..100 {

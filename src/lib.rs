@@ -18,6 +18,7 @@ pub struct Parameters {
     pub n_z: usize,
     pub p: f64,
     pub n_iterations: usize,
+    pub sample_rate: usize,
     pub serial_skip: usize,
     pub n_threads: usize,
 }
@@ -44,7 +45,7 @@ mod sim {
     /// In development: directed percolation in 1d/2d/3d.
     #[pyfunction]
     #[pyo3(signature = (**kwargs))]
-    fn dp(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<Vec<bool>> {
+    fn dp(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<(usize, Vec<Vec<bool>>)> {
         // Set parameter defaults.
         let mut params = Parameters {
             dim: Dimension::D1,
@@ -53,6 +54,7 @@ mod sim {
             n_z: 1,
             p: 0.5,
             n_iterations: 1,
+            sample_rate: 10,
             serial_skip: 1,
             n_threads: 1,
         };
@@ -80,6 +82,11 @@ mod sim {
                     },
                     "p" => params.p = v_float,
                     "n_iterations" => params.n_iterations = v_uint,
+                    "sample_rate" => {
+                        // Should flag an error 
+                        //    if n_iterations % sample_rate != 0
+                        params.sample_rate = v_uint;
+                    },
                     "serial_skip" => {
                         // Should flag an error if this value is zero.
                         params.serial_skip = v_uint;
@@ -89,9 +96,9 @@ mod sim {
                 }
             }
         }
-        let lattice = sim_dp(params);
+        let (n_lattices, lattices) = sim_dp(params);
 
-        Ok(lattice)
+        Ok((n_lattices, lattices))
     }
 
     /// Conway's Game of Life, adapted from Rayon demo.
