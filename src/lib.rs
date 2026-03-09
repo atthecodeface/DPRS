@@ -62,10 +62,10 @@ mod sim {
             for (key, value) in dict {
                 // Override parameter defaults per Py kwargs dict
                 // This should probably be done using a hashmap.
-                let v_float = 
-                    value.to_string().as_str().parse::<f64>().unwrap_or(0.0);
-                let v_uint = 
-                    value.to_string().as_str().parse::<usize>().unwrap_or(0);
+                let v_float = value
+                    .to_string().as_str().parse::<f64>().unwrap_or(0.0);
+                let v_uint = value
+                    .to_string().as_str().parse::<usize>().unwrap_or(0);
                 match key.to_string().as_str() {
                     "n_x" => params.n_x = v_uint,
                     "n_y" => {
@@ -82,7 +82,7 @@ mod sim {
                     "n_iterations" => params.n_iterations = v_uint,
                     "serial_skip" => {
                         // Should flag an error if this value is zero.
-                        params.serial_skip = v_uint
+                        params.serial_skip = v_uint;
                     },
                     "n_threads" => params.n_threads = v_uint,
                     _ => {},
