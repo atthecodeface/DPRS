@@ -6,9 +6,24 @@ use pyo3::types::PyDict;
 
 mod sim_life;
 use sim_life::sim_life;
-
 mod sim_dp;
 use sim_dp::sim_dp;
+
+/// Model parameter bundle derived from Python kwarg dict.
+#[derive(Clone)]
+pub struct Parameters {
+    pub dim: Dimension,
+    pub n_x: usize,
+    pub n_y: usize,
+    pub n_z: usize,
+    pub n_iterations: usize,
+    pub slow_factor: usize,
+    pub n_threads: usize,
+}
+
+/// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
+#[derive(PartialEq, Debug, Clone)]
+pub enum Dimension { D1, D2, D3, }
 
 /// Python wrapping around DP, "Game of Life" lattice models.
 #[pymodule]
@@ -19,8 +34,6 @@ mod sim {
     #[pyfunction]
     #[pyo3(signature = (**kwargs))]
     fn dp(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<Vec<bool>> {
-        use sim_dp::{Parameters, Dimension};
-
         // Set parameter defaults.
         let mut p = Parameters {
             dim: Dimension::D1,

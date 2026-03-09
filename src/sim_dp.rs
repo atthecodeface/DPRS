@@ -4,21 +4,7 @@ use lattice_model_2d::LatticeModel2D;
 mod compute;
 use compute::{compute_serial, compute_parallel};
 
-/// Model parameter bundle derived from Python kwarg dict.
-#[derive(Clone)]
-pub struct Parameters {
-    pub dim: Dimension,
-    pub n_x: usize,
-    pub n_y: usize,
-    pub n_z: usize,
-    pub n_iterations: usize,
-    pub slow_factor: usize,
-    pub n_threads: usize,
-}
-
-/// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
-#[derive(PartialEq, Debug, Clone)]
-pub enum Dimension { D1, D2, D3, }
+use crate::Parameters;
 
 /// Entry point to this module.
 pub fn sim_dp(p: Parameters) -> Vec<bool> {
