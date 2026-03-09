@@ -1,4 +1,3 @@
-use std::iter::repeat;
 use rand::distr::StandardUniform;
 use rand::{RngExt, rng};
 use rayon::prelude::*;
@@ -23,7 +22,7 @@ impl LatticeModel2D {
         Self {
             n_x,
             n_y,
-            lattice: repeat(false).take(n_x * n_y).collect(),
+            lattice: std::iter::repeat_n(false, n_x * n_y).collect(),
         }
     }
 

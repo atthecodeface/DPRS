@@ -1,5 +1,5 @@
 use std::time::Instant;
-use crate::sim_life::LatticeModel2D;
+use crate::sim::life::LatticeModel2D;
 
 /// Run a simulation and record how long the computation takes.
 pub fn monitor(

@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 # Latest coupled dependency for PyO3 and numpy is 0.28.0/0.28.0
 [dependencies]
-pyo3 = "0.28.0"
+pyo3 = "0.28.2"
 rand = "0.10.0"
 rayon = "1.11.0"
 # Best to avoid these if we want to keep things simple

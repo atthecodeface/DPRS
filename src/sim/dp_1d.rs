@@ -1,10 +1,10 @@
 use std::time::Instant;
-mod model_2d;
-use model_2d::Model2D;
-use crate::Parameters;
+mod model_1d;
+use model_1d::Model1D;
+use crate::sim::Parameters;
 
 /// Entry point to this module.
-pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<bool>>) {
+pub fn sim_dp_1d(params: Parameters) -> (usize, Vec<Vec<bool>>) {
     println!();
     println!("Dimension:   {:?}", params.dim);
     println!("Grid shape:  {:?}", (params.n_x, params.n_y, params.n_z));
@@ -30,7 +30,7 @@ pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<bool>>) {
 fn run_simulation(
     params: &Parameters, do_parallel: bool,
 ) -> (f64, usize, Vec<Vec<bool>>) {
-    let model = Model2D::initialize(
+    let model = Model1D::initialize(
         params.n_x, 
         params.n_y, 
         1, 
@@ -57,19 +57,18 @@ fn run_simulation(
             do_parallel,
     )
     );
-    let duration: f64;
-    if do_parallel {
-        duration = time.elapsed().as_secs_f64();
+    let duration: f64 = if do_parallel {
+        time.elapsed().as_secs_f64()
     } else {
-        duration = time.elapsed().as_secs_f64() * (params.serial_skip as f64);
-    }
+        time.elapsed().as_secs_f64() * (params.serial_skip as f64)
+    };
 
     (duration, n_lattices, lattices)
 }
 
 /// Run a simulation for n_iterations, either serially or in parallel
 pub fn compute(
-    model: Model2D, 
+    model: Model1D, 
     n_iterations: usize, sample_rate: usize,
     do_parallel: bool,
 ) -> (usize, Vec<Vec<bool>>) {
