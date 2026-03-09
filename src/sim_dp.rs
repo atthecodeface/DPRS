@@ -1,9 +1,6 @@
 use std::time::Instant;
 mod lattice_model_2d;
 use lattice_model_2d::LatticeModel2D;
-mod compute;
-use compute::{compute_serial, compute_parallel};
-
 use crate::Parameters;
 
 /// Entry point to this module.
@@ -15,10 +12,10 @@ pub fn sim_dp(p: Parameters) -> Vec<bool> {
     println!("Slow factor: s={}", p.slow_factor);
     println!("Threads: n_threads={}\n", p.n_threads);
 
-    let (t_serial, _,) = run_simulation(compute_serial, &p,);
+    let (t_serial, _,) = run_simulation(&p, false,);
     println!("Serial:   {:4.3}s", t_serial);
 
-    let (t_parallel, lattice,) = run_simulation(compute_parallel, &p,);
+    let (t_parallel, lattice,) = run_simulation(&p, true);
     println!("Parallel: {:4.3}s", t_parallel);
 
     println!("Speedup => {:.2}x", t_serial/t_parallel);
@@ -29,8 +26,7 @@ pub fn sim_dp(p: Parameters) -> Vec<bool> {
 
 /// Run a simulation and record how long the computation takes.
 fn run_simulation(
-    compute: fn(LatticeModel2D, usize) -> Vec<bool>, 
-    p: &Parameters,
+    p: &Parameters, do_parallel: bool,
 ) -> (f64, Vec<bool>) {
     let grid = 
         LatticeModel2D::initialize(p.n_x, p.n_y).randomize();
@@ -40,8 +36,26 @@ fn run_simulation(
         .unwrap();
     let time = Instant::now();
     let lattice = 
-        pool.install(|| compute(grid, p.n_iterations/p.slow_factor));
+        pool.install(|| compute(grid, p.n_iterations/p.slow_factor, do_parallel,));
     let duration = time.elapsed().as_secs_f64() * (p.slow_factor as f64);
 
     (duration, lattice)
+}
+
+/// Run a simulation for n_iterations, either serially or in parallel
+pub fn compute(
+    lattice_model: LatticeModel2D, n_iterations: usize, do_parallel: bool,
+) -> Vec<bool> {
+    let mut lattice_model = lattice_model;
+    if do_parallel {
+        for _ in 0..n_iterations {
+            lattice_model = lattice_model.next_iteration_parallel();
+        }
+    } else {
+        for _ in 0..n_iterations {
+            lattice_model = lattice_model.next_iteration_serial();
+        }
+    }
+
+    lattice_model.lattice
 }

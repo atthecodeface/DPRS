@@ -2,7 +2,7 @@ from dprs import sim
 
 print(f"\n{sim}\n")
 
-kwargs: dict = dict(
+kwargs = dict(
     n_x = 3_000,
     n_y = 5_000,
     # n_z = 1,
