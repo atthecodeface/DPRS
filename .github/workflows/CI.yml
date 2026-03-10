@@ -5,14 +5,16 @@
 #
 name: CI
 
+# Turn CI off for now (including for PRs!) for invoking push to 
+# master branch, which will never exist
 on:
-  # push:
-  #   branches:
-  #     - main
-  #     - master
+  push:
+    branches:
+      # - main
+      - master
   #   tags:
   #     - '*'
-  pull_request:
+  # pull_request:
   # workflow_dispatch:
 
 permissions:
