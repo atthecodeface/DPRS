@@ -13,6 +13,14 @@ use dp::sim_dp;
 mod dp_1d;
 use dp_1d::sim_dp_1d;
 
+/// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
+#[derive(PartialEq, Debug, Clone)]
+enum Dimension { D1, D2, D3, }
+
+/// Choice of processing type: will become a Py-passable parameter
+#[derive(PartialEq, Debug, Clone)]
+enum Processing { Serial, Parallel, ParallelChunked, }
+
 /// Model parameter bundle derived from Python kwarg dict.
 #[derive(Clone)]
 struct Parameters {
@@ -26,13 +34,6 @@ struct Parameters {
     pub serial_skip: usize,
     pub n_threads: usize,
 }
-
-/// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
-#[derive(PartialEq, Debug, Clone)]
-enum Dimension { D1, D2, D3, }
-
-#[derive(PartialEq, Debug, Clone)]
-enum Processing { Serial, Parallel, ParallelChunked, }
 
 /// Python wrapping around DP, "Game of Life" lattice models.
 #[pymodule]

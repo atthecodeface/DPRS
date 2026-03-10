@@ -106,7 +106,8 @@ pub fn compute(
             }
         }
     };
-    println!("n_lattices:  {} = {}", lattices.len(), n_lattices);
+    assert!(n_lattices == lattices.len());
+    // println!("n_lattices:  {} = {}", lattices.len(), n_lattices);
 
     (n_lattices, lattices)
 }
