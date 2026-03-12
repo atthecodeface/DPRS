@@ -10,38 +10,24 @@ import dprs as sim
 
 
 class Parameters:
-    # pub dim: MyDimension,
+    # dim: Dimension::D1,
+    # processing: Processing::ParallelChunked,
     dim: int = 0
-    processing: int = 0
+    processing: int = 2
     n_x: int = 1
     n_y: int = 1
     n_z: int = 1
     p: float = 0.5
-    n_iterations: int = 10000
-    sample_rate: int = 10000
-    # pub processing: MyProcessing,
-    n_threads: int = 4
-    serial_skip: int = 10
-    do_buffering: bool = False
+    n_iterations: int = 1
+    sample_rate: int = 10
+    n_threads: int = 1
+    serial_skip: int = 1
+    do_buffering: bool = True
 
-
-sim.blah(Parameters())
 
 print(f"\n{sim}\n")
 
-kwargs = dict(
-    n_x=10_000,
-    n_y=10_000,
-    # n_z = 1,
-    p=0.5,
-    n_iterations=50,
-    sample_rate=10,
-    n_threads=8,
-    serial_skip=10,
-    do_buffering=0,  # currently booleans not correctly parsed
-)
-
-_ = sim.life(**kwargs)
+_ = sim.life(Parameters())
 
 # num_iter = 10
 # thread_counts = range(1, 11)
