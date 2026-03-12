@@ -10,7 +10,7 @@ use crate::parameters::{Dimension, Parameters, Processing};
 
 /// Python wrapping around DP, "Game of Life" lattice models.
 #[pymodule]
-mod sim {
+mod dprs {
     use super::*;
 
     #[pyfunction]
