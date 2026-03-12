@@ -21,9 +21,7 @@ pub enum Processing {
     ParallelChunked,
 }
 
-/// Model parameter bundle derived from Python kwarg dict.
-// #[derive(Debug, Clone)]
-// #[pyclass(from_py_object)]
+/// Model parameter bundle derived from Python Parameters class instance.
 #[derive(FromPyObject, Debug, Clone)]
 pub struct Parameters {
     pub dim: Dimension,
