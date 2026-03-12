@@ -5,15 +5,18 @@
 use rand::Rng;
 use rayon::prelude::*;
 
-/// The trait required for a model to be modelled in 2D
+/// The trait required for a model to run in 2D.
 ///
-/// This must be [Sync] as the model can be accessed by different threads at the same time in the parallel working
+/// This must be [Sync] as the model can be accessed by
+/// different threads at the same time in the parallel working
 pub trait Model2D: Sync {
-    /// The value in each cell
+    /// The value in each cell.
     ///
-    /// This must be [Send] to support the 'parallel' versions; the Cell is passed to a work thread
+    /// This must be [Send] to support the 'parallel' versions;
+    /// the Cell is passed to a work thread.
     ///
-    /// This must be [Sync] to support the 'parallel' versions; the array of cells is accessed by many threads at once
+    /// This must be [Sync] to support the 'parallel' versions;
+    /// the array of cells is accessed by many threads at once.
     ///
     type Cell: Default + std::fmt::Debug + Copy + Send + Sync;
     fn randomize_cell<R: Rng>(&self, rng: &mut R) -> Self::Cell;
@@ -33,18 +36,18 @@ pub trait Model2D: Sync {
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct LatticeModel2D<M: Model2D> {
     /// The model that provides the cells and the mapping between 3x3 grids of
-    /// cells in one time step and the next
+    /// cells in one time step and the next.
     model: M,
     /// The number of 'column's in the lattice
     n_x: usize,
     /// The number of 'row's in the lattice
     n_y: usize,
     /// This used to be public, but is not now; it is an internal data structure
-    /// that might be handled differently in the future
+    /// that might be handled differently in the future.
     ///
     /// To recover this (if needed) either *borrow* the lattice with the
     /// `lattice` method, or deconstruct the [LatticeModel2D] and take the
-    /// lattice from there
+    /// lattice from there.
     lattice: Vec<M::Cell>,
 }
 
