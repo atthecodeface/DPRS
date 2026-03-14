@@ -57,9 +57,9 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let pruned_n_y = params.n_y;
     let n_x: usize = pruned_n_x + pad * 2;
     let n_y: usize = pruned_n_y + pad * 2;
-    let lattice_model_2d: LatticeModel2D<DPModel> =
-        LatticeModel2D::new(dp, n_x, n_y, params.edge_values_x, params.edge_values_y)
-            .randomize(params.p, &mut rng());
+    let mut lattice_model_2d: LatticeModel2D<DPModel> =
+        LatticeModel2D::new(dp, n_x, n_y, params.edge_values_x, params.edge_values_y);
+    lattice_model_2d.randomized_lattice(params.p, &mut rng());
 
     // Set up thread pool of size set by user
     let pool = rayon::ThreadPoolBuilder::new()
@@ -129,15 +129,15 @@ pub fn compute<M: Model2D, R: Rng>(
     sample_rate: usize,
 ) -> (usize, Vec<Vec<<M as Model2D>::Cell>>) {
     // Create a model lattice plus metadata
-    let mut lattice_model = lattice_model
-        .apply_edge_topology(&params)
-        .apply_boundary_conditions(&params);
+    let mut lm = lattice_model;
+    lm.apply_edge_topology(&params);
+    lm.apply_boundary_conditions(&params);
 
     // Set up a recording of lattice evolution
     let n_lattices = n_iterations / sample_rate + 1;
     let mut lattices = Vec::new();
     // Record the initial lattice
-    lattices.push(lattice_model.lattice().clone());
+    lattices.push(lm.lattice().clone());
     // We aren't going to worry about the lattice type being Cell
     //  - instead we're going to leave it up to pyo3 to convert
     // the lattice vector into a Python list as it thinks fit.
@@ -152,27 +152,25 @@ pub fn compute<M: Model2D, R: Rng>(
         Processing::Serial => {
             for i in 1..(n_iterations + 1) {
                 // TODO: implement periodic etc edge buffering
-                lattice_model = lattice_model
-                    .apply_edge_topology(&params)
-                    .apply_boundary_conditions(&params)
-                    .next_iteration_serial(params.p, rng)
-                    .apply_edge_topology(&params) // Can cut
-                    .apply_boundary_conditions(&params); // Can cut
+                lm.apply_edge_topology(&params);
+                lm.apply_boundary_conditions(&params);
+                lm.next_iteration_serial(params.p, rng);
+                lm.apply_edge_topology(&params); // Can cut
+                lm.apply_boundary_conditions(&params); // Can cut
                 if i % sample_rate == 0 {
-                    lattices.push(lattice_model.lattice().clone());
+                    lattices.push(lm.lattice().clone());
                 };
             }
         }
         Processing::Parallel => {
             for i in 1..(n_iterations + 1) {
-                lattice_model = lattice_model
-                    .apply_edge_topology(&params)
-                    .apply_boundary_conditions(&params)
-                    .next_iteration_serial(params.p, rng)
-                    .apply_edge_topology(&params) // Can cut
-                    .apply_boundary_conditions(&params); // Can cut
+                lm.apply_edge_topology(&params);
+                lm.apply_boundary_conditions(&params);
+                lm.next_iteration_parallel(params.p, rng);
+                lm.apply_edge_topology(&params); // Can cut
+                lm.apply_boundary_conditions(&params); // Can cut
                 if i % sample_rate == 0 {
-                    lattices.push(lattice_model.lattice().clone());
+                    lattices.push(lm.lattice().clone());
                 };
             }
         }
