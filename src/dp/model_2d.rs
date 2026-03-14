@@ -5,6 +5,8 @@
 use rand::Rng;
 use rayon::prelude::*;
 
+use crate::parameters::{Parameters, Topology};
+
 /// The trait required for a model to run in 2D.
 ///
 /// This must be [Sync] as the model can be accessed by
@@ -19,7 +21,9 @@ pub trait Model2D: Sync {
     /// the array of cells is accessed by many threads at once.
     ///
     type Cell: Default + std::fmt::Debug + Copy + Send + Sync;
+    /// TODO: DP2d
     fn randomize_cell<R: Rng>(&self, rng: &mut R) -> Self::Cell;
+    /// TODO: DP2d
     fn next_cell(
         &self,
         above: &[Self::Cell; 3],
@@ -91,6 +95,58 @@ impl<M: Model2D> LatticeModel2D<M> {
         self
     }
 
+    /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
+    fn periodic_x_edge_values(&self, lattice: &mut Vec<M::Cell>, y_from: usize, y_to: usize) {
+        let n_x = self.n_x;
+        for x in 0..n_x {
+            lattice[x + n_x * y_to] = lattice[x + n_x * y_from];
+        }
+    }
+    /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
+    fn periodic_y_edge_values(&self, lattice: &mut Vec<M::Cell>, x_from: usize, x_to: usize) {
+        let n_x = self.n_x;
+        let n_y = self.n_y;
+        for y in 0..n_y {
+            lattice[x_to + n_x * y] = lattice[x_from + n_x * y];
+        }
+    }
+
+    pub fn apply_boundary_topology(mut self, params: &Parameters) -> Self {
+        let mut new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
+        let n_x = self.n_x;
+        let n_y = self.n_y;
+        // Apply y-edge boundary topology
+        match params.edge_topology_y {
+            (Topology::Periodic | Topology::Auto, Topology::Periodic | Topology::Auto) => {
+                self.periodic_y_edge_values(&mut new_lattice, n_x - 2, 0);
+                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+            }
+            (Topology::Periodic, Topology::Extended | Topology::Reflecting | Topology::Pinned) => {
+                panic!(
+                    "y edge: for periodic topology, the opposite edge must be specified as periodic or auto."
+                );
+            }
+            _ => {} // _ => todo!()
+        };
+        // Apply x-edge boundary topology
+        match params.edge_topology_x {
+            (Topology::Periodic | Topology::Auto, Topology::Periodic | Topology::Auto) => {
+                self.periodic_x_edge_values(&mut new_lattice, n_y - 2, 0);
+                self.periodic_x_edge_values(&mut new_lattice, 1, n_y - 1);
+            }
+            (Topology::Periodic, Topology::Extended | Topology::Reflecting | Topology::Pinned) => {
+                panic!(
+                    "x edge: or periodic topology, the opposite edge must be specified as periodic or auto."
+                );
+            }
+            _ => {} // _ => todo!()
+        };
+
+        self.lattice = new_lattice;
+        self
+    }
+
+    /// TODO: DP2d
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial(mut self) -> Self {
         let new_lattice = (0..self.n_cells())
@@ -101,6 +157,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         self
     }
 
+    /// TODO: DP2d
     /// Evolve the grid by one iteration using parallel processing.
     pub fn next_iteration_parallel(mut self) -> Self {
         let new_lattice = (0..self.n_cells())
@@ -112,6 +169,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         self
     }
 
+    /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
     pub fn next_iteration_parallel_chunked(mut self) -> Self {
         let mut new_lattice = vec![M::Cell::default(); self.lattice.len()];
@@ -124,6 +182,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         self
     }
 
+    /// TODO: DP2d
     /// Check that this i_th cell -> cell(x,y) is a successor cell
     fn successor_cell(&self, i_cell: usize) -> M::Cell {
         let x_0 = i_cell % self.n_x;
@@ -151,6 +210,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         self.model.next_cell(&upper_row, &middle_row, &lower_row)
     }
 
+    /// TODO: DP2d
     /// Check if this cell is within bounds and alive
     fn is_alive(&self, x: usize, y: usize) -> M::Cell {
         // check (x,y) coordinate is within bounds
@@ -162,6 +222,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         }
     }
 
+    /// TODO: DP2d
     /// Calculate the next cells for just one row
     ///
     /// This zips across the row (unless it is the top or bottom row) using

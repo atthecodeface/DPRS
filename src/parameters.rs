@@ -12,6 +12,17 @@ pub enum Dimension {
     D3,
 }
 
+/// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
+#[derive(PartialEq, Debug, Clone)]
+#[pyclass(from_py_object, eq, eq_int)]
+pub enum Topology {
+    Auto,
+    Periodic,
+    Extended, // NYI
+    Pinned, // NYI
+    Reflecting, // NYI
+}
+
 /// Choice of processing type: will become a Py-passable parameter.
 #[derive(PartialEq, Debug, Clone)]
 #[pyclass(from_py_object, eq, eq_int)]
@@ -28,6 +39,9 @@ pub struct Parameters {
     pub n_x: usize,
     pub n_y: usize,
     pub n_z: usize,
+    pub edge_topology_x: (Topology, Topology),
+    pub edge_topology_y: (Topology, Topology),
+    pub edge_topology_z: (Topology, Topology),
     pub p: f64,
     pub n_iterations: usize,
     pub sample_rate: usize,

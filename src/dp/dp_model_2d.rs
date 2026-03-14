@@ -20,6 +20,7 @@ impl Model2D for DPModel {
         rng.sample(StandardUniform)
     }
 
+    /// TODO: DP2d
     /// Count the neighbours given the three rows of cells.
     ///
     /// As they are arrays there needs to be no range checking

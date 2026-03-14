@@ -2,10 +2,10 @@
 // //!
 // //!
 
-mod dp_model;
+mod dp_model_2d;
 mod model_2d;
 use crate::parameters::{Parameters, Processing};
-use dp_model::DPModel;
+use dp_model_2d::DPModel;
 use model_2d::{LatticeModel2D, Model2D};
 use rand::rng;
 use std::time::Instant;
@@ -77,6 +77,7 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let (n_lattices, lattices) = pool.install(|| {
         compute(
             lattice_model_2d,
+            &params,
             params.n_iterations / serial_skip,
             params.sample_rate,
             processing,
@@ -113,6 +114,7 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
 /// Run a simulation for n_iterations, either serially or in parallel
 pub fn compute<M: Model2D>(
     lattice_model: LatticeModel2D<M>,
+    params: &Parameters,
     n_iterations: usize,
     sample_rate: usize,
     processing: &Processing,
@@ -124,21 +126,25 @@ pub fn compute<M: Model2D>(
     let n_lattices = n_iterations / sample_rate + 1;
     let mut lattices = Vec::new();
     // Record the initial lattice
-    lattices.push(
-        lattice_model.lattice().clone(), // .iter()
-                                         // .enumerate()
-                                         // .map(|(i, val)| val)
-    );
+    lattices.push(lattice_model.lattice().clone());
     // We aren't going to worry about the lattice type being Cell
     //  - instead we're going to leave it up to pyo3 to convert
     // the lattice vector into a Python list as it thinks fit.
     // This happens (magically) on exiting sim_dp() back to Python.
 
     // Evolve the lattice for n_iterations
+    //
+    // Note: the second "apply_boundary_topology" is unnecessary.
+    // It's only there for now to ensure the t-sliced lattices show this
+    // boundary topology step is working (or not).
     match processing {
         Processing::Serial => {
             for i in 1..(n_iterations + 1) {
-                lattice_model = lattice_model.next_iteration_serial();
+                // TODO: implement periodic etc edge buffering
+                lattice_model = lattice_model
+                    .apply_boundary_topology(&params)
+                    .next_iteration_serial()
+                    .apply_boundary_topology(&params);
                 if i % sample_rate == 0 {
                     lattices.push(lattice_model.lattice().clone());
                 };
@@ -146,7 +152,10 @@ pub fn compute<M: Model2D>(
         }
         Processing::Parallel => {
             for i in 1..(n_iterations + 1) {
-                lattice_model = lattice_model.next_iteration_parallel();
+                lattice_model = lattice_model
+                    .apply_boundary_topology(&params)
+                    .next_iteration_serial()
+                    .apply_boundary_topology(&params);
                 if i % sample_rate == 0 {
                     lattices.push(lattice_model.lattice().clone());
                 };
@@ -154,7 +163,10 @@ pub fn compute<M: Model2D>(
         }
         Processing::ParallelChunked => {
             for i in 1..(n_iterations + 1) {
-                lattice_model = lattice_model.next_iteration_parallel_chunked();
+                lattice_model = lattice_model
+                    .apply_boundary_topology(&params)
+                    .next_iteration_serial()
+                    .apply_boundary_topology(&params);
                 if i % sample_rate == 0 {
                     lattices.push(lattice_model.lattice().clone());
                 };

@@ -14,10 +14,10 @@ mod sim {
 
     // #[pymodule_export]
     pub use crate::parameters::Parameters;
-
     #[pymodule_export]
     pub use crate::parameters::Dimension;
-
+    #[pymodule_export]
+    pub use crate::parameters::Topology;
     #[pymodule_export]
     pub use crate::parameters::Processing;
 
