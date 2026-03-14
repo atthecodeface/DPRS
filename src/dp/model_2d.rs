@@ -304,6 +304,8 @@ impl<M: Model2D> LatticeModel2D<M> {
         new_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
+            .skip(1) // Avoid having to return if row=0 or row=n_y-1
+            .take(self.n_y - 2)
             .for_each(|(row, lattice)| self.next_row(row, lattice, coin_tosses.clone()));
 
         self.lattice = new_lattice;
@@ -319,10 +321,10 @@ impl<M: Model2D> LatticeModel2D<M> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary) range checks.
     pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell], coin_tosses: Vec<bool>) {
-        // Bound check: should not be necessary
-        if row == 0 || row == self.n_y - 1 {
-            return;
-        }
+        // // Bounds check: would not be necessary if correct set of rows were passed
+        // if row == 0 || row == self.n_y - 1 {
+        //     return;
+        // }
 
         // Find the cell that is up and to the left
         let above_start = self.i_cell(0, row - 1);
