@@ -229,7 +229,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             M::Cell::default()
         } else {
             // and if the cell is occupied
-            self.lattice[y * self.n_x + x]
+            self.lattice[self.i_cell(x, y)]
         }
     }
 
@@ -260,12 +260,12 @@ impl<M: Model2D> LatticeModel2D<M> {
             lattice_row.iter_mut().skip(1).take(self.n_x - 2).zip(
                 self.lattice.split_at(above_start).1.windows(3).zip(
                     self.lattice
-                        .split_at(above_start + self.n_x)
+                        .split_at(self.i_cell(above_start, 1))
                         .1
                         .windows(3)
                         .zip(
                             self.lattice
-                                .split_at(above_start + 2 * self.n_x)
+                                .split_at(self.i_cell(above_start, 2))
                                 .1
                                 .windows(3),
                         ),
