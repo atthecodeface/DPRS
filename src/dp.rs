@@ -7,7 +7,7 @@ mod model_2d;
 use crate::parameters::{Parameters, Processing};
 use dp_model_2d::DPModel;
 use model_2d::{LatticeModel2D, Model2D};
-use rand::rng;
+use rand::{Rng, rng};
 use std::time::Instant;
 
 /// Entry point to this module.
@@ -82,6 +82,7 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let (n_lattices, lattices) = pool.install(|| {
         compute(
             lattice_model_2d,
+            &mut rng(),
             processing,
             &params,
             params.n_iterations / serial_skip,
@@ -117,8 +118,9 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
 }
 
 /// Run a simulation for n_iterations, either serially or in parallel
-pub fn compute<M: Model2D>(
+pub fn compute<M: Model2D, R: Rng>(
     lattice_model: LatticeModel2D<M>,
+    rng: &mut R,
     processing: &Processing,
     params: &Parameters,
     n_iterations: usize,
@@ -149,7 +151,7 @@ pub fn compute<M: Model2D>(
                 lattice_model = lattice_model
                     .apply_edge_topology(&params)
                     .apply_boundary_conditions(&params)
-                    .next_iteration_serial()
+                    .next_iteration_serial(rng, params.p)
                     .apply_edge_topology(&params) // Can cut
                     .apply_boundary_conditions(&params); // Can cut
                 if i % sample_rate == 0 {
@@ -162,7 +164,7 @@ pub fn compute<M: Model2D>(
                 lattice_model = lattice_model
                     .apply_edge_topology(&params)
                     .apply_boundary_conditions(&params)
-                    .next_iteration_serial()
+                    .next_iteration_serial(rng, params.p)
                     .apply_edge_topology(&params) // Can cut
                     .apply_boundary_conditions(&params); // Can cut
                 if i % sample_rate == 0 {

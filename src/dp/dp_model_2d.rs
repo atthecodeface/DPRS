@@ -23,17 +23,8 @@ impl Model2D for DPModel {
     /// DP rule: this cell will become occupied if:
     ///  (1) a coin toss with probability p says it *may* be occupied
     ///  (2) if one of the 9 neighborhood + here cells were previously occupied
-    fn cell_update(
-        &self,
-        coin_toss: bool,
-        up_cells: &[bool; 3],
-        mid_cells: &[bool; 3],
-        down_cells: &[bool; 3],
-    ) -> Self::Cell {
-        // Count the neighbors - the cells in the three *arrays* that we are using.
-        let n_occupied_neighbors = up_cells.iter().map(|b| *b as usize).sum::<usize>()
-            + mid_cells.iter().map(|b| *b as usize).sum::<usize>()
-            + down_cells.iter().map(|b| *b as usize).sum::<usize>();
+    fn cell_update(&self, coin_toss: bool, cell_nbrhood: &[bool; 9]) -> Self::Cell {
+        let n_occupied_neighbors = cell_nbrhood.iter().map(|b| *b as usize).sum::<usize>();
 
         n_occupied_neighbors >= 1
     }
@@ -51,8 +42,8 @@ fn test_dp() {
     let mut lm2 = lm1.clone();
 
     for _ in 0..100 {
-        lm1 = lm1.next_iteration_serial();
-        lm2 = lm2.next_iteration_parallel();
+        lm1 = lm1.next_iteration_serial(&mut rng(), 0.5);
+        lm2 = lm2.next_iteration_parallel(&mut rng(), 0.5);
 
         assert_eq!(lm1.lattice(), lm2.lattice());
     }

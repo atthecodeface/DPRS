@@ -2,7 +2,8 @@
 // //!
 // //!
 
-use rand::Rng;
+// use rand::distr::Bernoulli;
+use rand::{Rng, RngExt};
 use rayon::prelude::*;
 
 use crate::parameters::{BoundaryCondition, Parameters, Topology};
@@ -24,13 +25,7 @@ pub trait Model2D: Sync {
     /// TODO: DP2d
     fn randomize_cell<R: Rng>(&self, rng: &mut R) -> Self::Cell;
     /// TODO: DP2d
-    fn cell_update(
-        &self,
-        coin_toss: bool,
-        up_nbrs: &[Self::Cell; 3],
-        mid_nbrs: &[Self::Cell; 3],
-        down_nbrs: &[Self::Cell; 3],
-    ) -> Self::Cell;
+    fn cell_update(&self, coin_toss: bool, cell_nbrhood: &[Self::Cell; 9]) -> Self::Cell;
 }
 
 /// Model lattice in 2d.
@@ -102,25 +97,27 @@ impl<M: Model2D> LatticeModel2D<M> {
         x + self.n_x * y
     }
 
-    /// Cell value at (x, y)
-    fn cell_value(&self, x: usize, y: usize) -> M::Cell {
-        self.lattice[self.i_cell(x, y)]
-    }
+    // /// Cell value at (x, y)
+    // fn cell_value(&self, x: usize, y: usize) -> M::Cell {
+    //     self.lattice[self.i_cell(x, y)]
+    // }
 
     /// Cell values tripled across (x-1:x+1, y)
-    fn cell_values_triplet(&self, x: usize, y: usize) -> [<M as Model2D>::Cell; 3] {
-        let triplet = [
-            self.lattice[self.i_cell(x - 1, y)],
-            self.lattice[self.i_cell(x, y)],
-            self.lattice[self.i_cell(x + 1, y)],
+    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as Model2D>::Cell; 9] {
+        let nbrhood = [
+            self.lattice[self.i_cell(x - 1, y + 1)],
+            self.lattice[self.i_cell(x + 0, y + 1)],
+            self.lattice[self.i_cell(x + 1, y + 1)],
+            self.lattice[self.i_cell(x - 1, y + 0)],
+            self.lattice[self.i_cell(x + 0, y + 0)],
+            self.lattice[self.i_cell(x + 1, y + 0)],
+            self.lattice[self.i_cell(x - 1, y - 1)],
+            self.lattice[self.i_cell(x + 0, y - 1)],
+            self.lattice[self.i_cell(x + 1, y - 1)],
         ];
 
-        triplet
+        nbrhood
     }
-
-    // pub fn set_value(&mut self, new_value: <M as Model2D>::Cell) {
-    //     self.value = new_value;
-    // }
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
@@ -132,7 +129,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
-    fn periodic_x_edge_values(
+    fn periodic_x_edges(
         &self,
         lattice: &mut Vec<<M as Model2D>::Cell>,
         y_from: usize,
@@ -144,7 +141,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         }
     }
     /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
-    fn periodic_y_edge_values(
+    fn periodic_y_edges(
         &self,
         lattice: &mut Vec<<M as Model2D>::Cell>,
         x_from: usize,
@@ -155,7 +152,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             lattice[self.i_cell(x_to, y)] = lattice[self.i_cell(x_from, y)];
         }
     }
-    /// Enforce constant-value edge topology along the x edge (i.e., in y axis direction)
+    /// Enforce constant-value edge b.c. along a x edge
     fn pinned_x_edge_values(
         &self,
         lattice: &mut Vec<<M as Model2D>::Cell>,
@@ -167,7 +164,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             lattice[self.i_cell(x, y)] = pinned_value;
         }
     }
-    /// Enforce constant-value edge topology along the y edge (i.e., in x axis direction)
+    /// Enforce constant-value edge b.c. along a y edge
     fn pinned_y_edge_values(
         &self,
         lattice: &mut Vec<<M as Model2D>::Cell>,
@@ -192,8 +189,8 @@ impl<M: Model2D> LatticeModel2D<M> {
                 // No edge topology specified
             }
             Topology::Periodic => {
-                self.periodic_x_edge_values(&mut new_lattice, n_y - 2, 0);
-                self.periodic_x_edge_values(&mut new_lattice, 1, n_y - 1);
+                self.periodic_x_edges(&mut new_lattice, n_y - 2, 0);
+                self.periodic_x_edges(&mut new_lattice, 1, n_y - 1);
             }
         };
 
@@ -203,8 +200,8 @@ impl<M: Model2D> LatticeModel2D<M> {
                 // No edge topology specified
             }
             Topology::Periodic => {
-                self.periodic_y_edge_values(&mut new_lattice, n_x - 2, 0);
-                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+                self.periodic_y_edges(&mut new_lattice, n_x - 2, 0);
+                self.periodic_y_edges(&mut new_lattice, 1, n_x - 1);
             }
         };
 
@@ -272,43 +269,49 @@ impl<M: Model2D> LatticeModel2D<M> {
 
     /// TODO: DP2d
     /// Evolve the grid by one iteration using serial processing.
-    pub fn next_iteration_serial(mut self) -> Self {
+    pub fn next_iteration_serial<R: Rng>(mut self, rng: &mut R, p: f64) -> Self {
         let new_lattice = (0..self.n_cells())
-            .map(|i_cell| self.successor_cell(i_cell))
+            .map(|i_cell| {
+                let x = i_cell % self.n_x;
+                let y = i_cell / self.n_x;
+                if x > 0 && y > 0 && x < self.n_x - 1 && y < self.n_y - 1 {
+                    self.successor_cell(x, y, rng, p)
+                } else {
+                    M::Cell::default()
+                }
+            })
             .collect();
-
         self.lattice = new_lattice;
+
         self
     }
 
     /// TODO: DP2d
     /// Check that this i_th cell -> cell(x,y) is a successor cell
-    fn successor_cell(&self, i_cell: usize) -> M::Cell {
-        let x = i_cell % self.n_x;
-        let y = i_cell / self.n_x;
-        let up_cells = self.cell_values_triplet(x, y + 1);
-        let mid_cells = self.cell_values_triplet(x, y + 1);
-        let down_cells = self.cell_values_triplet(x, y + 1);
+    fn successor_cell<R: Rng>(&self, x: usize, y: usize, rng: &mut R, p: f64) -> M::Cell {
+        // println!("successor_cell {x} {y}");
+        let cell_nbrhood = self.cell_nbrhood(x, y);
         // Need to generate a coin toss here
-        let coin_toss = true;
+        let coin_toss = rng.random_bool(p);
 
-        self.model
-            .cell_update(coin_toss, &up_cells, &down_cells, &mid_cells)
+        self.model.cell_update(coin_toss, &cell_nbrhood)
     }
 
     /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
-    pub fn next_iteration_parallel(mut self) -> Self {
+    pub fn next_iteration_parallel<R: Rng>(mut self, rng: &mut R, p: f64) -> Self {
         let mut new_lattice = vec![M::Cell::default(); self.lattice.len()];
-        let coin_tosses = vec![false; self.lattice.len()];
+        // Placeholder
+        let coin_tosses: Vec<bool> = (0..self.n_x).map(|_| rng.random_bool(p)).collect();
         new_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
-            .skip(1) // Avoid having to return if row=0 or row=n_y-1
-            .take(self.n_y - 2)
+            // .skip(1) // Avoid having to return if row=0 or row=n_y-1
+            // .take(self.n_y - 2)
             .for_each(|(row, lattice)| self.next_row(row, lattice, coin_tosses.clone()));
 
         self.lattice = new_lattice;
+
         self
     }
 
@@ -321,10 +324,11 @@ impl<M: Model2D> LatticeModel2D<M> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary) range checks.
     pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell], coin_tosses: Vec<bool>) {
-        // // Bounds check: would not be necessary if correct set of rows were passed
-        // if row == 0 || row == self.n_y - 1 {
-        //     return;
-        // }
+        // Bounds check: would not be necessary if correct set of rows were passed
+        if row == 0 || row == self.n_y - 1 {
+            return;
+        }
+        println!("next_row()");
 
         // Find the cell that is up and to the left
         let above_start = self.i_cell(0, row - 1);
@@ -355,15 +359,15 @@ impl<M: Model2D> LatticeModel2D<M> {
             // This actually just converts &[bool] of length three to &[bool;3] for the function call - type munging
             //
             // I suspect that this is optimized out completely as it will check the length is 3, and it will no the length is 3 from the window creation.
-            let up_cells = from_up_left.as_array::<3>().unwrap();
-            let mid_cells = from_left.as_array::<3>().unwrap();
-            let down_cells = from_below_left.as_array::<3>().unwrap();
+            let up = from_up_left;
+            let mid = from_left;
+            let down = from_below_left;
+            let cell_nbrhood = [&up[..], &mid[..], &down[..]].concat();
+            let cell_nbrhood = cell_nbrhood.as_array::<9>().unwrap();
 
             // Need to generate a coin toss here
             let coin_toss = true;
-            *lattice_cell = self
-                .model
-                .cell_update(coin_toss, up_cells, mid_cells, down_cells);
+            *lattice_cell = self.model.cell_update(coin_toss, cell_nbrhood);
         }
     }
 }
