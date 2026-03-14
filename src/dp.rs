@@ -60,7 +60,8 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let n_x: usize = pruned_n_x + pad * 2;
     let n_y: usize = pruned_n_y + pad * 2;
     let lattice_model_2d: LatticeModel2D<DPModel> =
-        LatticeModel2D::new(dp, n_x, n_y).randomize(&mut rng());
+        LatticeModel2D::new(dp, n_x, n_y, params.edge_values_x, params.edge_values_y)
+            .randomize(&mut rng());
 
     // Set up thread pool of size set by user
     let pool = rayon::ThreadPoolBuilder::new()
@@ -83,10 +84,10 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let (n_lattices, lattices) = pool.install(|| {
         compute(
             lattice_model_2d,
+            processing,
             &params,
             params.n_iterations / serial_skip,
             params.sample_rate,
-            processing,
         )
     });
     // Stop the clock
@@ -120,10 +121,10 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
 /// Run a simulation for n_iterations, either serially or in parallel
 pub fn compute<M: Model2D>(
     lattice_model: LatticeModel2D<M>,
+    processing: &Processing,
     params: &Parameters,
     n_iterations: usize,
     sample_rate: usize,
-    processing: &Processing,
 ) -> (usize, Vec<Vec<<M as Model2D>::Cell>>) {
     // Create a model lattice plus metadata
     let mut lattice_model = lattice_model;

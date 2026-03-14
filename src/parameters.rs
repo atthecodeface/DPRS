@@ -16,10 +16,10 @@ pub enum Dimension {
 #[derive(PartialEq, Debug, Clone)]
 #[pyclass(from_py_object, eq, eq_int)]
 pub enum Topology {
-    Auto,
+    Unspecified,
     Periodic,
+    Pinned,
     Extended,   // NYI
-    Pinned,     // NYI
     Reflecting, // NYI
 }
 

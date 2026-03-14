@@ -53,18 +53,28 @@ pub struct LatticeModel2D<M: Model2D> {
     /// `lattice` method, or deconstruct the [LatticeModel2D] and take the
     /// lattice from there.
     lattice: Vec<M::Cell>,
+    edge_values_x: (M::Cell, M::Cell),
+    edge_values_y: (M::Cell, M::Cell),
 }
 
 /// Lattice model methods.
 impl<M: Model2D> LatticeModel2D<M> {
     /// Create a fresh grid (vector of booleans) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
-    pub fn new(model: M, n_x: usize, n_y: usize) -> Self {
+    pub fn new(
+        model: M,
+        n_x: usize,
+        n_y: usize,
+        edge_values_x: (M::Cell, M::Cell),
+        edge_values_y: (M::Cell, M::Cell),
+    ) -> Self {
         Self {
             model,
             n_x,
             n_y,
             lattice: vec![M::Cell::default(); n_x * n_y],
+            edge_values_x,
+            edge_values_y,
         }
     }
 
@@ -158,47 +168,71 @@ impl<M: Model2D> LatticeModel2D<M> {
         let mut new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
         let n_x = self.n_x;
         let n_y = self.n_y;
-        // Apply y-edge boundary topology
-        match params.edge_topology_y {
-            (Topology::Auto, Topology::Auto) => {
+
+        // Apply bottom x-edge boundary topology
+        match params.edge_topology_x.0 {
+            Topology::Unspecified => {
                 // No edge topology specified
             }
-            (Topology::Periodic | Topology::Auto, Topology::Periodic | Topology::Auto) => {
-                self.periodic_y_edge_values(&mut new_lattice, n_x - 2, 0);
-                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+            Topology::Periodic => {
+                self.periodic_x_edge_values(&mut new_lattice, n_y - 2, 0);
             }
-            (Topology::Periodic, Topology::Extended | Topology::Reflecting | Topology::Pinned) => {
-                panic!(
-                    "y edge: for periodic topology, the opposite edge must be specified as periodic or auto."
-                );
-            }
-            (Topology::Pinned, _) => {
-                todo!();
-                // self.pinned_x_edge_values(&mut new_lattice, 0, params.edge_topology_x.0 );
-                // self.pinned_x_edge_values(&mut new_lattice, n_y - 1, params.edge_topology_x.1 );
+            Topology::Pinned => {
+                println!("Pinning bottom x edge");
+                self.pinned_x_edge_values(&mut new_lattice, 0, self.edge_values_x.0);
             }
             _ => todo!(),
         };
-        // Apply x-edge boundary topology
-        match params.edge_topology_x {
-            (Topology::Auto, Topology::Auto) => {
+
+        // Apply top x-edge boundary topology
+        match params.edge_topology_x.1 {
+            Topology::Unspecified => {
                 // No edge topology specified
             }
-            (Topology::Periodic | Topology::Auto, Topology::Periodic | Topology::Auto) => {
+            Topology::Periodic => {
                 self.periodic_x_edge_values(&mut new_lattice, n_y - 2, 0);
                 self.periodic_x_edge_values(&mut new_lattice, 1, n_y - 1);
             }
-            (Topology::Periodic, Topology::Extended | Topology::Reflecting | Topology::Pinned) => {
-                panic!(
-                    "x edge: or periodic topology, the opposite edge must be specified as periodic or auto."
-                );
-            }
-            (Topology::Pinned, _) => {
-                todo!();
-                // self.pinned_y_edge_values(&mut new_lattice, 0, params.edge_topology_y.0);
-                // self.pinned_y_edge_values(&mut new_lattice, n_x - 1,  params.edge_topology_y.1);
+            Topology::Pinned => {
+                println!("Pinning top x edge");
+                self.pinned_x_edge_values(&mut new_lattice, n_y - 1, self.edge_values_x.1);
             }
             _ => todo!(),
+        };
+
+        // Apply left y-edge boundary topology
+        match params.edge_topology_y.0 {
+            Topology::Unspecified => {
+                // No edge topology specified
+            }
+            Topology::Periodic => {
+                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+            }
+            Topology::Pinned => {
+                // println!("Pinning left y edge");
+                self.pinned_y_edge_values(&mut new_lattice, 0, self.edge_values_y.0);
+            }
+            _ => {
+                println!("x edge topology  not implemented yet")
+            }
+        };
+
+        // Apply right y-edge boundary topology
+        match params.edge_topology_y.1 {
+            Topology::Unspecified => {
+                // No edge topology specified
+            }
+            Topology::Periodic => {
+                self.periodic_y_edge_values(&mut new_lattice, n_x - 2, 0);
+                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+            }
+            Topology::Pinned => {
+                // println!("Pinning right y edge");
+                self.pinned_y_edge_values(&mut new_lattice, n_x - 1, self.edge_values_y.1);
+            }
+            _ => {
+                println!("x edge topology  not implemented yet")
+            }
         };
 
         self.lattice = new_lattice;

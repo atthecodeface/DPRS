@@ -51,7 +51,8 @@ fn test_dp() {
     use rand::rng;
 
     let dp = DPModel::default();
-    let mut lm1 = LatticeModel2D::new(dp, 200, 200).randomize(&mut rng());
+    let mut lm1 =
+        LatticeModel2D::new(dp, 200, 200, (false, false), (false, false)).randomize(&mut rng());
     let mut lm2 = lm1.clone();
 
     for _ in 0..100 {
