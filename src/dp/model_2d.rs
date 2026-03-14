@@ -129,51 +129,37 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
-    fn periodic_x_edges(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        y_from: usize,
-        y_to: usize,
-    ) {
+    fn periodic_x_edges(&mut self, y_from: usize, y_to: usize) {
         let n_x = self.n_x;
         for x in 0..n_x {
-            lattice[self.i_cell(x, y_to)] = lattice[self.i_cell(x, y_from)];
+            let i_from = self.i_cell(x, y_to);
+            let i_to = self.i_cell(x, y_from);
+            self.lattice[i_to] = self.lattice[i_from];
         }
     }
     /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
-    fn periodic_y_edges(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        x_from: usize,
-        x_to: usize,
-    ) {
+    fn periodic_y_edges(&mut self, x_from: usize, x_to: usize) {
         let n_y = self.n_y;
         for y in 0..n_y {
-            lattice[self.i_cell(x_to, y)] = lattice[self.i_cell(x_from, y)];
+            let i_from = self.i_cell(x_from, y);
+            let i_to = self.i_cell(x_to, y);
+            self.lattice[i_to] = self.lattice[i_from];
         }
     }
     /// Enforce constant-value edge b.c. along a x edge
-    fn pinned_x_edge_values(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        y: usize,
-        pinned_value: <M as Model2D>::Cell,
-    ) {
+    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as Model2D>::Cell) {
         let n_x = self.n_x;
         for x in 0..n_x {
-            lattice[self.i_cell(x, y)] = pinned_value;
+            let i_cell = self.i_cell(x, y);
+            self.lattice[i_cell] = pinned_value;
         }
     }
     /// Enforce constant-value edge b.c. along a y edge
-    fn pinned_y_edge_values(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        x: usize,
-        pinned_value: <M as Model2D>::Cell,
-    ) {
+    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as Model2D>::Cell) {
         let n_y = self.n_y;
         for y in 0..n_y {
-            lattice[self.i_cell(x, y)] = pinned_value;
+            let i_cell = self.i_cell(x, y);
+            self.lattice[i_cell] = pinned_value;
         }
     }
 
@@ -189,8 +175,8 @@ impl<M: Model2D> LatticeModel2D<M> {
                 // No edge topology specified
             }
             Topology::Periodic => {
-                self.periodic_x_edges(&mut new_lattice, n_y - 2, 0);
-                self.periodic_x_edges(&mut new_lattice, 1, n_y - 1);
+                self.periodic_x_edges(n_y - 2, 0);
+                self.periodic_x_edges(1, n_y - 1);
             }
         };
 
@@ -200,8 +186,8 @@ impl<M: Model2D> LatticeModel2D<M> {
                 // No edge topology specified
             }
             Topology::Periodic => {
-                self.periodic_y_edges(&mut new_lattice, n_x - 2, 0);
-                self.periodic_y_edges(&mut new_lattice, 1, n_x - 1);
+                self.periodic_y_edges(n_x - 2, 0);
+                self.periodic_y_edges(1, n_x - 1);
             }
         };
 
@@ -211,7 +197,7 @@ impl<M: Model2D> LatticeModel2D<M> {
 
     /// Enforce edge boundary conditions
     pub fn apply_boundary_conditions(mut self, params: &Parameters) -> Self {
-        let mut new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
+        let new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
         let n_x = self.n_x;
         let n_y = self.n_y;
 
@@ -222,7 +208,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 println!("Pinning bottom x edge");
-                self.pinned_x_edge_values(&mut new_lattice, 0, self.edge_values_x.0);
+                self.pinned_x_edge_values(0, self.edge_values_x.0);
             }
             _ => todo!(),
         };
@@ -234,7 +220,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 println!("Pinning top x edge");
-                self.pinned_x_edge_values(&mut new_lattice, n_y - 1, self.edge_values_x.1);
+                self.pinned_x_edge_values(n_y - 1, self.edge_values_x.1);
             }
             _ => todo!(),
         };
@@ -246,7 +232,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 // println!("Pinning left y edge");
-                self.pinned_y_edge_values(&mut new_lattice, 0, self.edge_values_y.0);
+                self.pinned_y_edge_values(0, self.edge_values_y.0);
             }
             _ => todo!(),
         };
@@ -258,7 +244,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 // println!("Pinning right y edge");
-                self.pinned_y_edge_values(&mut new_lattice, n_x - 1, self.edge_values_y.1);
+                self.pinned_y_edge_values(n_x - 1, self.edge_values_y.1);
             }
             _ => todo!(),
         };
