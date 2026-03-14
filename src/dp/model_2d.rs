@@ -24,18 +24,19 @@ pub trait Model2D: Sync {
     /// TODO: DP2d
     fn randomize_cell<R: Rng>(&self, rng: &mut R) -> Self::Cell;
     /// TODO: DP2d
-    fn next_cell(
+    fn cell_update(
         &self,
-        above: &[Self::Cell; 3],
-        middle: &[Self::Cell; 3],
-        below: &[Self::Cell; 3],
+        coin_toss: bool,
+        up_nbrs: &[Self::Cell; 3],
+        mid_nbrs: &[Self::Cell; 3],
+        down_nbrs: &[Self::Cell; 3],
     ) -> Self::Cell;
 }
 
 /// Model lattice in 2d.
 ///
 /// Contains: grid size as width n_x and height n_y;
-/// the boolean lattice (true=alive) stored as a linear vector;
+/// the boolean lattice (true=occupied) stored as a linear vector;
 /// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct LatticeModel2D<M: Model2D> {
@@ -96,9 +97,25 @@ impl<M: Model2D> LatticeModel2D<M> {
         self.n_x * self.n_y
     }
 
-    /// Compute the cell index of a given x,y coordinate.
+    /// Compute the cell index of a given (x, y) coordinate.
     fn i_cell(&self, x: usize, y: usize) -> usize {
         x + self.n_x * y
+    }
+
+    /// Cell value at (x, y)
+    fn cell_value(&self, x: usize, y: usize) -> M::Cell {
+        self.lattice[self.i_cell(x, y)]
+    }
+
+    /// Cell values tripled across (x-1:x+1, y)
+    fn cell_values_triplet(&self, x: usize, y: usize) -> [<M as Model2D>::Cell; 3] {
+        let triplet = [
+            self.lattice[self.i_cell(x - 1, y)],
+            self.lattice[self.i_cell(x, y)],
+            self.lattice[self.i_cell(x + 1, y)],
+        ];
+
+        triplet
     }
 
     // pub fn set_value(&mut self, new_value: <M as Model2D>::Cell) {
@@ -265,68 +282,32 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// TODO: DP2d
-    /// Evolve the grid by one iteration using parallel processing.
-    pub fn next_iteration_parallel(mut self) -> Self {
-        let new_lattice = (0..self.n_cells())
-            .into_par_iter()
-            .map(|i_cell| self.successor_cell(i_cell))
-            .collect();
+    /// Check that this i_th cell -> cell(x,y) is a successor cell
+    fn successor_cell(&self, i_cell: usize) -> M::Cell {
+        let x = i_cell % self.n_x;
+        let y = i_cell / self.n_x;
+        let up_cells = self.cell_values_triplet(x, y + 1);
+        let mid_cells = self.cell_values_triplet(x, y + 1);
+        let down_cells = self.cell_values_triplet(x, y + 1);
+        // Need to generate a coin toss here
+        let coin_toss = true;
 
-        self.lattice = new_lattice;
-        self
+        self.model
+            .cell_update(coin_toss, &up_cells, &down_cells, &mid_cells)
     }
 
     /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
-    pub fn next_iteration_parallel_chunked(mut self) -> Self {
+    pub fn next_iteration_parallel(mut self) -> Self {
         let mut new_lattice = vec![M::Cell::default(); self.lattice.len()];
+        let coin_tosses = vec![false; self.lattice.len()];
         new_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
-            .for_each(|(r, l)| self.next_row(r, l));
+            .for_each(|(row, lattice)| self.next_row(row, lattice, coin_tosses.clone()));
 
         self.lattice = new_lattice;
         self
-    }
-
-    /// TODO: DP2d
-    /// Check that this i_th cell -> cell(x,y) is a successor cell
-    fn successor_cell(&self, i_cell: usize) -> M::Cell {
-        let x_0 = i_cell % self.n_x;
-        let y_0 = i_cell / self.n_x;
-
-        let xp1 = x_0 + 1;
-        let yp1 = y_0 + 1;
-        let xm1 = x_0.wrapping_sub(1);
-        let ym1 = y_0.wrapping_sub(1);
-        let upper_row = [
-            self.is_alive(xm1, ym1),
-            self.is_alive(x_0, ym1),
-            self.is_alive(xp1, ym1),
-        ];
-        let middle_row = [
-            self.is_alive(xm1, y_0),
-            self.is_alive(x_0, y_0),
-            self.is_alive(xp1, y_0),
-        ];
-        let lower_row = [
-            self.is_alive(xm1, yp1),
-            self.is_alive(x_0, yp1),
-            self.is_alive(xp1, yp1),
-        ];
-        self.model.next_cell(&upper_row, &middle_row, &lower_row)
-    }
-
-    /// TODO: DP2d
-    /// Check if this cell is within bounds and alive
-    fn is_alive(&self, x: usize, y: usize) -> M::Cell {
-        // check (x,y) coordinate is within bounds
-        if x >= self.n_x || y >= self.n_y {
-            M::Cell::default()
-        } else {
-            // and if the cell is occupied
-            self.lattice[self.i_cell(x, y)]
-        }
     }
 
     /// TODO: DP2d
@@ -337,13 +318,14 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// row, and those in the row below
     ///
     /// By using iterators we can guarantee safe access without (unnecessary) range checks.
-    pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell]) {
+    pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell], coin_tosses: Vec<bool>) {
+        // Bound check: should not be necessary
         if row == 0 || row == self.n_y - 1 {
             return;
         }
 
         // Find the cell that is up and to the left
-        let above_start = self.i_cell(0, row - 1); //(row - 1) * self.n_x;
+        let above_start = self.i_cell(0, row - 1);
 
         // Iterate over every cell in the row skipping the first and last
         //
@@ -371,11 +353,15 @@ impl<M: Model2D> LatticeModel2D<M> {
             // This actually just converts &[bool] of length three to &[bool;3] for the function call - type munging
             //
             // I suspect that this is optimized out completely as it will check the length is 3, and it will no the length is 3 from the window creation.
-            let upper_row = from_up_left.as_array::<3>().unwrap();
-            let middle_row = from_left.as_array::<3>().unwrap();
-            let lower_row = from_below_left.as_array::<3>().unwrap();
+            let up_cells = from_up_left.as_array::<3>().unwrap();
+            let mid_cells = from_left.as_array::<3>().unwrap();
+            let down_cells = from_below_left.as_array::<3>().unwrap();
 
-            *lattice_cell = self.model.next_cell(upper_row, middle_row, lower_row);
+            // Need to generate a coin toss here
+            let coin_toss = true;
+            *lattice_cell = self
+                .model
+                .cell_update(coin_toss, up_cells, mid_cells, down_cells);
         }
     }
 }

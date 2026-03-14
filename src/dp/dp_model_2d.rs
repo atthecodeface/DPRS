@@ -20,27 +20,22 @@ impl Model2D for DPModel {
         rng.sample(StandardUniform)
     }
 
-    // fn set_cell() {
-    // }
+    /// DP rule: this cell will become occupied if:
+    ///  (1) a coin toss with probability p says it *may* be occupied
+    ///  (2) if one of the 9 neighborhood + here cells were previously occupied
+    fn cell_update(
+        &self,
+        coin_toss: bool,
+        up_cells: &[bool; 3],
+        mid_cells: &[bool; 3],
+        down_cells: &[bool; 3],
+    ) -> Self::Cell {
+        // Count the neighbors - the cells in the three *arrays* that we are using.
+        let n_occupied_neighbors = up_cells.iter().map(|b| *b as usize).sum::<usize>()
+            + mid_cells.iter().map(|b| *b as usize).sum::<usize>()
+            + down_cells.iter().map(|b| *b as usize).sum::<usize>();
 
-    /// TODO: DP2d
-    /// Count the neighbours given the three rows of cells.
-    ///
-    /// As they are arrays there needs to be no range checking
-    /// (not that there is in release anyway...)
-    fn next_cell(&self, above: &[bool; 3], middle: &[bool; 3], below: &[bool; 3]) -> Self::Cell {
-        // Count the neighbors
-        //  - the cells in the three *arrays* that we are using.
-        let n_alive_neighbors = above.iter().map(|b| *b as usize).sum::<usize>()
-            + below.iter().map(|b| *b as usize).sum::<usize>()
-            + { if middle[0] { 1 } else { 0 } }
-            + { if middle[2] { 1 } else { 0 } };
-
-        if middle[1] {
-            (2..=3).contains(&n_alive_neighbors)
-        } else {
-            (2..=2).contains(&n_alive_neighbors)
-        }
+        n_occupied_neighbors >= 1
     }
 }
 

@@ -35,16 +35,10 @@ pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<bool>>) {
     let (t_serial, _, _) = run_simulation(&params, &Processing::Serial);
     println!("Serial:   {:4.3}s", t_serial);
 
-    let (t_parallel, _, _) = run_simulation(&params, &Processing::Parallel);
+    let (t_parallel, n_lattices, lattices) = run_simulation(&params, &Processing::Parallel);
     println!("Parallel: {:4.3}s", t_parallel);
 
-    let (t_parallel_chunked, n_lattices, lattices) =
-        run_simulation(&params, &Processing::ParallelChunked);
-    println!("Chunked:  {:4.3}s", t_parallel_chunked);
-    println!();
-
     println!("Parallel speedup => {:.2}x", t_serial / t_parallel);
-    println!("Chunked speedup =>  {:.2}x", t_serial / t_parallel_chunked);
     println!();
 
     (n_lattices, lattices)
@@ -77,7 +71,8 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     // the parallelized runs.
     let serial_skip: usize = match processing {
         Processing::Serial => params.serial_skip,
-        Processing::Parallel | Processing::ParallelChunked => 1,
+        Processing::Parallel => 1,
+        _ => todo!()
     };
 
     // Start the timer
@@ -175,23 +170,9 @@ pub fn compute<M: Model2D>(
                 };
             }
         }
-        Processing::ParallelChunked => {
-            for i in 1..(n_iterations + 1) {
-                lattice_model = lattice_model
-                    .apply_edge_topology(&params)
-                    .apply_boundary_conditions(&params)
-                    .next_iteration_serial()
-                    .apply_edge_topology(&params) // Can cut
-                    .apply_boundary_conditions(&params); // Can cut
-                // lattice_model[0]=1;
-                if i % sample_rate == 0 {
-                    lattices.push(lattice_model.lattice().clone());
-                };
-            }
-        }
+        _ => todo!()
     };
     assert!(n_lattices == lattices.len());
-    // println!("n_lattices:  {} = {}", lattices.len(), n_lattices);
 
     (n_lattices, lattices)
 }
