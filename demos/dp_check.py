@@ -3,11 +3,17 @@ from dprs import sim
 print(f"\n{sim}\n")
 
 class Parameters:
-    dim: int = sim.Dimension.D2
-    processing: int = sim.Processing.Parallel
+    dim = sim.Dimension.D2
+    processing = sim.Processing.Parallel
     n_x: int = 81 #10_000
     n_y: int = 51 #10_000
     n_z: int = 1
+    edge_topology_x = (sim.Topology.Periodic, sim.Topology.Periodic)
+    edge_topology_y = (sim.Topology.Pinned, sim.Topology.Pinned)
+    edge_topology_z = (sim.Topology.Unspecified, sim.Topology.Unspecified)
+    edge_values_x = (False, False)
+    edge_values_y = (False, True)
+    edge_values_z = (False, False)
     p: float = 0.5
     n_iterations: int = 100
     sample_rate: int = 10

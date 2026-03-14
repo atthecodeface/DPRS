@@ -46,11 +46,13 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let life = LifeModel::default();
     // Buffer lattice edges
     let pad: usize = match params.do_buffering {
-        true => 2,
+        true => 1,
         false => 0,
     };
-    let n_x: usize = params.n_x + pad * 2;
-    let n_y: usize = params.n_y + pad * 2;
+    let pruned_n_x = params.n_x;
+    let pruned_n_y = params.n_y;
+    let n_x: usize = pruned_n_x + pad * 2;
+    let n_y: usize = pruned_n_y + pad * 2;
     let lattice_model_2d: LatticeModel2D<LifeModel> =
         LatticeModel2D::new(life, n_x, n_y).randomize(&mut rng());
 
@@ -85,38 +87,25 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
 
     if params.do_buffering {
         // Remove edge buffering before returning the lattice time-slices.
-        //
-        // TODO: make this more idiomatic Rust. Too many nested for-loops!
-        //
         println!("Doing buffering");
-        let mut clipped_lattices: Vec<Vec<bool>> = Vec::new();
-        // Step through each of the recorded lattices
-        // (from 0 to n_lattices-1 inclusively)
-        for i_timeslice in 0..n_lattices {
-            // Extract this time slice
-            let lattice = &lattices[i_timeslice];
-            // Prepare an empty lattice of pruned size
-            let mut clipped_lattice: Vec<bool> = Vec::new();
-            // Iterate over each 'row', skipping the padding
-            for y in pad..(n_y - pad) {
-                // Iterate over each 'column', skipping the padding
-                for x in pad..(n_x - pad) {
-                    let i_cell: usize = x + y * n_x;
-                    clipped_lattice.push(lattice[i_cell]);
+        // Step through each of the recorded lattices, pruning off by 'pad'
+        // at each edge, returning the pruned lattices
+        let pruned_lattices = lattices
+            .into_iter()
+            .map(|lattice| {
+                let mut clipped_lattice = vec![];
+                for c in lattice.chunks(n_x).skip(pad).take(pruned_n_y) {
+                    clipped_lattice.extend_from_slice(&c[pad..(pad + pruned_n_x)]);
                 }
-            }
-            clipped_lattices.push(clipped_lattice);
-        }
-        // Return the runtime, the number of recorded (time slice) lattices
+                clipped_lattice
+            })
+            .collect();
+
+        // Return the run time, the number of recorded (time slice) lattices
         // (which always includes the initial lattice at t=0), and a vector
         // of lattice vectors.
-
-        (duration, n_lattices, clipped_lattices)
+        (duration, n_lattices, pruned_lattices)
     } else {
-        // Return the runtime, the number of recorded (time slice) lattices
-        // (which always includes the initial lattice at t=0), and a vector
-        // of lattice vectors.
-
         (duration, n_lattices, lattices)
     }
 }
@@ -136,9 +125,9 @@ pub fn compute<M: Model2D>(
     let mut lattices = Vec::new();
     // Record the initial lattice
     lattices.push(
-        lattice_model.lattice().to_vec(), // .iter()
-                                          // .enumerate()
-                                          // .map(|(i, val)| val)
+        lattice_model.lattice().clone(), // .iter()
+                                         // .enumerate()
+                                         // .map(|(i, val)| val)
     );
     // We aren't going to worry about the lattice type being Cell
     //  - instead we're going to leave it up to pyo3 to convert
@@ -151,7 +140,7 @@ pub fn compute<M: Model2D>(
             for i in 1..(n_iterations + 1) {
                 lattice_model = lattice_model.next_iteration_serial();
                 if i % sample_rate == 0 {
-                    lattices.push(lattice_model.lattice().to_vec());
+                    lattices.push(lattice_model.lattice().clone());
                 };
             }
         }
@@ -159,7 +148,7 @@ pub fn compute<M: Model2D>(
             for i in 1..(n_iterations + 1) {
                 lattice_model = lattice_model.next_iteration_parallel();
                 if i % sample_rate == 0 {
-                    lattices.push(lattice_model.lattice().to_vec());
+                    lattices.push(lattice_model.lattice().clone());
                 };
             }
         }
@@ -167,7 +156,7 @@ pub fn compute<M: Model2D>(
             for i in 1..(n_iterations + 1) {
                 lattice_model = lattice_model.next_iteration_parallel_chunked();
                 if i % sample_rate == 0 {
-                    lattices.push(lattice_model.lattice().to_vec());
+                    lattices.push(lattice_model.lattice().clone());
                 };
             }
         }

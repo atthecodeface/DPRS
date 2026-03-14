@@ -2,85 +2,320 @@
 // //!
 // //!
 
-use rand::distr::StandardUniform;
-use rand::{RngExt, rng};
+use rand::Rng;
 use rayon::prelude::*;
-use std::iter::repeat_n;
 
-/// Model in 2d.
+use crate::parameters::{Parameters, Topology};
+
+/// The trait required for a model to run in 2D.
 ///
-/// Contains:
-///    - grid size as width n_x and height n_y;
-///    - the boolean lattice stored as a linear vector.
+/// This must be [Sync] as the model can be accessed by
+/// different threads at the same time in the parallel working
+pub trait Model2D: Sync {
+    /// The value in each cell.
+    ///
+    /// This must be [Send] to support the 'parallel' versions;
+    /// the Cell is passed to a work thread.
+    ///
+    /// This must be [Sync] to support the 'parallel' versions;
+    /// the array of cells is accessed by many threads at once.
+    ///
+    type Cell: Default + std::fmt::Debug + Copy + Send + Sync;
+    /// TODO: DP2d
+    fn randomize_cell<R: Rng>(&self, rng: &mut R) -> Self::Cell;
+    /// TODO: DP2d
+    fn next_cell(
+        &self,
+        above: &[Self::Cell; 3],
+        middle: &[Self::Cell; 3],
+        below: &[Self::Cell; 3],
+    ) -> Self::Cell;
+}
+
+/// Model lattice in 2d.
+///
+/// Contains: grid size as width n_x and height n_y;
+/// the boolean lattice (true=alive) stored as a linear vector;
+/// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct Model2D {
+pub struct LatticeModel2D<M: Model2D> {
+    /// The model that provides the cells and the mapping between 3x3 grids of
+    /// cells in one time step and the next.
+    model: M,
+    /// The number of 'column's in the lattice
     n_x: usize,
+    /// The number of 'row's in the lattice
     n_y: usize,
-    n_z: usize, // not going to be used
-    pub lattice: Vec<bool>,
+    /// This used to be public, but is not now; it is an internal data structure
+    /// that might be handled differently in the future.
+    ///
+    /// To recover this (if needed) either *borrow* the lattice with the
+    /// `lattice` method, or deconstruct the [LatticeModel2D] and take the
+    /// lattice from there.
+    lattice: Vec<M::Cell>,
+    edge_values_x: (M::Cell, M::Cell),
+    edge_values_y: (M::Cell, M::Cell),
 }
 
 /// Lattice model methods.
-impl Model2D {
+impl<M: Model2D> LatticeModel2D<M> {
     /// Create a fresh grid (vector of booleans) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
-    pub fn initialize(n_x: usize, n_y: usize, n_z: usize) -> Self {
+    pub fn new(
+        model: M,
+        n_x: usize,
+        n_y: usize,
+        edge_values_x: (M::Cell, M::Cell),
+        edge_values_y: (M::Cell, M::Cell),
+    ) -> Self {
         Self {
+            model,
             n_x,
             n_y,
-            n_z,
-            lattice: repeat_n(false, n_x * n_y).collect(),
+            lattice: vec![M::Cell::default(); n_x * n_y],
+            edge_values_x,
+            edge_values_y,
         }
     }
 
+    /// Borrow the lattice
+    pub fn lattice(&self) -> &Vec<M::Cell> {
+        &self.lattice
+    }
+
+    /// Take the model and the lattice, destroying the rest of the model.
+    ///
+    /// This is the 'deconstructor', used after simulation to take the lattice
+    /// (and potentially the model, if that is useful too).
+    pub fn take(self) -> (M, Vec<M::Cell>) {
+        (self.model, self.lattice)
+    }
+
     /// Count the total number of cells in the grid.
-    pub fn n_cells(&self) -> usize {
+    fn n_cells(&self) -> usize {
         self.n_x * self.n_y
     }
 
+    /// Compute the cell index of a given x,y coordinate.
+    fn i_cell(&self, x: usize, y: usize) -> usize {
+        x + self.n_x * y
+    }
+
+    // pub fn set_value(&mut self, new_value: <M as Model2D>::Cell) {
+    //     self.value = new_value;
+    // }
+
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
-    pub fn randomize(&self) -> Self {
-        let new_lattice = rng()
-            .sample_iter(&StandardUniform)
-            .take(self.n_cells())
+    pub fn randomize<R: Rng>(mut self, rng: &mut R) -> Self {
+        self.lattice = (0..self.n_cells())
+            .map(|_| self.model.randomize_cell(rng))
             .collect();
-
-        self.next_grid(new_lattice)
+        self
     }
 
+    /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
+    fn periodic_x_edge_values(
+        &self,
+        lattice: &mut Vec<<M as Model2D>::Cell>,
+        y_from: usize,
+        y_to: usize,
+    ) {
+        let n_x = self.n_x;
+        for x in 0..n_x {
+            lattice[self.i_cell(x, y_to)] = lattice[self.i_cell(x, y_from)];
+        }
+    }
+    /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
+    fn periodic_y_edge_values(
+        &self,
+        lattice: &mut Vec<<M as Model2D>::Cell>,
+        x_from: usize,
+        x_to: usize,
+    ) {
+        let n_y = self.n_y;
+        for y in 0..n_y {
+            lattice[self.i_cell(x_to, y)] = lattice[self.i_cell(x_from, y)];
+        }
+    }
+    /// Enforce constant-value edge topology along the x edge (i.e., in y axis direction)
+    fn pinned_x_edge_values(
+        &self,
+        lattice: &mut Vec<<M as Model2D>::Cell>,
+        y: usize,
+        pinned_value: <M as Model2D>::Cell,
+    ) {
+        let n_x = self.n_x;
+        for x in 0..n_x {
+            lattice[self.i_cell(x, y)] = pinned_value;
+        }
+    }
+    /// Enforce constant-value edge topology along the y edge (i.e., in x axis direction)
+    fn pinned_y_edge_values(
+        &self,
+        lattice: &mut Vec<<M as Model2D>::Cell>,
+        x: usize,
+        pinned_value: <M as Model2D>::Cell,
+    ) {
+        let n_y = self.n_y;
+        for y in 0..n_y {
+            lattice[self.i_cell(x, y)] = pinned_value;
+        }
+    }
+
+    /// Enforce edge topology specifications
+    pub fn apply_boundary_topology(mut self, params: &Parameters) -> Self {
+        let mut new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
+        let n_x = self.n_x;
+        let n_y = self.n_y;
+
+        // Apply bottom x-edge boundary topology
+        match params.edge_topology_x.0 {
+            Topology::Unspecified => {
+                // No edge topology specified
+            }
+            Topology::Periodic => {
+                self.periodic_x_edge_values(&mut new_lattice, n_y - 2, 0);
+            }
+            Topology::Pinned => {
+                println!("Pinning bottom x edge");
+                self.pinned_x_edge_values(&mut new_lattice, 0, self.edge_values_x.0);
+            }
+            _ => todo!(),
+        };
+
+        // Apply top x-edge boundary topology
+        match params.edge_topology_x.1 {
+            Topology::Unspecified => {
+                // No edge topology specified
+            }
+            Topology::Periodic => {
+                self.periodic_x_edge_values(&mut new_lattice, n_y - 2, 0);
+                self.periodic_x_edge_values(&mut new_lattice, 1, n_y - 1);
+            }
+            Topology::Pinned => {
+                println!("Pinning top x edge");
+                self.pinned_x_edge_values(&mut new_lattice, n_y - 1, self.edge_values_x.1);
+            }
+            _ => todo!(),
+        };
+
+        // Apply left y-edge boundary topology
+        match params.edge_topology_y.0 {
+            Topology::Unspecified => {
+                // No edge topology specified
+            }
+            Topology::Periodic => {
+                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+            }
+            Topology::Pinned => {
+                // println!("Pinning left y edge");
+                self.pinned_y_edge_values(&mut new_lattice, 0, self.edge_values_y.0);
+            }
+            _ => {
+                println!("x edge topology  not implemented yet")
+            }
+        };
+
+        // Apply right y-edge boundary topology
+        match params.edge_topology_y.1 {
+            Topology::Unspecified => {
+                // No edge topology specified
+            }
+            Topology::Periodic => {
+                self.periodic_y_edge_values(&mut new_lattice, n_x - 2, 0);
+                self.periodic_y_edge_values(&mut new_lattice, 1, n_x - 1);
+            }
+            Topology::Pinned => {
+                // println!("Pinning right y edge");
+                self.pinned_y_edge_values(&mut new_lattice, n_x - 1, self.edge_values_y.1);
+            }
+            _ => {
+                println!("x edge topology  not implemented yet")
+            }
+        };
+
+        self.lattice = new_lattice;
+        self
+    }
+
+    /// TODO: DP2d
     /// Evolve the grid by one iteration using serial processing.
-    pub fn next_iteration_serial(&self) -> Self {
+    pub fn next_iteration_serial(mut self) -> Self {
         let new_lattice = (0..self.n_cells())
-            .map(|i_cell| self.is_successor_cell(i_cell))
-            // .map(|i_cell| !self.lattice[i_cell])
+            .map(|i_cell| self.successor_cell(i_cell))
             .collect();
 
-        self.next_grid(new_lattice)
+        self.lattice = new_lattice;
+        self
     }
 
+    /// TODO: DP2d
     /// Evolve the grid by one iteration using parallel processing.
-    pub fn next_iteration_parallel(&self) -> Self {
+    pub fn next_iteration_parallel(mut self) -> Self {
         let new_lattice = (0..self.n_cells())
             .into_par_iter()
-            .map(|i_cell| self.is_successor_cell(i_cell))
-            // .map(|i_cell| !self.lattice[i_cell])
+            .map(|i_cell| self.successor_cell(i_cell))
             .collect();
 
-        self.next_grid(new_lattice)
+        self.lattice = new_lattice;
+        self
     }
 
+    /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
-    pub fn next_iteration_parallel_chunked(&self) -> Self {
-        let mut new_lattice = vec![false; self.lattice.len()];
+    pub fn next_iteration_parallel_chunked(mut self) -> Self {
+        let mut new_lattice = vec![M::Cell::default(); self.lattice.len()];
         new_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
             .for_each(|(r, l)| self.next_row(r, l));
 
-        self.next_grid(new_lattice)
+        self.lattice = new_lattice;
+        self
     }
 
+    /// TODO: DP2d
+    /// Check that this i_th cell -> cell(x,y) is a successor cell
+    fn successor_cell(&self, i_cell: usize) -> M::Cell {
+        let x_0 = i_cell % self.n_x;
+        let y_0 = i_cell / self.n_x;
+
+        let xp1 = x_0 + 1;
+        let yp1 = y_0 + 1;
+        let xm1 = x_0.wrapping_sub(1);
+        let ym1 = y_0.wrapping_sub(1);
+        let upper_row = [
+            self.is_alive(xm1, ym1),
+            self.is_alive(x_0, ym1),
+            self.is_alive(xp1, ym1),
+        ];
+        let middle_row = [
+            self.is_alive(xm1, y_0),
+            self.is_alive(x_0, y_0),
+            self.is_alive(xp1, y_0),
+        ];
+        let lower_row = [
+            self.is_alive(xm1, yp1),
+            self.is_alive(x_0, yp1),
+            self.is_alive(xp1, yp1),
+        ];
+        self.model.next_cell(&upper_row, &middle_row, &lower_row)
+    }
+
+    /// TODO: DP2d
+    /// Check if this cell is within bounds and alive
+    fn is_alive(&self, x: usize, y: usize) -> M::Cell {
+        // check (x,y) coordinate is within bounds
+        if x >= self.n_x || y >= self.n_y {
+            M::Cell::default()
+        } else {
+            // and if the cell is occupied
+            self.lattice[self.i_cell(x, y)]
+        }
+    }
+
+    /// TODO: DP2d
     /// Calculate the next cells for just one row
     ///
     /// This zips across the row (unless it is the top or bottom row) using
@@ -88,13 +323,13 @@ impl Model2D {
     /// row, and those in the row below
     ///
     /// By using iterators we can guarantee safe access without (unnecessary) range checks.
-    pub fn next_row(&self, row: usize, lattice_row: &mut [bool]) {
+    pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell]) {
         if row == 0 || row == self.n_y - 1 {
             return;
         }
 
         // Find the cell that is up and to the left
-        let above_start = (row - 1) * self.n_x;
+        let above_start = self.i_cell(0, row - 1); //(row - 1) * self.n_x;
 
         // Iterate over every cell in the row skipping the first and last
         //
@@ -126,96 +361,7 @@ impl Model2D {
             let middle_row = from_left.as_array::<3>().unwrap();
             let lower_row = from_below_left.as_array::<3>().unwrap();
 
-            // Count the neighbors - the cells in the three *arrays* that we are using
-            let n_alive_neighbors = Self::count_neighbours(upper_row, middle_row, lower_row);
-            *lattice_cell = {
-                if middle_row[1] {
-                    (2..=3).contains(&n_alive_neighbors)
-                } else {
-                    (2..=2).contains(&n_alive_neighbors)
-                }
-            };
+            *lattice_cell = self.model.next_cell(upper_row, middle_row, lower_row);
         }
-    }
-
-    /// Count the neighbours given the three rows of cells
-    ///
-    /// As they are arrays there needs to be no range checking (not that there is in release anyway...)
-    fn count_neighbours(above: &[bool; 3], middle: &[bool; 3], below: &[bool; 3]) -> usize {
-        above.iter().map(|b| *b as usize).sum::<usize>()
-            + below.iter().map(|b| *b as usize).sum::<usize>()
-            + { if middle[0] { 1 } else { 0 } }
-            + { if middle[2] { 1 } else { 0 } }
-    }
-
-    /// Create the next grid with the assigned lattice vector and previous rules.
-    fn next_grid(&self, new_lattice: Vec<bool>) -> Self {
-        assert!(new_lattice.len() == self.n_cells());
-
-        Self {
-            n_x: self.n_x,
-            n_y: self.n_y,
-            n_z: self.n_z,
-            // n_iterations: self.n_iterations,
-            lattice: new_lattice,
-        }
-    }
-
-    /// Check that this i_th cell -> cell(x,y) is a successor cell
-    fn is_successor_cell(&self, i_cell: usize) -> bool {
-        self.will_succeed(i_cell % self.n_x, i_cell / self.n_x)
-    }
-
-    /// Decide if this (x,y) cell, if alive, survives or gives birth,
-    /// i.e., if it will "succeed" – if so, return true.
-    fn will_succeed(&self, x: usize, y: usize) -> bool {
-        let n_alive_neighbors = self.n_alive_neighbors(x, y);
-
-        if self.is_alive(x, y) {
-            (2..=3).contains(&n_alive_neighbors)
-        } else {
-            (2..=2).contains(&n_alive_neighbors)
-        }
-    }
-
-    /// Count how many neighboring cells are alive.
-    fn n_alive_neighbors(&self, x_0: usize, y_0: usize) -> usize {
-        let xp1 = x_0 + 1;
-        let yp1 = y_0 + 1;
-        let xm1 = x_0.wrapping_sub(1);
-        let ym1 = y_0.wrapping_sub(1);
-        let neighbors = [
-            self.is_alive(xm1, ym1),
-            self.is_alive(x_0, ym1),
-            self.is_alive(xp1, ym1),
-            self.is_alive(xm1, y_0),
-            self.is_alive(xp1, y_0),
-            self.is_alive(xm1, yp1),
-            self.is_alive(x_0, yp1),
-            self.is_alive(xp1, yp1),
-        ];
-
-        neighbors.iter().filter(|&x| *x).count()
-    }
-
-    /// Check if this cell is within bounds and alive
-    fn is_alive(&self, x: usize, y: usize) -> bool {
-        // check (x,y) coordinate is within bounds
-        !(x >= self.n_x || y >= self.n_y) && self.lattice[y * self.n_x + x]
-        // and if the cell is occupied
-    }
-}
-
-/// Minimal testing.
-#[test]
-fn test_dp() {
-    let mut model1 = Model2D::initialize(200, 200, 1).randomize();
-    let mut model2 = model1.clone();
-
-    for _ in 0..100 {
-        model1 = model1.next_iteration_serial();
-        model2 = model2.next_iteration_parallel();
-
-        assert_eq!(model1, model2);
     }
 }

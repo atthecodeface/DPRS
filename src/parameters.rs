@@ -12,7 +12,18 @@ pub enum Dimension {
     D3,
 }
 
-/// Choice of processing type: will become a Py-passable parameter
+/// Lattice dimension, auto-computed from presence of n_y, n_z kwarg parameters.
+#[derive(PartialEq, Debug, Clone)]
+#[pyclass(from_py_object, eq, eq_int)]
+pub enum Topology {
+    Unspecified,
+    Periodic,
+    Pinned,
+    Extended,   // NYI
+    Reflecting, // NYI
+}
+
+/// Choice of processing type: will become a Py-passable parameter.
 #[derive(PartialEq, Debug, Clone)]
 #[pyclass(from_py_object, eq, eq_int)]
 pub enum Processing {
@@ -21,15 +32,19 @@ pub enum Processing {
     ParallelChunked,
 }
 
-/// Model parameter bundle derived from Python kwarg dict.
-// #[derive(Debug, Clone)]
-// #[pyclass(from_py_object)]
+/// Model parameter bundle derived from Python Parameters class instance.
 #[derive(FromPyObject, Debug, Clone)]
 pub struct Parameters {
     pub dim: Dimension,
     pub n_x: usize,
     pub n_y: usize,
     pub n_z: usize,
+    pub edge_topology_x: (Topology, Topology),
+    pub edge_topology_y: (Topology, Topology),
+    pub edge_topology_z: (Topology, Topology),
+    pub edge_values_x: (bool, bool),
+    pub edge_values_y: (bool, bool),
+    pub edge_values_z: (bool, bool),
     pub p: f64,
     pub n_iterations: usize,
     pub sample_rate: usize,
