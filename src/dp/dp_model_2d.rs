@@ -2,7 +2,6 @@
 // //!
 // //!
 
-use rand::distr::StandardUniform;
 use rand::{Rng, RngExt};
 
 use super::Model2D;
@@ -35,13 +34,13 @@ fn test_dp() {
     use rand::rng;
 
     let dp = DPModel::default();
-    let mut lm1 = LatticeModel2D::new(dp, 200, 200, (false, false), (false, false))
-        .randomize(0.5, &mut rng());
+    let mut lm1 = LatticeModel2D::new(dp, 200, 200, (false, false), (false, false));
+    lm1.randomized_lattice(0.5, &mut rng());
     let mut lm2 = lm1.clone();
 
     for _ in 0..100 {
-        lm1 = lm1.next_iteration_serial(0.5, &mut rng());
-        lm2 = lm2.next_iteration_parallel(0.5, &mut rng());
+        lm1.next_iteration_serial(0.5, &mut rng());
+        lm2.next_iteration_parallel(0.5, &mut rng());
 
         assert_eq!(lm1.lattice(), lm2.lattice());
     }

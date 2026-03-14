@@ -97,11 +97,6 @@ impl<M: Model2D> LatticeModel2D<M> {
         x + self.n_x * y
     }
 
-    // /// Cell value at (x, y)
-    // fn cell_value(&self, x: usize, y: usize) -> M::Cell {
-    //     self.lattice[self.i_cell(x, y)]
-    // }
-
     /// Cell values tripled across (x-1:x+1, y)
     fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as Model2D>::Cell; 9] {
         let nbrhood = [
@@ -121,65 +116,49 @@ impl<M: Model2D> LatticeModel2D<M> {
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
-    pub fn randomize<R: Rng>(mut self, p: f64, rng: &mut R) -> Self {
+    pub fn randomized_lattice<R: Rng>(&mut self, p: f64, rng: &mut R) {
         self.lattice = (0..self.n_cells())
             .map(|_| self.model.randomize_cell(p, rng))
             .collect();
-        self
     }
 
     /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
-    fn periodic_x_edges(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        y_from: usize,
-        y_to: usize,
-    ) {
+    fn periodic_x_edges(&mut self, y_from: usize, y_to: usize) {
         let n_x = self.n_x;
         for x in 0..n_x {
-            lattice[self.i_cell(x, y_to)] = lattice[self.i_cell(x, y_from)];
+            let i_from = self.i_cell(x, y_to);
+            let i_to = self.i_cell(x, y_from);
+            self.lattice[i_to] = self.lattice[i_from];
         }
     }
     /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
-    fn periodic_y_edges(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        x_from: usize,
-        x_to: usize,
-    ) {
+    fn periodic_y_edges(&mut self, x_from: usize, x_to: usize) {
         let n_y = self.n_y;
         for y in 0..n_y {
-            lattice[self.i_cell(x_to, y)] = lattice[self.i_cell(x_from, y)];
+            let i_from = self.i_cell(x_from, y);
+            let i_to = self.i_cell(x_to, y);
+            self.lattice[i_to] = self.lattice[i_from];
         }
     }
     /// Enforce constant-value edge b.c. along a x edge
-    fn pinned_x_edge_values(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        y: usize,
-        pinned_value: <M as Model2D>::Cell,
-    ) {
+    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as Model2D>::Cell) {
         let n_x = self.n_x;
         for x in 0..n_x {
-            lattice[self.i_cell(x, y)] = pinned_value;
+            let i_cell = self.i_cell(x, y);
+            self.lattice[i_cell] = pinned_value;
         }
     }
     /// Enforce constant-value edge b.c. along a y edge
-    fn pinned_y_edge_values(
-        &self,
-        lattice: &mut Vec<<M as Model2D>::Cell>,
-        x: usize,
-        pinned_value: <M as Model2D>::Cell,
-    ) {
+    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as Model2D>::Cell) {
         let n_y = self.n_y;
         for y in 0..n_y {
-            lattice[self.i_cell(x, y)] = pinned_value;
+            let i_cell = self.i_cell(x, y);
+            self.lattice[i_cell] = pinned_value;
         }
     }
 
     /// Enforce edge topology specifications
-    pub fn apply_edge_topology(mut self, params: &Parameters) -> Self {
-        let mut new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
+    pub fn apply_edge_topology(&mut self, params: &Parameters) {
         let n_x = self.n_x;
         let n_y = self.n_y;
 
@@ -189,8 +168,8 @@ impl<M: Model2D> LatticeModel2D<M> {
                 // No edge topology specified
             }
             Topology::Periodic => {
-                self.periodic_x_edges(&mut new_lattice, n_y - 2, 0);
-                self.periodic_x_edges(&mut new_lattice, 1, n_y - 1);
+                self.periodic_x_edges(n_y - 2, 0);
+                self.periodic_x_edges(1, n_y - 1);
             }
         };
 
@@ -200,18 +179,15 @@ impl<M: Model2D> LatticeModel2D<M> {
                 // No edge topology specified
             }
             Topology::Periodic => {
-                self.periodic_y_edges(&mut new_lattice, n_x - 2, 0);
-                self.periodic_y_edges(&mut new_lattice, 1, n_x - 1);
+                self.periodic_y_edges(n_x - 2, 0);
+                self.periodic_y_edges(1, n_x - 1);
             }
         };
-
-        self.lattice = new_lattice;
-        self
     }
 
     /// Enforce edge boundary conditions
-    pub fn apply_boundary_conditions(mut self, params: &Parameters) -> Self {
-        let mut new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
+    pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
+        // let new_lattice: Vec<<M as Model2D>::Cell> = self.lattice().clone();
         let n_x = self.n_x;
         let n_y = self.n_y;
 
@@ -222,7 +198,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 println!("Pinning bottom x edge");
-                self.pinned_x_edge_values(&mut new_lattice, 0, self.edge_values_x.0);
+                self.pinned_x_edge_values(0, self.edge_values_x.0);
             }
             _ => todo!(),
         };
@@ -234,7 +210,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 println!("Pinning top x edge");
-                self.pinned_x_edge_values(&mut new_lattice, n_y - 1, self.edge_values_x.1);
+                self.pinned_x_edge_values(n_y - 1, self.edge_values_x.1);
             }
             _ => todo!(),
         };
@@ -246,7 +222,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 // println!("Pinning left y edge");
-                self.pinned_y_edge_values(&mut new_lattice, 0, self.edge_values_y.0);
+                self.pinned_y_edge_values(0, self.edge_values_y.0);
             }
             _ => todo!(),
         };
@@ -258,19 +234,16 @@ impl<M: Model2D> LatticeModel2D<M> {
             }
             BoundaryCondition::Pinned => {
                 // println!("Pinning right y edge");
-                self.pinned_y_edge_values(&mut new_lattice, n_x - 1, self.edge_values_y.1);
+                self.pinned_y_edge_values(n_x - 1, self.edge_values_y.1);
             }
             _ => todo!(),
         };
-
-        self.lattice = new_lattice;
-        self
     }
 
     /// TODO: DP2d
     /// Evolve the grid by one iteration using serial processing.
-    pub fn next_iteration_serial<R: Rng>(mut self, p: f64, rng: &mut R) -> Self {
-        let new_lattice = (0..self.n_cells())
+    pub fn next_iteration_serial<R: Rng>(&mut self, p: f64, rng: &mut R) {
+        self.lattice = (0..self.n_cells())
             .map(|i_cell| {
                 let x = i_cell % self.n_x;
                 let y = i_cell / self.n_x;
@@ -281,9 +254,6 @@ impl<M: Model2D> LatticeModel2D<M> {
                 }
             })
             .collect();
-        self.lattice = new_lattice;
-
-        self
     }
 
     /// TODO: DP2d
@@ -299,20 +269,18 @@ impl<M: Model2D> LatticeModel2D<M> {
 
     /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
-    pub fn next_iteration_parallel<R: Rng>(mut self, p: f64, rng: &mut R) -> Self {
+    pub fn next_iteration_parallel<R: Rng>(&mut self, p: f64, rng: &mut R)  {
         let mut new_lattice = vec![M::Cell::default(); self.lattice.len()];
         // Placeholder
         let coin_tosses: Vec<bool> = (0..self.n_x).map(|_| rng.random_bool(p)).collect();
+        // println!("next_iteration_parallel()");
         new_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
-            // .skip(1) // Avoid having to return if row=0 or row=n_y-1
-            // .take(self.n_y - 2)
+            .skip(1) // Avoid having to return if row=0 or row=n_y-1
+            .take(self.n_y - 2)
             .for_each(|(row, lattice)| self.next_row(row, lattice, coin_tosses.clone()));
-
         self.lattice = new_lattice;
-
-        self
     }
 
     /// TODO: DP2d
@@ -323,12 +291,12 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// row, and those in the row below
     ///
     /// By using iterators we can guarantee safe access without (unnecessary) range checks.
-    pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell], coin_tosses: Vec<bool>) {
+    pub fn next_row(&self, row: usize, lattice_row: &mut [M::Cell], _coin_tosses: Vec<bool>) {
         // Bounds check: would not be necessary if correct set of rows were passed
-        if row == 0 || row == self.n_y - 1 {
-            return;
-        }
-        println!("next_row()");
+        // if row == 0 || row == self.n_y - 1 {
+        //     return;
+        // }
+        // println!("next_row()");
 
         // Find the cell that is up and to the left
         let above_start = self.i_cell(0, row - 1);
