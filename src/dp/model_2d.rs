@@ -288,7 +288,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             .zip(rngs)
             .skip(1)
             .take(self.n_y - 2)
-            .for_each(|((y, row), mut rng)| self.row_update(&mut rng, p, y, row));
+            .for_each(|((y, row), mut rng)| self.update_row(&mut rng, p, y, row));
 
         // Only replace the lattice with the updated version once all the rows
         // have been updated.
@@ -302,7 +302,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary) 
     /// range checks.
-    pub fn row_update<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [M::Cell]) {
+    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [M::Cell]) {
         let i_up = self.i_cell(0, y + 1);
         let i_md = self.i_cell(0, y + 0);
         let i_dn = self.i_cell(0, y - 1);
