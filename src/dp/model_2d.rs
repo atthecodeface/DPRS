@@ -97,23 +97,6 @@ impl<M: Model2D> LatticeModel2D<M> {
         x + self.n_x * y
     }
 
-    /// Cell values tripled across (x-1:x+1, y)
-    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as Model2D>::Cell; 9] {
-        let nbrhood = [
-            self.lattice[self.i_cell(x - 1, y + 1)],
-            self.lattice[self.i_cell(x + 0, y + 1)],
-            self.lattice[self.i_cell(x + 1, y + 1)],
-            self.lattice[self.i_cell(x - 1, y + 0)],
-            self.lattice[self.i_cell(x + 0, y + 0)],
-            self.lattice[self.i_cell(x + 1, y + 0)],
-            self.lattice[self.i_cell(x - 1, y - 1)],
-            self.lattice[self.i_cell(x + 0, y - 1)],
-            self.lattice[self.i_cell(x + 1, y - 1)],
-        ];
-
-        nbrhood
-    }
-
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
     pub fn randomized_lattice<R: Rng>(&mut self, p: f64, rng: &mut R) {
@@ -241,6 +224,23 @@ impl<M: Model2D> LatticeModel2D<M> {
             let i_cell = self.i_cell(x, y);
             self.lattice[i_cell] = pinned_value;
         }
+    }
+
+    /// Cell values tripled across (x-1:x+1, y)
+    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as Model2D>::Cell; 9] {
+        let nbrhood = [
+            self.lattice[self.i_cell(x - 1, y + 1)],
+            self.lattice[self.i_cell(x + 0, y + 1)],
+            self.lattice[self.i_cell(x + 1, y + 1)],
+            self.lattice[self.i_cell(x - 1, y + 0)],
+            self.lattice[self.i_cell(x + 0, y + 0)],
+            self.lattice[self.i_cell(x + 1, y + 0)],
+            self.lattice[self.i_cell(x - 1, y - 1)],
+            self.lattice[self.i_cell(x + 0, y - 1)],
+            self.lattice[self.i_cell(x + 1, y - 1)],
+        ];
+
+        nbrhood
     }
 
     /// TODO: DP2d
