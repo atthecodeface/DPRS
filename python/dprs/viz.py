@@ -44,7 +44,7 @@ class Viz:
     fdict: dict[Any, Any]
     font_family: str
 
-    def __init__(self, dpi: int = 200, font_size: int = 11) -> None:
+    def __init__(self, dpi: int = 150, font_size: int = 11) -> None:
         """
         Instantiate the visualization class and set some figure parameters.
         
