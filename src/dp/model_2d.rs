@@ -272,7 +272,6 @@ impl<M: Model2D> LatticeModel2D<M> {
         (self.is_in_bounds_xy(x, y), x, y)
     }
 
-    /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
     /// TODO: Does it make sense to pass the probability p like this?
     /// Wouldn't it be better to set it on the model struct?
@@ -296,14 +295,13 @@ impl<M: Model2D> LatticeModel2D<M> {
         self.lattice = updated_lattice;
     }
 
-    /// TODO: DP2d
-    /// Calculate the next cells for just one row
+    /// Update a row of cells.
     ///
-    /// This zips across the row (unless it is the top or bottom row) using
-    /// windows onto the lattice for the cells in the row above, those in this
-    /// row, and those in the row below
+    /// This zips across the row using windows onto the lattice for the cells 
+    /// in the row above, those in this row, and those in the row below.
     ///
-    /// By using iterators we can guarantee safe access without (unnecessary) range checks.
+    /// By using iterators we can guarantee safe access without (unnecessary) 
+    /// range checks.
     pub fn row_update<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [M::Cell]) {
         let i_up = self.i_cell(0, y + 1);
         let i_md = self.i_cell(0, y + 0);
