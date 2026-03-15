@@ -7,18 +7,14 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from matplotlib.axes import Axes
 from typing import Any, Callable
 from collections.abc import Sequence
 from numpy.typing import NDArray
 from dprs import sim
 
 warnings.filterwarnings("ignore")
-
-__all__ = [
-    "viz"
-]
 
 __all__ = [
     "Viz"
@@ -67,7 +63,7 @@ class Viz:
         dpi: int | None = None,
     ) -> Figure:
         """
-        Initialize a :mod:`Pyplot <matplotlib.pyplot>` figure.
+        Initialize a Pyplot figure.
 
         Set its size and dpi, set the font size,
         choose the Arial font family if possible,
@@ -82,9 +78,8 @@ class Viz:
                 rasterization resolution
 
         Returns:
-            :obj:`Pyplot figure <matplotlib.figure.Figure>`:
-                reference to :mod:`MatPlotLib/Pyplot <matplotlib.pyplot>`
-                figure
+            figure:
+                reference to MatPlotLib/Pyplot figure
         """
         fig_size_: tuple[float, float] = (
             (8, 8) if fig_size is None else fig_size

@@ -1,3 +1,5 @@
+notebooks/plots/*
+
 /target
 python/dprs/libdprs.dylib.dSYM/
 
