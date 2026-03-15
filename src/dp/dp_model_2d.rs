@@ -23,9 +23,9 @@ impl Model2D for DPModel {
     fn cell_update<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &[Self::Cell; 9]) -> Self::Cell {
         // let n_occupied_neighbors = cell_nbrhood.iter().map(|b| *b as usize).sum::<usize>();
         let is_any_nbr_occupied = nbrhood.iter().any(|&b| b);
-        let coin_toss = rng.random_bool(p);
+        let do_survive = rng.random_bool(p);
 
-        is_any_nbr_occupied & coin_toss
+        is_any_nbr_occupied & do_survive
     }
 
     /// TODO: DP2d

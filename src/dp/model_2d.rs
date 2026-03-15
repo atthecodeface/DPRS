@@ -303,7 +303,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             .zip(rngs)
             .skip(1)
             .take(self.n_y - 2)
-            .for_each(|((y, row), mut rng)| self.next_row(p, row, y, &mut rng));
+            .for_each(|((y, row), mut rng)| self.row_update(&mut rng, p, y, row));
 
         // Only replace the lattice with the updated version once all the rows
         // have been updated.
@@ -312,50 +312,26 @@ impl<M: Model2D> LatticeModel2D<M> {
 
     /// TODO: DP2d
     /// Calculate the next cells for just one row
-    ///
-    /// This zips across the row (unless it is the top or bottom row) using
-    /// windows onto the lattice for the cells in the row above, those in this
-    /// row, and those in the row below
-    ///
-    /// By using iterators we can guarantee safe access without (unnecessary) range checks.
-    pub fn next_row<R: Rng>(&self, p: f64, row: &mut [M::Cell], y: usize, rng: &mut R) {
-        // Find the cell that is up and to the left
-        let above_start = self.i_cell(0, y - 1);
-
-        // Iterate over every cell in the row skipping the first and last
-        //
-        // With each also provided three windows on the lattice each of 3 bools
-        //
-        //   the first is starting at 'above_start', i.e. above left through to above right
-        //   the second is starting just left of this cell through to the one to the right
-        //   the third is starting at two rows down from'above_start', i.e. below left through to below right
-        for (lattice_cell, (from_up_left, (from_left, from_below_left))) in
-            row.iter_mut().skip(1).take(self.n_x - 2).zip(
-                self.lattice.split_at(above_start).1.windows(3).zip(
-                    self.lattice
-                        .split_at(above_start + self.n_x)
-                        .1
-                        .windows(3)
-                        .zip(
-                            self.lattice
-                                .split_at(above_start + 2 * self.n_x)
-                                .1
-                                .windows(3),
-                        ),
-                ),
-            )
-        {
-            // This actually just converts &[bool] of length three to &[bool;3] for the function call - type munging
-            //
-            // I suspect that this is optimized out completely as it will check the length is 3, and it will no the length is 3 from the window creation.
-            let up = from_up_left;
-            let mid = from_left;
-            let down = from_below_left;
-            let cell_nbrhood = [&up[..], &mid[..], &down[..]].concat();
-            let cell_nbrhood = cell_nbrhood.as_array::<9>().unwrap();
-
-            // Need to generate a coin toss here
-            *lattice_cell = self.model.cell_update(rng, p, cell_nbrhood);
+    pub fn row_update<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [M::Cell]) {
+        let i_up = self.i_cell(0, y + 1);
+        let i_mid = self.i_cell(0, y + 0);
+        let i_down = self.i_cell(0, y - 1);
+        let row_len = self.n_x - 2; // .skip(1).take(row_len)
+        let lattice = &self.lattice;
+        for (cell, (down, (mid, up))) in row.iter_mut().zip(
+            lattice.split_at(i_down).1.windows(3).zip(
+                lattice
+                    .split_at(i_mid)
+                    .1
+                    .windows(3)
+                    .zip(lattice.split_at(i_up).1.windows(3)),
+            ),
+        ) {
+            let nbrhood = [
+                up[0], up[1], up[2], mid[0], mid[1], mid[2], down[0], down[1], down[2],
+            ];
+            let nbrhood = nbrhood.as_array::<9>().unwrap();
+            *cell = self.model.cell_update(rng, p, nbrhood);
         }
     }
 }

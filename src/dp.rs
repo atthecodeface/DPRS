@@ -34,10 +34,10 @@ pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<bool>>) {
     println!("Buffering:   {}", params.do_buffering);
     println!();
 
-    let (t_serial, n_lattices, lattices) = run_simulation(&params, &Processing::Serial);
+    let (t_serial, _n_lattices, _lattices) = run_simulation(&params, &Processing::Serial);
     println!("Serial:   {:4.3}s", t_serial);
 
-    let (t_parallel, _, _) = run_simulation(&params, &Processing::Parallel);
+    let (t_parallel, n_lattices, lattices) = run_simulation(&params, &Processing::Parallel);
     println!("Parallel: {:4.3}s", t_parallel);
 
     println!("Parallel speedup => {:.2}x", t_serial / t_parallel);
