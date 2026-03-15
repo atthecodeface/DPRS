@@ -3,7 +3,6 @@
 // //!
 
 use rand::Rng;
-use rand::rngs::StdRng;
 use rayon::prelude::*;
 
 use crate::parameters::{BoundaryCondition, Parameters, Topology};
@@ -278,7 +277,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// Evolve the grid by one iteration using chunked parallel processing.
     /// TODO: Does it make sense to pass the probability p like this?
     /// Wouldn't it be better to set it on the model struct?
-    pub fn next_iteration_parallel(&mut self, rngs: &mut Vec<StdRng>, p: f64) {
+    pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R], p: f64) {
         let mut updated_lattice = vec![M::State::default(); self.lattice.len()];
         // Split the lattice into n_y rows each of length n_x and
         // update these rows in parallel using par_chunks_mut().
@@ -292,7 +291,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             .zip(rngs)
             .skip(1)
             .take(n_rows)
-            .for_each(|((y, row), mut rng)| self.update_row(&mut rng, p, y, row));
+            .for_each(|((y, row), rng)| self.update_row(rng, p, y, row));
 
         // Only replace the lattice with the updated version once all the rows
         // have been updated.
