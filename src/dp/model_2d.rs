@@ -243,7 +243,6 @@ impl<M: Model2D> LatticeModel2D<M> {
         nbrhood
     }
 
-    /// TODO: DP2d
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial<R: Rng>(&mut self, p: f64, rng: &mut R) {
         self.lattice = (0..self.n_cells())
@@ -251,23 +250,15 @@ impl<M: Model2D> LatticeModel2D<M> {
                 let x = i_cell % self.n_x;
                 let y = i_cell / self.n_x;
                 if x > 0 && y > 0 && x < self.n_x - 1 && y < self.n_y - 1 {
-                    self.successor_cell(x, y, p, rng)
+                    let cell_nbrhood = self.cell_nbrhood(x, y);
+                    let coin_toss = rng.random_bool(p);
+
+                    self.model.cell_update(coin_toss, &cell_nbrhood)                    
                 } else {
                     M::Cell::default()
                 }
             })
             .collect();
-    }
-
-    /// TODO: DP2d
-    /// Check that this i_th cell -> cell(x,y) is a successor cell
-    fn successor_cell<R: Rng>(&self, x: usize, y: usize, p: f64, rng: &mut R) -> M::Cell {
-        // println!("successor_cell {x} {y}");
-        let cell_nbrhood = self.cell_nbrhood(x, y);
-        // Need to generate a coin toss here
-        let coin_toss = rng.random_bool(p);
-
-        self.model.cell_update(coin_toss, &cell_nbrhood)
     }
 
     /// TODO: DP2d
