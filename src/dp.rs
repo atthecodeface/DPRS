@@ -7,7 +7,8 @@ mod model_2d;
 use crate::parameters::{Parameters, Processing};
 use dp_model_2d::DPModel;
 use model_2d::{LatticeModel2D, Model2D};
-use rand::{Rng, rng};
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 use std::time::Instant;
 
 /// Entry point to this module.
@@ -59,7 +60,9 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let n_y: usize = pruned_n_y + pad * 2;
     let mut lattice_model_2d: LatticeModel2D<DPModel> =
         LatticeModel2D::new(dp, n_x, n_y, params.edge_values_x, params.edge_values_y);
-    lattice_model_2d.randomized_lattice(params.p, &mut rng());
+
+    let mut rng = StdRng::seed_from_u64(params.seed as u64);
+    lattice_model_2d.randomized_lattice(params.p, &mut rng);
 
     // Set up thread pool of size set by user
     let pool = rayon::ThreadPoolBuilder::new()
@@ -84,7 +87,7 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
         // println!("{:?}", std::thread::current());
         compute(
             lattice_model_2d,
-            &mut rng(),
+            &mut rng,
             processing,
             &params,
             params.n_iterations / serial_skip,
