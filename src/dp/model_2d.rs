@@ -22,10 +22,10 @@ pub trait Model2D: Sync {
     /// the array of cells is accessed by many threads at once.
     ///
     type Cell: Default + std::fmt::Debug + Copy + Send + Sync;
-    /// TODO: DP2d
     fn randomize_cell<R: Rng>(&self, p: f64, rng: &mut R) -> Self::Cell;
-    /// TODO: DP2d
     fn cell_update(&self, coin_toss: bool, cell_nbrhood: &[Self::Cell; 9]) -> Self::Cell;
+    /// TODO: DP2d
+    fn row_update(&self, rows: &Vec<Vec<Self::Cell>>, coin_tosses: Vec<bool>) -> Vec<Self::Cell>;
 }
 
 /// Model lattice in 2d.
@@ -216,7 +216,7 @@ impl<M: Model2D> LatticeModel2D<M> {
             self.lattice[i_cell] = pinned_value;
         }
     }
-    
+
     /// Enforce constant-value edge b.c. along a y edge
     fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as Model2D>::Cell) {
         let n_y = self.n_y;
@@ -243,7 +243,6 @@ impl<M: Model2D> LatticeModel2D<M> {
         nbrhood
     }
 
-    /// TODO: DP2d
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial<R: Rng>(&mut self, p: f64, rng: &mut R) {
         self.lattice = (0..self.n_cells())
@@ -251,7 +250,10 @@ impl<M: Model2D> LatticeModel2D<M> {
                 let x = i_cell % self.n_x;
                 let y = i_cell / self.n_x;
                 if x > 0 && y > 0 && x < self.n_x - 1 && y < self.n_y - 1 {
-                    self.successor_cell(x, y, p, rng)
+                    let cell_nbrhood = self.cell_nbrhood(x, y);
+                    let coin_toss = rng.random_bool(p);
+
+                    self.model.cell_update(coin_toss, &cell_nbrhood)
                 } else {
                     M::Cell::default()
                 }
@@ -260,19 +262,8 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// TODO: DP2d
-    /// Check that this i_th cell -> cell(x,y) is a successor cell
-    fn successor_cell<R: Rng>(&self, x: usize, y: usize, p: f64, rng: &mut R) -> M::Cell {
-        // println!("successor_cell {x} {y}");
-        let cell_nbrhood = self.cell_nbrhood(x, y);
-        // Need to generate a coin toss here
-        let coin_toss = rng.random_bool(p);
-
-        self.model.cell_update(coin_toss, &cell_nbrhood)
-    }
-
-    /// TODO: DP2d
     /// Evolve the grid by one iteration using chunked parallel processing.
-    pub fn next_iteration_parallel<R: Rng>(&mut self, p: f64, rng: &mut R)  {
+    pub fn next_iteration_parallel<R: Rng>(&mut self, p: f64, rng: &mut R) {
         let mut new_lattice = vec![M::Cell::default(); self.lattice.len()];
         // Placeholder
         let coin_tosses: Vec<bool> = (0..self.n_x).map(|_| rng.random_bool(p)).collect();
