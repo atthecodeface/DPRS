@@ -81,3 +81,12 @@ pub struct Parameters {
     pub serial_skip: usize,
     pub do_buffering: bool,
 }
+
+impl Parameters {
+    pub fn edge_topo_is_periodic_x(&self) -> bool {
+        matches![self.edge_topology_x, Topology::Periodic]
+    }
+    pub fn edge_topo_is_periodic_y(&self) -> bool {
+        matches![self.edge_topology_y, Topology::Periodic]
+    }
+}

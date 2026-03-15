@@ -5,7 +5,7 @@
 use rand::Rng;
 use rayon::prelude::*;
 
-use crate::parameters::{BoundaryCondition, Parameters, Topology};
+use crate::parameters::{BoundaryCondition, Parameters};
 
 /// The trait required for a model to run in 2D.
 ///
@@ -104,30 +104,19 @@ impl<M: Model2D> LatticeModel2D<M> {
 
     /// Enforce edge topology specifications
     pub fn apply_edge_topology(&mut self, params: &Parameters) {
-        let n_x = self.n_x;
-        let n_y = self.n_y;
-
         // Apply x-edge boundary topology
-        match params.edge_topology_x {
-            Topology::Unspecified | Topology::Open => {
-                // No edge topology specified
-            }
-            Topology::Periodic => {
-                self.periodic_x_edges(n_y - 2, 0);
-                self.periodic_x_edges(1, n_y - 1);
-            }
-        };
+        if params.edge_topo_is_periodic_x() {
+            let n_y = self.n_y;
+            self.periodic_x_edges(n_y - 2, 0);
+            self.periodic_x_edges(1, n_y - 1);
+        }
 
         // Apply y-edge boundary topology
-        match params.edge_topology_y {
-            Topology::Unspecified | Topology::Open => {
-                // No edge topology specified
-            }
-            Topology::Periodic => {
-                self.periodic_y_edges(n_x - 2, 0);
-                self.periodic_y_edges(1, n_x - 1);
-            }
-        };
+        if params.edge_topo_is_periodic_y() {
+            let n_x = self.n_x;
+            self.periodic_y_edges(n_x - 2, 0);
+            self.periodic_y_edges(1, n_x - 1);
+        }
     }
 
     /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
