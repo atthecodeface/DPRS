@@ -2,7 +2,6 @@
 // //!
 // //!
 
-// use rand::distr::Bernoulli;
 use rand::Rng;
 use rand::rngs::StdRng;
 use rayon::prelude::*;
@@ -282,12 +281,13 @@ impl<M: Model2D> LatticeModel2D<M> {
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
+        let n_rows = self.n_y - 2;
         updated_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
             .zip(rngs)
             .skip(1)
-            .take(self.n_y - 2)
+            .take(n_rows)
             .for_each(|((y, row), mut rng)| self.update_row(&mut rng, p, y, row));
 
         // Only replace the lattice with the updated version once all the rows
@@ -306,9 +306,9 @@ impl<M: Model2D> LatticeModel2D<M> {
         let i_up = self.i_cell(0, y + 1);
         let i_md = self.i_cell(0, y + 0);
         let i_dn = self.i_cell(0, y - 1);
-        let row_len = self.n_x - 2;
+        let row_span = self.n_x - 2;
         let lattice = &self.lattice;
-        for (cell, (dn, (md, up))) in row.iter_mut().skip(1).take(row_len).zip(
+        for (cell, (dn, (md, up))) in row.iter_mut().skip(1).take(row_span).zip(
             lattice.split_at(i_dn).1.windows(3).zip(
                 lattice
                     .split_at(i_md)

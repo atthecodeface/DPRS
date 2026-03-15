@@ -21,7 +21,6 @@ impl Model2D for DPModel {
     ///  (1) a coin toss with probability p says it *may* be occupied
     ///  (2) if one of the 9 neighborhood + here cells were previously occupied
     fn update_cell<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &[Self::Cell; 9]) -> Self::Cell {
-        // let n_occupied_neighbors = cell_nbrhood.iter().map(|b| *b as usize).sum::<usize>();
         let is_any_nbr_occupied = nbrhood.iter().any(|&b| b);
         let do_survive = rng.random_bool(p);
 
