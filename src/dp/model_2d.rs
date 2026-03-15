@@ -134,6 +134,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
     fn periodic_x_edges(&mut self, y_from: usize, y_to: usize) {
         let n_x = self.n_x;
+        // TODO: Rustify
         for x in 0..n_x {
             let i_from = self.i_cell(x, y_to);
             let i_to = self.i_cell(x, y_from);
@@ -144,6 +145,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
     fn periodic_y_edges(&mut self, x_from: usize, x_to: usize) {
         let n_y = self.n_y;
+        // TODO: Rustify
         for y in 0..n_y {
             let i_from = self.i_cell(x_from, y);
             let i_to = self.i_cell(x_to, y);
@@ -209,6 +211,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// Enforce constant-value edge b.c. along a x edge
     fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as Model2D>::Cell) {
         let n_x = self.n_x;
+        // TODO: Rustify
         for x in 0..n_x {
             let i_cell = self.i_cell(x, y);
             self.lattice[i_cell] = pinned_value;
@@ -218,6 +221,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// Enforce constant-value edge b.c. along a y edge
     fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as Model2D>::Cell) {
         let n_y = self.n_y;
+        // TODO: Rustify
         for y in 0..n_y {
             let i_cell = self.i_cell(x, y);
             self.lattice[i_cell] = pinned_value;
