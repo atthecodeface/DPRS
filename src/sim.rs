@@ -14,7 +14,7 @@ mod sim {
 
     #[pymodule_export]
     pub use crate::parameters::BoundaryCondition;
-    use crate::parameters::DPState;
+    pub use crate::parameters::DPState;
     #[pymodule_export]
     pub use crate::parameters::Dimension;
     pub use crate::parameters::Parameters;
