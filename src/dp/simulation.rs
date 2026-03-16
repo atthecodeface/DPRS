@@ -59,8 +59,8 @@ pub fn simulation<C: CellModel2D, R: Rng>(
                 lm.apply_edge_topology(&params);
                 lm.apply_boundary_conditions(&params);
                 lm.next_iteration_serial(rng, params.p);
-                lm.apply_edge_topology(&params); // Can cut
-                lm.apply_boundary_conditions(&params); // Can cut
+                lm.apply_edge_topology(&params);
+                lm.apply_boundary_conditions(&params);
                 if i % sample_rate == 0 {
                     lattices.push(lm.lattice().clone());
                 };
@@ -87,8 +87,8 @@ pub fn simulation<C: CellModel2D, R: Rng>(
                 lm.apply_edge_topology(&params);
                 lm.apply_boundary_conditions(&params);
                 lm.next_iteration_parallel(&mut rngs, params.p);
-                lm.apply_edge_topology(&params); // Can cut
-                lm.apply_boundary_conditions(&params); // Can cut
+                lm.apply_edge_topology(&params);
+                lm.apply_boundary_conditions(&params);
                 if i % sample_rate == 0 {
                     lattices.push(lm.lattice().clone());
                 };
