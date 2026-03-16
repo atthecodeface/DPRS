@@ -83,7 +83,7 @@ pub struct Parameters {
     pub do_buffering: bool,
 }
 
-/// Edge topology checking.
+/// Edge topology and boundary condition checking.
 impl Parameters {
     pub fn edge_topology_is_periodic_x(&self) -> bool {
         matches![self.edge_topology_x, Topology::Periodic]
