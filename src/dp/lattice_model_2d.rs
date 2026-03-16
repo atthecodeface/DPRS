@@ -71,14 +71,13 @@ impl<C: CellModel2D> LatticeModel2D<C> {
 
     /// Compute the mean cell occupancy
     pub fn mean(&self) -> f64 {
-        let usize_lattice: Vec<usize> = self
+        let total: usize = self
             .lattice()
             .iter()
-            .map(|&s| C::from_state_to_bool(s) as usize)
-            .collect();
-        let total: usize = usize_lattice.iter().sum();
+            .map(|&s| C::from_state_to_bool(&s) as usize)
+            .sum();
 
-        (total as f64)/(self.n_cells() as f64)
+        (total as f64) / (self.n_cells() as f64)
     }
 
     /// Compute the cell index of a given (x, y) coordinate.
@@ -279,9 +278,9 @@ impl<C: CellModel2D> LatticeModel2D<C> {
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
     pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [C::State]) {
-        let i_up = self.i_cell(0, y + 1);
         let i_md = self.i_cell(0, y + 0);
-        let i_dn = self.i_cell(0, y - 1);
+        let i_up = i_md + self.n_x;
+        let i_dn = i_md - self.n_x;
         let row_span = self.n_x - 2;
         let lattice = &self.lattice;
         for (cell, (dn, (md, up))) in row.iter_mut().skip(1).take(row_span).zip(
