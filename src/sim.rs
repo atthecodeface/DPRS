@@ -13,15 +13,8 @@ mod sim {
     use super::*;
 
     #[pymodule_export]
-    pub use crate::parameters::BoundaryCondition;
-    pub use crate::parameters::DPState;
-    #[pymodule_export]
-    pub use crate::parameters::Dimension;
+    use crate::parameters::DPState;
     pub use crate::parameters::Parameters;
-    #[pymodule_export]
-    pub use crate::parameters::Processing;
-    #[pymodule_export]
-    pub use crate::parameters::Topology;
 
     #[pyfunction]
     fn dp(params: Parameters) -> PyResult<(usize, Vec<Vec<bool>>)> {
