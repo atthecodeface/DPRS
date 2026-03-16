@@ -32,7 +32,7 @@ pub enum BoundaryCondition {
     Reflecting, // NYI
 }
 
-/// For now, Rust-side only DP state.
+/// Cell state behavior for DP.
 #[derive(Default, PartialEq, Clone, Copy, Debug)]
 #[pyclass(from_py_object, eq, eq_int)]
 #[repr(u8)]
@@ -76,11 +76,11 @@ pub struct Parameters {
     pub edge_values_x: (bool, bool),
     pub edge_values_y: (bool, bool),
     pub edge_values_z: (bool, bool),
+    pub do_edge_buffering: bool,
     pub processing: Processing,
     pub sample_rate: usize,
     pub n_threads: usize,
     pub serial_skip: usize,
-    pub do_buffering: bool,
 }
 
 /// Edge topology and boundary condition checking.
@@ -88,7 +88,7 @@ impl Parameters {
     pub fn edge_topology_is_periodic_x(&self) -> bool {
         matches![self.edge_topology_x, Topology::Periodic]
     }
-    
+
     pub fn edge_topology_is_periodic_y(&self) -> bool {
         matches![self.edge_topology_y, Topology::Periodic]
     }
@@ -153,11 +153,11 @@ impl Parameters {
         println!("Edge x vals: {:?}", self.edge_values_x);
         println!("Edge y vals: {:?}", self.edge_values_y);
         println!("Edge z vals: {:?}", self.edge_values_z);
+        println!("Edge buffer: {}", self.do_edge_buffering);
         println!("Processing:  {:?}", self.processing);
         println!("Sample rate: {}", self.sample_rate);
         println!("Threads:     {}", self.n_threads);
         println!("Serial skip: {}", self.serial_skip);
-        println!("Buffering:   {}", self.do_buffering);
         println!();
     }
 }

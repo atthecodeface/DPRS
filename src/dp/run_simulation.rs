@@ -18,7 +18,7 @@ pub fn run_simulation(
 ) -> (f64, usize, Vec<Vec<DPState>>) {
     let dp = DPModel2D::default();
     // Buffer lattice edges
-    let pad: usize = match params.do_buffering {
+    let pad: usize = match params.do_edge_buffering {
         true => 1,
         false => 0,
     };
@@ -70,9 +70,9 @@ pub fn run_simulation(
     // Stop the clock
     let duration: f64 = time.elapsed().as_secs_f64() * (serial_skip as f64);
 
-    if params.do_buffering {
+    if params.do_edge_buffering {
         // Remove edge buffering before returning the lattice time-slices.
-        println!("Doing buffering");
+        println!("Doing edge buffering");
         // Step through each of the recorded lattices, pruning off by 'pad'
         // at each edge, returning the pruned lattices
         let pruned_lattices = lattices
