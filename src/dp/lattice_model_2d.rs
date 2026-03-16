@@ -2,28 +2,9 @@
 // //!
 // //!
 
+use crate::{dp::cell_model_2d::CellModel2D, parameters::Parameters};
 use rand::Rng;
 use rayon::prelude::*;
-
-use crate::parameters::Parameters;
-
-/// The trait required for a model to run in 2D.
-///
-/// This must be [Sync] as the model can be accessed by
-/// different threads at the same time in the parallel working.
-pub trait Model2D: Sync {
-    /// The value in each cell.
-    ///
-    /// This must be [Send] to support the 'parallel' versions;
-    /// the Cell is passed to a work thread.
-    ///
-    /// This must be [Sync] to support the 'parallel' versions;
-    /// the array of cells is accessed by many threads at once.
-    ///
-    type State: Default + std::fmt::Debug + Copy + Send + Sync;
-    fn randomize_cell<R: Rng>(&self, rng: &mut R, p: f64) -> Self::State;
-    fn update_cell<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &[Self::State; 9]) -> Self::State;
-}
 
 /// Model lattice in 2d.
 ///
@@ -31,7 +12,7 @@ pub trait Model2D: Sync {
 /// the boolean lattice (true=occupied) stored as a linear vector;
 /// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct LatticeModel2D<M: Model2D> {
+pub struct LatticeModel2D<M: CellModel2D> {
     /// The model that provides the cells and the mapping between
     /// 3x3 cell neighborhoods in one time step and the next.
     model: M,
@@ -49,7 +30,7 @@ pub struct LatticeModel2D<M: Model2D> {
 }
 
 /// Lattice model methods.
-impl<M: Model2D> LatticeModel2D<M> {
+impl<M: CellModel2D> LatticeModel2D<M> {
     /// Create a fresh grid (vector of M::State cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
@@ -187,7 +168,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// Enforce constant-value edge b.c. along a x edge.
-    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as Model2D>::State) {
+    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as CellModel2D>::State) {
         let n_x = self.n_x;
         // TODO: Rustify
         for x in 0..n_x {
@@ -197,7 +178,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// Enforce constant-value edge b.c. along a y edge.
-    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as Model2D>::State) {
+    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as CellModel2D>::State) {
         let n_y = self.n_y;
         // TODO: Rustify
         for y in 0..n_y {
@@ -224,7 +205,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     }
 
     /// Cell values tripled across (x-1:x+1, y).
-    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as Model2D>::State; 9] {
+    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as CellModel2D>::State; 9] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1, y + 1)],
             self.lattice[self.i_cell(x + 0, y + 1)],

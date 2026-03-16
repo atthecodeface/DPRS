@@ -2,16 +2,16 @@
 // //!
 // //!
 
-use super::Model2D;
+use super::CellModel2D;
 use crate::parameters::DPState;
 use rand::{Rng, RngExt};
 
-/// DPModel implements the Model2D trait, plus these.
+/// DPModel2D implements the Model2D trait, plus these.
 #[derive(Clone, Copy, Default, Debug)]
-pub struct DPModel();
+pub struct DPModel2D();
 
 // Implement Model2D trait for DPModel.
-impl Model2D for DPModel {
+impl CellModel2D for DPModel2D {
     type State = DPState;
 
     fn randomize_cell<R: Rng>(&self, rng: &mut R, p: f64) -> Self::State {
