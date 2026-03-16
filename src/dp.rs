@@ -2,11 +2,13 @@
 // //!
 // //!
 
+mod cell_model_2d;
 mod dp_model_2d;
-mod model_2d;
 use crate::parameters::{DPState, Parameters, Processing};
-use dp_model_2d::DPModel;
-use model_2d::{LatticeModel2D, Model2D};
+use dp_model_2d::DPModel2D;
+mod lattice_model_2d;
+use cell_model_2d::CellModel2D;
+use lattice_model_2d::LatticeModel2D;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 use std::time::Instant;
@@ -14,6 +16,9 @@ use std::time::Instant;
 /// Entry point to this module.
 pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<DPState>>) {
     println!();
+    println!("Probability: {}", params.p);
+    println!("Random seed: {}", params.seed);
+    println!("Iterations:  {}", params.n_iterations);
     println!("Dimension:   {:?}", params.dim);
     println!("Grid shape:  {:?}", (params.n_x, params.n_y, params.n_z));
     println!("Topology x:  {:?}", params.edge_topology_x);
@@ -25,9 +30,7 @@ pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<DPState>>) {
     println!("Edge x vals: {:?}", params.edge_values_x);
     println!("Edge y vals: {:?}", params.edge_values_y);
     println!("Edge z vals: {:?}", params.edge_values_z);
-    println!("Probability: {}", params.p);
-    println!("Random seed: {}", params.seed);
-    println!("Iterations:  {}", params.n_iterations);
+    println!("Processing:  {:?}", params.processing);
     println!("Sample rate: {}", params.sample_rate);
     println!("Threads:     {}", params.n_threads);
     println!("Serial skip: {}", params.serial_skip);
@@ -48,7 +51,7 @@ pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<DPState>>) {
 
 /// Run a simulation and record how long the computation takes.
 fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, Vec<Vec<DPState>>) {
-    let dp = DPModel::default();
+    let dp = DPModel2D::default();
     // Buffer lattice edges
     let pad: usize = match params.do_buffering {
         true => 1,
@@ -58,7 +61,7 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     let pruned_n_y = params.n_y;
     let n_x: usize = pruned_n_x + pad * 2;
     let n_y: usize = pruned_n_y + pad * 2;
-    let mut lattice_model_2d: LatticeModel2D<DPModel> = LatticeModel2D::new(
+    let mut lattice_model_2d: LatticeModel2D<DPModel2D> = LatticeModel2D::new(
         dp,
         n_x,
         n_y,
@@ -128,14 +131,14 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
 }
 
 /// Run a simulation for n_iterations, either serially or in parallel
-pub fn compute<M: Model2D, R: Rng>(
-    lattice_model: LatticeModel2D<M>,
+pub fn compute<C: CellModel2D, R: Rng>(
+    lattice_model: LatticeModel2D<C>,
     rng: &mut R,
     processing: &Processing,
     params: &Parameters,
     n_iterations: usize,
     sample_rate: usize,
-) -> (usize, Vec<Vec<<M as Model2D>::State>>) {
+) -> (usize, Vec<Vec<<C as CellModel2D>::State>>) {
     // Create a model lattice plus metadata
     let mut lm = lattice_model;
     lm.apply_edge_topology(&params);

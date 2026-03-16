@@ -2,28 +2,9 @@
 // //!
 // //!
 
+use crate::{dp::cell_model_2d::CellModel2D, parameters::Parameters};
 use rand::Rng;
 use rayon::prelude::*;
-
-use crate::parameters::{BoundaryCondition, Parameters};
-
-/// The trait required for a model to run in 2D.
-///
-/// This must be [Sync] as the model can be accessed by
-/// different threads at the same time in the parallel working
-pub trait Model2D: Sync {
-    /// The value in each cell.
-    ///
-    /// This must be [Send] to support the 'parallel' versions;
-    /// the Cell is passed to a work thread.
-    ///
-    /// This must be [Sync] to support the 'parallel' versions;
-    /// the array of cells is accessed by many threads at once.
-    ///
-    type State: Default + std::fmt::Debug + Copy + Send + Sync;
-    fn randomize_cell<R: Rng>(&self, rng: &mut R, p: f64) -> Self::State;
-    fn update_cell<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &[Self::State; 9]) -> Self::State;
-}
 
 /// Model lattice in 2d.
 ///
@@ -31,13 +12,11 @@ pub trait Model2D: Sync {
 /// the boolean lattice (true=occupied) stored as a linear vector;
 /// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct LatticeModel2D<M: Model2D> {
-    /// The model that provides the cells and the mapping between 3x3 grids of
-    /// cells in one time step and the next.
-    model: M,
-    /// The number of 'column's in the lattice
+pub struct LatticeModel2D<C: CellModel2D> {
+    /// The model that provides the cells and the mapping between
+    /// 3x3 cell neighborhoods in one time step and the next.
+    cell_model: C,
     n_x: usize,
-    /// The number of 'row's in the lattice
     n_y: usize,
     /// This used to be public, but is not now; it is an internal data structure
     /// that might be handled differently in the future.
@@ -45,34 +24,34 @@ pub struct LatticeModel2D<M: Model2D> {
     /// To recover this (if needed) either *borrow* the lattice with the
     /// `lattice` method, or deconstruct the [LatticeModel2D] and take the
     /// lattice from there.
-    lattice: Vec<M::State>,
-    edge_values_x: (M::State, M::State),
-    edge_values_y: (M::State, M::State),
+    lattice: Vec<C::State>,
+    edge_values_x: (C::State, C::State),
+    edge_values_y: (C::State, C::State),
 }
 
 /// Lattice model methods.
-impl<M: Model2D> LatticeModel2D<M> {
-    /// Create a fresh grid (vector of booleans) with all values=false,
+impl<C: CellModel2D> LatticeModel2D<C> {
+    /// Create a fresh grid (vector of C::State cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
-        model: M,
+        cell_model: C,
         n_x: usize,
         n_y: usize,
-        edge_values_x: (M::State, M::State),
-        edge_values_y: (M::State, M::State),
+        edge_values_x: (C::State, C::State),
+        edge_values_y: (C::State, C::State),
     ) -> Self {
         Self {
-            model,
+            cell_model,
             n_x,
             n_y,
-            lattice: vec![M::State::default(); n_x * n_y],
+            lattice: vec![C::State::default(); n_x * n_y],
             edge_values_x,
             edge_values_y,
         }
     }
 
-    /// Borrow the lattice
-    pub fn lattice(&self) -> &Vec<M::State> {
+    /// Borrow the lattice.
+    pub fn lattice(&self) -> &Vec<C::State> {
         &self.lattice
     }
 
@@ -80,8 +59,8 @@ impl<M: Model2D> LatticeModel2D<M> {
     ///
     /// This is the 'deconstructor', used after simulation to take the lattice
     /// (and potentially the model, if that is useful too).
-    pub fn take(self) -> (M, Vec<M::State>) {
-        (self.model, self.lattice)
+    pub fn take(self) -> (C, Vec<C::State>) {
+        (self.cell_model, self.lattice)
     }
 
     /// Count the total number of cells in the grid.
@@ -98,28 +77,28 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// from a de-facto Bernoulli distribution.
     pub fn randomized_lattice<R: Rng>(&mut self, rng: &mut R, p: f64) {
         self.lattice = (0..self.n_cells())
-            .map(|_| self.model.randomize_cell(rng, p))
+            .map(|_| self.cell_model.randomize_cell(rng, p))
             .collect();
     }
 
-    /// Enforce edge topology specifications
+    /// Enforce edge topology specifications.
     pub fn apply_edge_topology(&mut self, params: &Parameters) {
         // Apply x-edge boundary topology
-        if params.edge_topo_is_periodic_x() {
+        if params.edge_topology_is_periodic_x() {
             let n_y = self.n_y;
             self.periodic_x_edges(n_y - 2, 0);
             self.periodic_x_edges(1, n_y - 1);
         }
 
         // Apply y-edge boundary topology
-        if params.edge_topo_is_periodic_y() {
+        if params.edge_topology_is_periodic_y() {
             let n_x = self.n_x;
             self.periodic_y_edges(n_x - 2, 0);
             self.periodic_y_edges(1, n_x - 1);
         }
     }
 
-    /// Enforce periodic edge topology along the x edges (i.e., in y axis direction)
+    /// Enforce periodic edge topology along the x edges (i.e., in y axis direction).
     fn periodic_x_edges(&mut self, y_from: usize, y_to: usize) {
         let n_x = self.n_x;
         // TODO: Rustify
@@ -130,7 +109,7 @@ impl<M: Model2D> LatticeModel2D<M> {
         }
     }
 
-    /// Enforce periodic edge topology along the y edges (i.e., in x axis direction)
+    /// Enforce periodic edge topology along the y edges (i.e., in x axis direction).
     fn periodic_y_edges(&mut self, x_from: usize, x_to: usize) {
         let n_y = self.n_y;
         // TODO: Rustify
@@ -141,63 +120,55 @@ impl<M: Model2D> LatticeModel2D<M> {
         }
     }
 
-    /// Enforce edge boundary conditions
+    /// Enforce edge boundary conditions.
     pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
-        // let new_lattice: Vec<<M as Model2D>::State> = self.lattice().clone();
+        // let new_lattice: Vec<<C as Model2D>::State> = self.lattice().clone();
         let n_x = self.n_x;
         let n_y = self.n_y;
 
         // Apply bottom x-edge b.c.
-        match params.edge_bc_x.0 {
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating => {
-                // No edge values need be imposed
-            }
-            BoundaryCondition::Pinned => {
-                println!("Pinning bottom x edge");
-                self.pinned_x_edge_values(0, self.edge_values_x.0);
-            }
-            _ => todo!(),
-        };
+        if params.edge_boundary_is_unconstrained_x0() {
+            // No edge values need be imposed
+        } else if params.edge_boundary_is_pinned_x0() {
+            // println!("Pinning bottom x edge");
+            self.pinned_x_edge_values(0, self.edge_values_x.0);
+        } else {
+            todo!();
+        }
 
         // Apply top x-edge b.c.
-        match params.edge_bc_x.1 {
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating => {
-                // No edge values need be imposed
-            }
-            BoundaryCondition::Pinned => {
-                println!("Pinning top x edge");
-                self.pinned_x_edge_values(n_y - 1, self.edge_values_x.1);
-            }
-            _ => todo!(),
-        };
+        if params.edge_boundary_is_unconstrained_x1() {
+            // No edge values need be imposed
+        } else if params.edge_boundary_is_pinned_x1() {
+            // println!("Pinning top x edge");
+            self.pinned_x_edge_values(n_y - 1, self.edge_values_x.1);
+        } else {
+            todo!();
+        }
 
         // Apply left y-edge b.c.
-        match params.edge_bc_y.0 {
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating => {
-                // No edge values need be imposed
-            }
-            BoundaryCondition::Pinned => {
-                // println!("Pinning left y edge");
-                self.pinned_y_edge_values(0, self.edge_values_y.0);
-            }
-            _ => todo!(),
-        };
+        if params.edge_boundary_is_unconstrained_y0() {
+            // No edge values need be imposed
+        } else if params.edge_boundary_is_pinned_y0() {
+            // println!("Pinning left y edge");
+            self.pinned_y_edge_values(0, self.edge_values_y.0);
+        } else {
+            todo!();
+        }
 
         // Apply right y-edge b.c.
-        match params.edge_bc_y.1 {
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating => {
-                // No edge values need be imposed
-            }
-            BoundaryCondition::Pinned => {
-                // println!("Pinning right y edge");
-                self.pinned_y_edge_values(n_x - 1, self.edge_values_y.1);
-            }
-            _ => todo!(),
-        };
+        if params.edge_boundary_is_unconstrained_y1() {
+            // No edge values need be imposed
+        } else if params.edge_boundary_is_pinned_y1() {
+            // println!("Pinning right y edge");
+            self.pinned_y_edge_values(n_x - 1, self.edge_values_y.1);
+        } else {
+            todo!();
+        }
     }
 
-    /// Enforce constant-value edge b.c. along a x edge
-    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as Model2D>::State) {
+    /// Enforce constant-value edge b.c. along a x edge.
+    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <C as CellModel2D>::State) {
         let n_x = self.n_x;
         // TODO: Rustify
         for x in 0..n_x {
@@ -206,8 +177,8 @@ impl<M: Model2D> LatticeModel2D<M> {
         }
     }
 
-    /// Enforce constant-value edge b.c. along a y edge
-    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as Model2D>::State) {
+    /// Enforce constant-value edge b.c. along a y edge.
+    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <C as CellModel2D>::State) {
         let n_y = self.n_y;
         // TODO: Rustify
         for y in 0..n_y {
@@ -223,9 +194,9 @@ impl<M: Model2D> LatticeModel2D<M> {
                 let (is_in_bounds, x, y) = self.is_in_bounds(i_cell);
                 let updated_cell = if is_in_bounds {
                     let nbrhood = self.cell_nbrhood(x, y);
-                    self.model.update_cell(&mut rng, p, &nbrhood)
+                    self.cell_model.update_cell(&mut rng, p, &nbrhood)
                 } else {
-                    M::State::default()
+                    C::State::default()
                 };
 
                 updated_cell
@@ -233,8 +204,8 @@ impl<M: Model2D> LatticeModel2D<M> {
             .collect();
     }
 
-    /// Cell values tripled across (x-1:x+1, y)
-    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as Model2D>::State; 9] {
+    /// Cell values tripled across (x-1:x+1, y).
+    fn cell_nbrhood(&self, x: usize, y: usize) -> [<C as CellModel2D>::State; 9] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1, y + 1)],
             self.lattice[self.i_cell(x + 0, y + 1)],
@@ -250,12 +221,12 @@ impl<M: Model2D> LatticeModel2D<M> {
         nbrhood
     }
 
-    /// Check (x,y) coordinate is within lattice bounds
+    /// Check (x,y) coordinate is within lattice bounds.
     fn is_in_bounds_xy(&self, x: usize, y: usize) -> bool {
         x > 0 && y > 0 && x < self.n_x - 1 && y < self.n_y - 1
     }
 
-    /// Check cell index is within lattice bounds; return this test and (x, y)
+    /// Check cell index is within lattice bounds; return this test and (x, y).
     fn is_in_bounds(&self, i_cell: usize) -> (bool, usize, usize) {
         let x = i_cell % self.n_x;
         let y = i_cell / self.n_x;
@@ -267,7 +238,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     /// TODO: Does it make sense to pass the probability p like this?
     /// Wouldn't it be better to set it on the model struct?
     pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R], p: f64) {
-        let mut updated_lattice = vec![M::State::default(); self.lattice.len()];
+        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
         // Split the lattice into n_y rows each of length n_x and
         // update these rows in parallel using par_chunks_mut().
         // Before passing to next_row() to perform the update,
@@ -294,7 +265,7 @@ impl<M: Model2D> LatticeModel2D<M> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
-    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [M::State]) {
+    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [C::State]) {
         let i_up = self.i_cell(0, y + 1);
         let i_md = self.i_cell(0, y + 0);
         let i_dn = self.i_cell(0, y - 1);
@@ -313,7 +284,7 @@ impl<M: Model2D> LatticeModel2D<M> {
                 up[0], up[1], up[2], md[0], md[1], md[2], dn[0], dn[1], dn[2],
             ];
             let nbrhood = nbrhood.as_array::<9>().unwrap();
-            *cell = self.model.update_cell(rng, p, nbrhood);
+            *cell = self.cell_model.update_cell(rng, p, nbrhood);
         }
     }
 }
