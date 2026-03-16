@@ -179,7 +179,7 @@ impl Parameters {
         println!("Edge buffer: {}", self.do_edge_buffering);
         println!("Processing:  {:?}", self.processing);
         println!("Sample rate: {}", self.sample_rate);
-        println!("Thread num.: {}", self.n_threads);
+        println!("Num threads: {}", self.n_threads);
         println!();
     }
 }
