@@ -6,11 +6,11 @@ use super::CellModel2D;
 use crate::parameters::DPState;
 use rand::{Rng, RngExt};
 
-/// DPModel2D implements the Model2D trait, plus these.
+/// DPModel2D implements the CellModel2D trait, plus these.
 #[derive(Clone, Copy, Default, Debug)]
 pub struct DPModel2D();
 
-// Implement Model2D trait for DPModel.
+// Implement CellModel2D trait for DPModel.
 impl CellModel2D for DPModel2D {
     type State = DPState;
 

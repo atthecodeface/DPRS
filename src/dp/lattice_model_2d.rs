@@ -12,10 +12,10 @@ use rayon::prelude::*;
 /// the boolean lattice (true=occupied) stored as a linear vector;
 /// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct LatticeModel2D<M: CellModel2D> {
+pub struct LatticeModel2D<C: CellModel2D> {
     /// The model that provides the cells and the mapping between
     /// 3x3 cell neighborhoods in one time step and the next.
-    model: M,
+    cell_model: C,
     n_x: usize,
     n_y: usize,
     /// This used to be public, but is not now; it is an internal data structure
@@ -24,34 +24,34 @@ pub struct LatticeModel2D<M: CellModel2D> {
     /// To recover this (if needed) either *borrow* the lattice with the
     /// `lattice` method, or deconstruct the [LatticeModel2D] and take the
     /// lattice from there.
-    lattice: Vec<M::State>,
-    edge_values_x: (M::State, M::State),
-    edge_values_y: (M::State, M::State),
+    lattice: Vec<C::State>,
+    edge_values_x: (C::State, C::State),
+    edge_values_y: (C::State, C::State),
 }
 
 /// Lattice model methods.
-impl<M: CellModel2D> LatticeModel2D<M> {
-    /// Create a fresh grid (vector of M::State cells) with all values=false,
+impl<C: CellModel2D> LatticeModel2D<C> {
+    /// Create a fresh grid (vector of C::State cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
-        model: M,
+        cell_model: C,
         n_x: usize,
         n_y: usize,
-        edge_values_x: (M::State, M::State),
-        edge_values_y: (M::State, M::State),
+        edge_values_x: (C::State, C::State),
+        edge_values_y: (C::State, C::State),
     ) -> Self {
         Self {
-            model,
+            cell_model,
             n_x,
             n_y,
-            lattice: vec![M::State::default(); n_x * n_y],
+            lattice: vec![C::State::default(); n_x * n_y],
             edge_values_x,
             edge_values_y,
         }
     }
 
     /// Borrow the lattice.
-    pub fn lattice(&self) -> &Vec<M::State> {
+    pub fn lattice(&self) -> &Vec<C::State> {
         &self.lattice
     }
 
@@ -59,8 +59,8 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     ///
     /// This is the 'deconstructor', used after simulation to take the lattice
     /// (and potentially the model, if that is useful too).
-    pub fn take(self) -> (M, Vec<M::State>) {
-        (self.model, self.lattice)
+    pub fn take(self) -> (C, Vec<C::State>) {
+        (self.cell_model, self.lattice)
     }
 
     /// Count the total number of cells in the grid.
@@ -77,7 +77,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     /// from a de-facto Bernoulli distribution.
     pub fn randomized_lattice<R: Rng>(&mut self, rng: &mut R, p: f64) {
         self.lattice = (0..self.n_cells())
-            .map(|_| self.model.randomize_cell(rng, p))
+            .map(|_| self.cell_model.randomize_cell(rng, p))
             .collect();
     }
 
@@ -122,7 +122,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
 
     /// Enforce edge boundary conditions.
     pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
-        // let new_lattice: Vec<<M as Model2D>::State> = self.lattice().clone();
+        // let new_lattice: Vec<<C as Model2D>::State> = self.lattice().clone();
         let n_x = self.n_x;
         let n_y = self.n_y;
 
@@ -168,7 +168,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     }
 
     /// Enforce constant-value edge b.c. along a x edge.
-    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <M as CellModel2D>::State) {
+    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <C as CellModel2D>::State) {
         let n_x = self.n_x;
         // TODO: Rustify
         for x in 0..n_x {
@@ -178,7 +178,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     }
 
     /// Enforce constant-value edge b.c. along a y edge.
-    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <M as CellModel2D>::State) {
+    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <C as CellModel2D>::State) {
         let n_y = self.n_y;
         // TODO: Rustify
         for y in 0..n_y {
@@ -194,9 +194,9 @@ impl<M: CellModel2D> LatticeModel2D<M> {
                 let (is_in_bounds, x, y) = self.is_in_bounds(i_cell);
                 let updated_cell = if is_in_bounds {
                     let nbrhood = self.cell_nbrhood(x, y);
-                    self.model.update_cell(&mut rng, p, &nbrhood)
+                    self.cell_model.update_cell(&mut rng, p, &nbrhood)
                 } else {
-                    M::State::default()
+                    C::State::default()
                 };
 
                 updated_cell
@@ -205,7 +205,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     }
 
     /// Cell values tripled across (x-1:x+1, y).
-    fn cell_nbrhood(&self, x: usize, y: usize) -> [<M as CellModel2D>::State; 9] {
+    fn cell_nbrhood(&self, x: usize, y: usize) -> [<C as CellModel2D>::State; 9] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1, y + 1)],
             self.lattice[self.i_cell(x + 0, y + 1)],
@@ -238,7 +238,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     /// TODO: Does it make sense to pass the probability p like this?
     /// Wouldn't it be better to set it on the model struct?
     pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R], p: f64) {
-        let mut updated_lattice = vec![M::State::default(); self.lattice.len()];
+        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
         // Split the lattice into n_y rows each of length n_x and
         // update these rows in parallel using par_chunks_mut().
         // Before passing to next_row() to perform the update,
@@ -265,7 +265,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
-    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [M::State]) {
+    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [C::State]) {
         let i_up = self.i_cell(0, y + 1);
         let i_md = self.i_cell(0, y + 0);
         let i_dn = self.i_cell(0, y - 1);
@@ -284,7 +284,7 @@ impl<M: CellModel2D> LatticeModel2D<M> {
                 up[0], up[1], up[2], md[0], md[1], md[2], dn[0], dn[1], dn[2],
             ];
             let nbrhood = nbrhood.as_array::<9>().unwrap();
-            *cell = self.model.update_cell(rng, p, nbrhood);
+            *cell = self.cell_model.update_cell(rng, p, nbrhood);
         }
     }
 }

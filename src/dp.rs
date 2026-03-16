@@ -131,14 +131,14 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
 }
 
 /// Run a simulation for n_iterations, either serially or in parallel
-pub fn compute<M: CellModel2D, R: Rng>(
-    lattice_model: LatticeModel2D<M>,
+pub fn compute<C: CellModel2D, R: Rng>(
+    lattice_model: LatticeModel2D<C>,
     rng: &mut R,
     processing: &Processing,
     params: &Parameters,
     n_iterations: usize,
     sample_rate: usize,
-) -> (usize, Vec<Vec<<M as CellModel2D>::State>>) {
+) -> (usize, Vec<Vec<<C as CellModel2D>::State>>) {
     // Create a model lattice plus metadata
     let mut lm = lattice_model;
     lm.apply_edge_topology(&params);
