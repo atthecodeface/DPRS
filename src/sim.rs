@@ -14,7 +14,6 @@ mod sim {
 
     #[pymodule_export]
     use crate::parameters::BoundaryCondition;
-    use crate::parameters::DPState;
     #[pymodule_export]
     use crate::parameters::Dimension;
     use crate::parameters::Parameters;
@@ -24,23 +23,17 @@ mod sim {
     use crate::parameters::Topology;
 
     #[pyfunction]
-    fn dp(params: Parameters) -> PyResult<(usize, Vec<Vec<bool>>, Vec<Vec<f64>>)> {
-        let (n_lattices, lattices, tracking) = sim_dp(params);
+    fn dp(params: Parameters) -> PyResult<(usize, Vec<Vec<bool>>, Vec<Vec<f64>>, f64)> {
+        let (n_lattices, lattices, tracking, t_run_time) = sim_dp(params);
         // Quick and dirty translation layer between DPState and bool
         // lattice cell types.
         let mut bool_lattices: Vec<Vec<bool>> = Vec::new();
         for lattice in lattices {
-            let bool_lattice: Vec<bool> = lattice
-                .iter()
-                .map(|&state| match state {
-                    DPState::Empty => false,
-                    DPState::Occupied => true,
-                })
-                .collect();
-            bool_lattices.push(bool_lattice.clone());
+            let bool_lattice = lattice.iter().map(|s| (*s).into()).collect();
+            bool_lattices.push(bool_lattice);
         }
 
-        Ok((n_lattices, bool_lattices, tracking))
+        Ok((n_lattices, bool_lattices, tracking, t_run_time))
     }
 
     #[pyfunction]

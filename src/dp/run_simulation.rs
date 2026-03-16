@@ -57,7 +57,6 @@ pub fn run_simulation(
 
     // Do the simulation
     let (n_lattices, lattices, tracking) = pool.install(|| {
-        // println!("{:?}", std::thread::current());
         simulation(
             lattice_model_2d,
             &mut rng,
@@ -70,27 +69,23 @@ pub fn run_simulation(
     // Stop the clock
     let duration: f64 = time.elapsed().as_secs_f64() * (serial_skip as f64);
 
-    if params.do_edge_buffering {
-        // Remove edge buffering before returning the lattice time-slices.
-        println!("Doing edge buffering");
+    // If needed, remove edge buffering before returning the lattice time-slices.
+    let lattices = if params.do_edge_buffering {
         // Step through each of the recorded lattices, pruning off by 'pad'
         // at each edge, returning the pruned lattices
-        let pruned_lattices = lattices
+        lattices
             .into_iter()
             .map(|lattice| {
-                let mut clipped_lattice = vec![];
+                let mut pruned_lattice = vec![];
                 for c in lattice.chunks(n_x).skip(pad).take(pruned_n_y) {
-                    clipped_lattice.extend_from_slice(&c[pad..(pad + pruned_n_x)]);
+                    pruned_lattice.extend_from_slice(&c[pad..(pad + pruned_n_x)]);
                 }
-                clipped_lattice
+                pruned_lattice
             })
-            .collect();
-
-        // Return the run time, the number of recorded (time slice) lattices
-        // (which always includes the initial lattice at t=0), and a vector
-        // of lattice vectors.
-        (duration, n_lattices, pruned_lattices, tracking)
+            .collect()
     } else {
-        (duration, n_lattices, lattices, tracking)
-    }
+        lattices
+    };
+
+    (duration, n_lattices, lattices, tracking)
 }

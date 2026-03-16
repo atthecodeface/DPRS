@@ -69,6 +69,18 @@ impl<C: CellModel2D> LatticeModel2D<C> {
         self.n_x * self.n_y
     }
 
+    /// Compute the mean cell occupancy
+    pub fn mean(&self) -> f64 {
+        let usize_lattice: Vec<usize> = self
+            .lattice()
+            .iter()
+            .map(|&s| C::from_state_to_bool(s) as usize)
+            .collect();
+        let total: usize = usize_lattice.iter().sum();
+
+        (total as f64)/(self.n_cells() as f64)
+    }
+
     /// Compute the cell index of a given (x, y) coordinate.
     fn i_cell(&self, x: usize, y: usize) -> usize {
         x + self.n_x * y

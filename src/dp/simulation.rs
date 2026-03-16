@@ -40,6 +40,8 @@ pub fn simulation<C: CellModel2D, R: Rng>(
     tracking.push(t_track);
     tracking.push(rho_mean_track);
     tracking[0].push(0.0);
+    let rho_mean = lm.mean();
+    tracking[1].push(rho_mean);
     // We aren't going to worry about the lattice type being Cell
     //  - instead we're going to leave it up to pyo3 to convert
     // the lattice vector into a Python list as it thinks fit.
@@ -63,10 +65,9 @@ pub fn simulation<C: CellModel2D, R: Rng>(
                     lattices.push(lm.lattice().clone());
                 };
                 let t = i as f64;
-                // let rho_mean = lm.lattice().iter().sum();
-                let _rho_mean = lm.lattice()[0];
                 tracking[0].push(t);
-                // tracking[0].push(rho_mean);
+                let rho_mean = lm.mean();
+                tracking[1].push(rho_mean);
             }
         }
         Processing::Parallel => {
@@ -93,6 +94,8 @@ pub fn simulation<C: CellModel2D, R: Rng>(
                 };
                 let t = i as f64;
                 tracking[0].push(t);
+                let rho_mean = lm.mean();
+                tracking[1].push(rho_mean);
             }
         }
         _ => todo!(),

@@ -2,6 +2,7 @@
 // //!
 // //!
 use pyo3::{FromPyObject, pyclass};
+use std::convert::From;
 
 /// Lattice dimension.
 #[derive(PartialEq, Debug, Clone)]
@@ -40,6 +41,29 @@ pub enum DPState {
     #[default]
     Empty,
     Occupied,
+}
+
+impl From<bool> for DPState {
+    fn from(b: bool) -> Self {
+        match b {
+            false => Self::Empty,
+            true => Self::Occupied,
+        }
+    }
+}
+
+impl From<DPState> for bool {
+    fn from(state: DPState) -> bool {
+        matches![state, DPState::Occupied]
+    }
+}
+
+impl From<DPState> for f64 {
+    fn from(state: DPState) -> f64 {
+        let b = matches![state, DPState::Occupied];
+
+        (b as usize) as f64
+    }
 }
 
 /// Test the DPState var is a byte.
