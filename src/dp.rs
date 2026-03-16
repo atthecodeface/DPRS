@@ -16,6 +16,9 @@ use std::time::Instant;
 /// Entry point to this module.
 pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<DPState>>) {
     println!();
+    println!("Probability: {}", params.p);
+    println!("Random seed: {}", params.seed);
+    println!("Iterations:  {}", params.n_iterations);
     println!("Dimension:   {:?}", params.dim);
     println!("Grid shape:  {:?}", (params.n_x, params.n_y, params.n_z));
     println!("Topology x:  {:?}", params.edge_topology_x);
@@ -27,9 +30,7 @@ pub fn sim_dp(params: Parameters) -> (usize, Vec<Vec<DPState>>) {
     println!("Edge x vals: {:?}", params.edge_values_x);
     println!("Edge y vals: {:?}", params.edge_values_y);
     println!("Edge z vals: {:?}", params.edge_values_z);
-    println!("Probability: {}", params.p);
-    println!("Random seed: {}", params.seed);
-    println!("Iterations:  {}", params.n_iterations);
+    println!("Processing:  {:?}", params.processing);
     println!("Sample rate: {}", params.sample_rate);
     println!("Threads:     {}", params.n_threads);
     println!("Serial skip: {}", params.serial_skip);
