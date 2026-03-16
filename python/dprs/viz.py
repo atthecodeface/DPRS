@@ -85,7 +85,7 @@ class Viz:
                 reference to MatPlotLib/Pyplot figure
         """
         fig_size_: tuple[float, float] = (
-            (8, 8) if fig_size is None else fig_size
+            (6, 4) if fig_size is None else fig_size
         )
         dpi_: float = self.dpi if dpi is None else dpi
         logging.info(
@@ -114,10 +114,10 @@ class Viz:
         Plot colorized image of lattice.
         """
         _ = self.create_figure(fig_name=name, fig_size=fig_size,)
-        plt.title(title)
+        plt.title(title, fontdict={"fontsize": 11.5})
         color_map = ListedColormap(((0.9, 0.9, 0.9,), (0.65, 0, 0.65),))
-        x = (lattices.shape[0] if x is None else x)
-        y = (lattices.shape[1] if y is None else y)
+        x = (lattices.shape[0] if x is None else min(x, lattices.shape[0]))
+        y = (lattices.shape[1] if y is None else min(y, lattices.shape[1]))
         plt.imshow(
             lattices[0:x, 0:y, i_lattice,].T, 
             vmin=0, vmax=1,
@@ -135,3 +135,39 @@ class Viz:
         plt.ylabel(r"$y$")
         plt.grid(ls=":")
         # plt.close()
+
+
+    def plot_ρmean(
+            self,
+            name: str,
+            title: str,
+            tracking: NDArray,
+            δ: float, 
+            ρ_mean_ref: float,
+            fig_size: tuple[float,float]=(6,4,),
+        ) -> tuple[Figure, Any]:
+        """
+        Plot time evolution of mean order parameter.
+        """
+        _ = self.create_figure(fig_name=name, fig_size=fig_size,)
+        plt.title(title, fontdict={"fontsize": 13})
+        i_offset: int = 3
+        t: NDArray = tracking[0][i_offset:]
+        ρ_mean: NDArray = tracking[1][i_offset:]
+        ρ_mean_fn = lambda t: ρ_mean_ref*t**(-δ)
+        plt.plot(
+            t, ρ_mean, lw=0.5, color="k",
+        )
+        plt.plot(
+            t, ρ_mean_fn(t), color="blue", alpha=0.5, 
+            label=r"$\widebar\rho(t) \sim t^{-\delta}$" + rf"$\quad\delta={δ}$",
+        )
+        plt.legend()
+        axes = plt.gca()
+        axes.autoscale(enable=True, axis="both", tight=True)
+        plt.loglog()
+        # plt.ylim(0,)
+        # plt.xlim(0,)
+        plt.ylabel(r"Mean order parameter  $\widebar\rho(t)$")
+        plt.xlabel(r"Time  $t$")
+        plt.grid(ls=":")

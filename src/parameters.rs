@@ -2,6 +2,7 @@
 // //!
 // //!
 use pyo3::{FromPyObject, pyclass};
+use std::convert::From;
 
 /// Lattice dimension.
 #[derive(PartialEq, Debug, Clone)]
@@ -32,7 +33,7 @@ pub enum BoundaryCondition {
     Reflecting, // NYI
 }
 
-/// For now, Rust-side only DP state.
+/// Cell state behavior for DP.
 #[derive(Default, PartialEq, Clone, Copy, Debug)]
 #[pyclass(from_py_object, eq, eq_int)]
 #[repr(u8)]
@@ -40,6 +41,29 @@ pub enum DPState {
     #[default]
     Empty,
     Occupied,
+}
+
+impl From<bool> for DPState {
+    fn from(b: bool) -> Self {
+        match b {
+            false => Self::Empty,
+            true => Self::Occupied,
+        }
+    }
+}
+
+impl From<DPState> for bool {
+    fn from(state: DPState) -> bool {
+        matches![state, DPState::Occupied]
+    }
+}
+
+impl From<DPState> for f64 {
+    fn from(state: DPState) -> f64 {
+        let b = matches![state, DPState::Occupied];
+
+        (b as usize) as f64
+    }
 }
 
 /// Test the DPState var is a byte.
@@ -76,11 +100,11 @@ pub struct Parameters {
     pub edge_values_x: (bool, bool),
     pub edge_values_y: (bool, bool),
     pub edge_values_z: (bool, bool),
+    pub do_edge_buffering: bool,
     pub processing: Processing,
     pub sample_rate: usize,
     pub n_threads: usize,
     pub serial_skip: usize,
-    pub do_buffering: bool,
 }
 
 /// Edge topology and boundary condition checking.
@@ -88,43 +112,76 @@ impl Parameters {
     pub fn edge_topology_is_periodic_x(&self) -> bool {
         matches![self.edge_topology_x, Topology::Periodic]
     }
+
     pub fn edge_topology_is_periodic_y(&self) -> bool {
         matches![self.edge_topology_y, Topology::Periodic]
     }
+
     pub fn edge_boundary_is_unconstrained_x0(&self) -> bool {
         matches![
             self.edge_bc_x.0,
             BoundaryCondition::Unspecified | BoundaryCondition::Floating
         ]
     }
+
     pub fn edge_boundary_is_unconstrained_x1(&self) -> bool {
         matches![
             self.edge_bc_x.1,
             BoundaryCondition::Unspecified | BoundaryCondition::Floating
         ]
     }
+
     pub fn edge_boundary_is_unconstrained_y0(&self) -> bool {
         matches![
             self.edge_bc_y.0,
             BoundaryCondition::Unspecified | BoundaryCondition::Floating
         ]
     }
+
     pub fn edge_boundary_is_unconstrained_y1(&self) -> bool {
         matches![
             self.edge_bc_y.1,
             BoundaryCondition::Unspecified | BoundaryCondition::Floating
         ]
     }
+
     pub fn edge_boundary_is_pinned_x0(&self) -> bool {
         matches![self.edge_bc_x.0, BoundaryCondition::Pinned]
     }
+
     pub fn edge_boundary_is_pinned_x1(&self) -> bool {
         matches![self.edge_bc_x.1, BoundaryCondition::Pinned]
     }
+
     pub fn edge_boundary_is_pinned_y0(&self) -> bool {
         matches![self.edge_bc_y.0, BoundaryCondition::Pinned]
     }
+
     pub fn edge_boundary_is_pinned_y1(&self) -> bool {
         matches![self.edge_bc_y.1, BoundaryCondition::Pinned]
+    }
+
+    pub fn print(&self) {
+        println!();
+        println!("Probability: {}", self.p);
+        println!("Random seed: {}", self.seed);
+        println!("Iterations:  {}", self.n_iterations);
+        println!("Dimension:   {:?}", self.dim);
+        println!("Grid shape:  {:?}", (self.n_x, self.n_y, self.n_z));
+        println!("Topology x:  {:?}", self.edge_topology_x);
+        println!("Topology y:  {:?}", self.edge_topology_y);
+        println!("Topology z:  {:?}", self.edge_topology_z);
+        println!("Edge x b.c.: {:?}", self.edge_bc_x);
+        println!("Edge y b.c.: {:?}", self.edge_bc_y);
+        println!("Edge z b.c.: {:?}", self.edge_bc_z);
+        println!("Edge x vals: {:?}", self.edge_values_x);
+        println!("Edge y vals: {:?}", self.edge_values_y);
+        println!("Edge z vals: {:?}", self.edge_values_z);
+        println!("Edge buffer: {}", self.do_edge_buffering);
+        println!("Processing:  {:?}", self.processing);
+        println!("Sample rate: {}", self.sample_rate);
+        println!("Threads:     {}", self.n_threads);
+        println!("Serial skip: {}", self.serial_skip);
+        println!();
     }
 }

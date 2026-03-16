@@ -20,7 +20,7 @@ pub fn sim_life(params: Parameters) -> (usize, Vec<Vec<bool>>) {
     println!("Sample rate: {}", params.sample_rate);
     println!("Threads:     {}", params.n_threads);
     println!("Serial skip: {}", params.serial_skip);
-    println!("Buffering:   {}", params.do_buffering);
+    println!("Buffering:   {}", params.do_edge_buffering);
     println!();
 
     let (t_serial, _, _) = run_simulation(&params, &Processing::Serial);
@@ -45,7 +45,7 @@ pub fn sim_life(params: Parameters) -> (usize, Vec<Vec<bool>>) {
 fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, Vec<Vec<bool>>) {
     let life = LifeModel::default();
     // Buffer lattice edges
-    let pad: usize = match params.do_buffering {
+    let pad: usize = match params.do_edge_buffering {
         true => 1,
         false => 0,
     };
@@ -85,7 +85,7 @@ fn run_simulation(params: &Parameters, processing: &Processing) -> (f64, usize, 
     // Stop the clock
     let duration: f64 = time.elapsed().as_secs_f64() * (serial_skip as f64);
 
-    if params.do_buffering {
+    if params.do_edge_buffering {
         // Remove edge buffering before returning the lattice time-slices.
         println!("Doing buffering");
         // Step through each of the recorded lattices, pruning off by 'pad'
