@@ -3,9 +3,9 @@
 // //!
 
 mod cell_model_2d;
-mod compute;
 mod dp_model_2d;
 mod run_simulation;
+mod simulation;
 use crate::dp::run_simulation::run_simulation;
 use crate::parameters::{DPState, Parameters, Processing};
 mod lattice_model_2d;

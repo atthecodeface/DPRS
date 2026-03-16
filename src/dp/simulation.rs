@@ -9,8 +9,8 @@ use lattice_model_2d::LatticeModel2D;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 
-/// Run a simulation for n_iterations, either serially or in parallel
-pub fn compute<C: CellModel2D, R: Rng>(
+/// Simulate DP model for n_iterations, either serially or in parallel
+pub fn simulation<C: CellModel2D, R: Rng>(
     lattice_model: LatticeModel2D<C>,
     rng: &mut R,
     processing: &Processing,

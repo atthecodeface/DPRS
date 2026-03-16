@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use crate::dp::compute::compute;
+use crate::dp::simulation::simulation;
 use crate::dp::{dp_model_2d, lattice_model_2d};
 use crate::parameters::{DPState, Parameters, Processing};
 use dp_model_2d::DPModel2D;
@@ -58,7 +58,7 @@ pub fn run_simulation(
     // Do the simulation
     let (n_lattices, lattices) = pool.install(|| {
         // println!("{:?}", std::thread::current());
-        compute(
+        simulation(
             lattice_model_2d,
             &mut rng,
             processing,
