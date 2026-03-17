@@ -8,7 +8,7 @@ We have two motivations for adopting Rust: one is to ensure maximum performance;
 Fast run times are achieved through parallelization using the [`Rayon`](https://docs.rs/rayon/latest/rayon/) crate. 
 We anticipate boosting performance further with GPU-compute using [`wgpu`](https://wgpu.rs/).
 
-See [here](HOWTO.md) for some rough "how-to" notes on wrapping Rust with Python.
+See [here](docs/HOWTO.md) for some rough "how-to" notes on wrapping Rust with Python.
 
 ## Demos
 
@@ -16,7 +16,7 @@ For now, only DP has been implemented.  A series of related models are in develo
 
 ### DP
 
-![t-decay of mean ρ, for p=0.163145, nx=30,000, ny=30,000, t=50,000](images/ρmean_p0p163145_s1_nx30000_ny30000.png)
+![t-decay of mean ρ, for p=0.163145, nx=30,000, ny=30,000, t=50,000](docs/images/ρmean_p0p163145_s1_nx30000_ny30000.png)
 
 Directed-percolation model simulations in 2d are demonstrated in the following Jupyter notebook:
 
