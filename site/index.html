@@ -377,10 +377,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#directed-percolation-type-models-implemented-in-rust-and-wrapped-in-python" class="md-nav__link">
+  <a href="#directed-percolation-type-models-in-rust" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Directed percolation-type models implemented in Rust and wrapped in Python
+        Directed percolation-type models in Rust
       
     </span>
   </a>
@@ -450,10 +450,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#directed-percolation-type-models-implemented-in-rust-and-wrapped-in-python" class="md-nav__link">
+  <a href="#directed-percolation-type-models-in-rust" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Directed percolation-type models implemented in Rust and wrapped in Python
+        Directed percolation-type models in Rust
       
     </span>
   </a>
@@ -517,13 +517,15 @@
 
 
 <h1 id="dprs"><a href="https://pypi.org/project/dprs/"><strong>DPRS</strong></a><a class="headerlink" href="#dprs" title="Permanent link">¶</a></h1>
-<h3 id="directed-percolation-type-models-implemented-in-rust-and-wrapped-in-python"><em>Directed percolation-type models implemented in Rust and wrapped in Python</em><a class="headerlink" href="#directed-percolation-type-models-implemented-in-rust-and-wrapped-in-python" title="Permanent link">¶</a></h3>
-<p><a href="https://github.com/cstarkjp/DPRS/actions/workflows/publish-pypi.yml"><img alt="" src="https://github.com/cstarkjp/DPRS/actions/workflows/publish-pypi.yml/badge.svg?style=cache-control=no-cache"></a>
-<a href="https://github.com/cstarkjp/DPRS/actions/workflows/publish-testpypi.yml"><img alt="" src="https://github.com/cstarkjp/DPRS/actions/workflows/publish-testpypi.yml/badge.svg?style=cache-control=no-cache"></a>
-<a href="https://github.com/cstarkjp/DPRS/actions/workflows/unittest-macos.yml"><img alt="" src="https://github.com/cstarkjp/DPRS/actions/workflows/unittest-macos.yml/badge.svg?style=cache-control=no-cache"></a>
-<a href="https://github.com/cstarkjp/DPRS/actions/workflows/unittest-linux.yml"><img alt="" src="https://github.com/cstarkjp/DPRS/actions/workflows/unittest-linux.yml/badge.svg?style=cache-control=no-cache"></a>
-<a href="https://github.com/cstarkjp/DPRS/actions/workflows/unittest-windows.yml"><img alt="" src="https://github.com/cstarkjp/DPRS/actions/workflows/unittest-windows.yml/badge.svg?style=cache-control=no-cache"></a></p>
-<p>In this project, we implement directed percolation (DP) and similar lattice  models in Rust. The Rust code is accessed via a Python wrapper to make experimentation as convenient as possible. Jupyter notebooks are used to implement the Python-wrapped simulations. </p>
+<h3 id="directed-percolation-type-models-in-rust"><em>Directed percolation-type models in Rust</em><a class="headerlink" href="#directed-percolation-type-models-in-rust" title="Permanent link">¶</a></h3>
+<!-- [![](https://github.com/cstarkjp/DPRS/actions/workflows/publish-pypi.yml/badge.svg?style=cache-control=no-cache)](https://github.com/cstarkjp/DPRS/actions/workflows/publish-pypi.yml)
+[![](https://github.com/cstarkjp/DPRS/actions/workflows/publish-testpypi.yml/badge.svg?style=cache-control=no-cache)](https://github.com/cstarkjp/DPRS/actions/workflows/publish-testpypi.yml)
+[![](https://github.com/cstarkjp/DPRS/actions/workflows/unittest-macos.yml/badge.svg?style=cache-control=no-cache)](https://github.com/cstarkjp/DPRS/actions/workflows/unittest-macos.yml)
+[![](https://github.com/cstarkjp/DPRS/actions/workflows/unittest-linux.yml/badge.svg?style=cache-control=no-cache)](https://github.com/cstarkjp/DPRS/actions/workflows/unittest-linux.yml)
+[![](https://github.com/cstarkjp/DPRS/actions/workflows/unittest-windows.yml/badge.svg?style=cache-control=no-cache)](https://github.com/cstarkjp/DPRS/actions/workflows/unittest-windows.yml) -->
+
+<p>In this project, we implement directed percolation (DP) and similar lattice  models in Rust. The <a href="https://github.com/cstarkjp/DPRS/tree/main/src">Rust code</a> is accessed via a <a href="https://github.com/cstarkjp/DPRS/tree/main/src/sim.rs">Python wrapper</a> to make experimentation as convenient as possible. Jupyter notebooks are used to implement the Python-wrapped simulations. </p>
+<p><figure id="_figure-1"><img alt="t-decay of mean ρ, for p=0.163145, nx=30,000, ny=30,000, t=50,000" src="images/%CF%81mean_p0p163145_s1_nx30000_ny30000.png" width="500"><figcaption>Figure 1: t-decay of mean ρ, for p=0.163145, nx=30,000, ny=30,000, t=50,000</figcaption></figure></p>
 <p>We have two motivations for adopting Rust: one is to ensure maximum performance; another is to achieve this in a memory-safe and bug-free fashion (which is not easy to do in C or C++). </p>
 <p>Fast run times are achieved through parallelization using the <a href="https://docs.rs/rayon/latest/rayon/"><code>Rayon</code></a> crate. 
 We anticipate boosting performance further with GPU-compute using <a href="https://wgpu.rs/"><code>wgpu</code></a>.</p>
@@ -531,7 +533,6 @@ We anticipate boosting performance further with GPU-compute using <a href="https
 <h2 id="demos">Demos<a class="headerlink" href="#demos" title="Permanent link">¶</a></h2>
 <p>For now, only DP has been implemented.  A series of related models are in development.</p>
 <h3 id="dp">DP<a class="headerlink" href="#dp" title="Permanent link">¶</a></h3>
-<p><figure id="_figure-1"><img alt="t-decay of mean ρ, for p=0.163145, nx=30,000, ny=30,000, t=50,000" src="images/%CF%81mean_p0p163145_s1_nx30000_ny30000.png"><figcaption>Figure 1: t-decay of mean ρ, for p=0.163145, nx=30,000, ny=30,000, t=50,000</figcaption></figure></p>
 <p>Directed-percolation model simulations in 2d are demonstrated in the following Jupyter notebook:</p>
 <ul>
 <li><a href="https://github.com/cstarkjp/DPRS/tree/main/notebooks/dp_2d.ipynb">Jupyter demo</a></li>
@@ -603,7 +604,7 @@ Plot of grid-averaged density $\overline{\rho}(t)$ versus time, for an ensemble 
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2025 Colin P. Stark
+      Copyright &copy; 2026 Colin P. Stark & Gavin J. Stark
     </div>
   
   
