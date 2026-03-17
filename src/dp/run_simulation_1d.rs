@@ -23,14 +23,10 @@ pub fn run_simulation(
         false => 0,
     };
     let pruned_n_x = params.n_x;
-    let pruned_n_y = params.n_y;
     let n_x: usize = pruned_n_x + pad * 2;
-    let n_y: usize = pruned_n_y + pad * 2;
     let mut lattice_model_1d: LatticeModel1D<DPModel1D> = LatticeModel1D::new(
         dp,
         n_x,
-        n_y,
-        (DPState::Empty, DPState::Empty),
         (DPState::Empty, DPState::Empty),
     );
 

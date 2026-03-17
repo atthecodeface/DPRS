@@ -36,8 +36,8 @@ impl CellModel1D for DPModel1D {
 
     /// DP rule: this cell will become occupied if:
     ///  (1) a coin toss with probability p says it *may* be occupied
-    ///  (2) if one of the 9 neighborhood + here cells were previously occupied
-    fn update_state<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &[Self::State; 9]) -> Self::State {
+    ///  (2) if one of the 3 neighborhood + here cells were previously occupied
+    fn update_state<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &[Self::State; 3]) -> Self::State {
         let is_any_nbr_occupied = nbrhood.iter().any(Self::from_state_to_bool);
         let do_survive = rng.random_bool(p);
         let do_activate = is_any_nbr_occupied & do_survive;
@@ -45,23 +45,3 @@ impl CellModel1D for DPModel1D {
         Self::from_bool_to_state(&do_activate)
     }
 }
-
-// /// Minimal testing.
-// #[test]
-// fn test_dp() {
-//     use super::LatticeModel1D;
-//     use rand::rng;
-
-//     let dp = DPModel::default();
-//     let mut lm1 = LatticeModel1D::new(dp, 200, 200, (false, false), (false, false));
-//     lm1.randomized_lattice(&mut rng(), 0.5);
-//     let mut lm2 = lm1.clone();
-
-//     for _ in 0..100 {
-//         lm1.next_iteration_serial(&mut rng(), 0.5);
-//         // TODO: pass RNGs vec
-//         lm2.next_iteration_parallel(&mut rng(), 0.5);
-
-//         assert_eq!(lm1.lattice(), lm2.lattice());
-//     }
-// }

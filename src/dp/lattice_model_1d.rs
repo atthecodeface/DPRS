@@ -8,19 +8,17 @@ use rayon::prelude::*;
 
 /// Model lattice in 1d.
 ///
-/// Contains: grid size as width n_x and height n_y;
+/// Contains: grid size as width n_x;
 /// the boolean lattice (true=occupied) stored as a linear vector;
 /// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct LatticeModel1D<C: CellModel1D> {
     /// The model that provides the cells and the mapping between
-    /// 3x3 cell neighborhoods in one time step and the next.
+    /// 3x1 cell neighborhoods in one time step and the next.
     cell_model: C,
     n_x: usize,
-    n_y: usize,
     lattice: Vec<C::State>,
     edge_values_x: (C::State, C::State),
-    edge_values_y: (C::State, C::State),
 }
 
 /// Lattice model methods.
@@ -30,17 +28,13 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     pub fn new(
         cell_model: C,
         n_x: usize,
-        n_y: usize,
         edge_values_x: (C::State, C::State),
-        edge_values_y: (C::State, C::State),
     ) -> Self {
         Self {
             cell_model,
             n_x,
-            n_y,
-            lattice: vec![C::State::default(); n_x * n_y],
+            lattice: vec![C::State::default(); n_x],
             edge_values_x,
-            edge_values_y,
         }
     }
 
@@ -60,7 +54,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
 
     /// Count the total number of cells in the grid.
     fn n_cells(&self) -> usize {
-        self.n_x * self.n_y
+        self.n_x
     }
 
     /// Compute the mean cell occupancy
@@ -75,8 +69,8 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     }
 
     /// Compute the cell index of a given (x, y) coordinate.
-    fn i_cell(&self, x: usize, y: usize) -> usize {
-        x + self.n_x * y
+    fn i_cell(&self, x: usize) -> usize {
+        x
     }
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
@@ -89,29 +83,11 @@ impl<C: CellModel1D> LatticeModel1D<C> {
 
     /// Enforce edge topology specifications.
     pub fn apply_edge_topology(&mut self, params: &Parameters) {
-        // Apply x-edge boundary topology
-        if params.edge_topology_is_periodic_x() {
-            let n_y = self.n_y;
-            self.periodic_x_edges(n_y - 2, 0);
-            self.periodic_x_edges(1, n_y - 1);
-        }
-
         // Apply y-edge boundary topology
         if params.edge_topology_is_periodic_y() {
             let n_x = self.n_x;
             self.periodic_y_edges(n_x - 2, 0);
             self.periodic_y_edges(1, n_x - 1);
-        }
-    }
-
-    /// Enforce periodic edge topology along the x edges (i.e., in y axis direction).
-    fn periodic_x_edges(&mut self, y_from: usize, y_to: usize) {
-        let n_x = self.n_x;
-        // TODO: Rustify
-        for x in 0..n_x {
-            let i_from = self.i_cell(x, y_to);
-            let i_to = self.i_cell(x, y_from);
-            self.lattice[i_to] = self.lattice[i_from];
         }
     }
 
@@ -130,23 +106,6 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
         // let new_lattice: Vec<<C as Model1D>::State> = self.lattice().clone();
         let n_x = self.n_x;
-        let n_y = self.n_y;
-
-        // Apply bottom x-edge b.c.
-        if params.edge_boundary_is_unconstrained_x0() {
-            // No edge values need be imposed
-        } else if params.edge_boundary_is_pinned_x0() {
-            // println!("Pinning bottom x edge");
-            self.pinned_x_edge_values(0, self.edge_values_x.0);
-        }
-
-        // Apply top x-edge b.c.
-        if params.edge_boundary_is_unconstrained_x1() {
-            // No edge values need be imposed
-        } else if params.edge_boundary_is_pinned_x1() {
-            // println!("Pinning top x edge");
-            self.pinned_x_edge_values(n_y - 1, self.edge_values_x.1);
-        }
 
         // Apply left y-edge b.c.
         if params.edge_boundary_is_unconstrained_y0() {
@@ -162,16 +121,6 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         } else if params.edge_boundary_is_pinned_y1() {
             // println!("Pinning right y edge");
             self.pinned_y_edge_values(n_x - 1, self.edge_values_y.1);
-        }
-    }
-
-    /// Enforce constant-value edge b.c. along a x edge.
-    fn pinned_x_edge_values(&mut self, y: usize, pinned_value: <C as CellModel1D>::State) {
-        let n_x = self.n_x;
-        // TODO: Rustify
-        for x in 0..n_x {
-            let i_cell = self.i_cell(x, y);
-            self.lattice[i_cell] = pinned_value;
         }
     }
 
