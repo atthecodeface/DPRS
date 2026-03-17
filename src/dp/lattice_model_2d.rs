@@ -18,12 +18,6 @@ pub struct LatticeModel2D<C: CellModel2D> {
     cell_model: C,
     n_x: usize,
     n_y: usize,
-    /// This used to be public, but is not now; it is an internal data structure
-    /// that might be handled differently in the future.
-    ///
-    /// To recover this (if needed) either *borrow* the lattice with the
-    /// `lattice` method, or deconstruct the [LatticeModel2D] and take the
-    /// lattice from there.
     lattice: Vec<C::State>,
     edge_values_x: (C::State, C::State),
     edge_values_y: (C::State, C::State),
