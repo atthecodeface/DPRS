@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use crate::dp::simulation::simulation;
+use crate::dp::simulation_2d::simulation;
 use crate::dp::{dp_model_2d, lattice_model_2d};
 use crate::parameters::{DPState, Parameters, Processing};
 use dp_model_2d::DPModel2D;
