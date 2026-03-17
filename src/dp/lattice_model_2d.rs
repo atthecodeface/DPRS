@@ -264,7 +264,7 @@ impl<C: CellModel2D> LatticeModel2D<C> {
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
     pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [C::State]) {
-        let i_md = self.i_cell(0, y + 0);
+        let i_md = self.i_cell(0, y);
         let i_up = i_md + self.n_x;
         let i_dn = i_md - self.n_x;
         let row_span = self.n_x - 2;

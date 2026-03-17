@@ -25,11 +25,7 @@ pub struct LatticeModel1D<C: CellModel1D> {
 impl<C: CellModel1D> LatticeModel1D<C> {
     /// Create a fresh grid (vector of C::State cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
-    pub fn new(
-        cell_model: C,
-        n_x: usize,
-        edge_values_x: (C::State, C::State),
-    ) -> Self {
+    pub fn new(cell_model: C, n_x: usize, edge_values_x: (C::State, C::State)) -> Self {
         Self {
             cell_model,
             n_x,
@@ -93,13 +89,9 @@ impl<C: CellModel1D> LatticeModel1D<C> {
 
     /// Enforce periodic edge topology along the y edges (i.e., in x axis direction).
     fn periodic_y_edges(&mut self, x_from: usize, x_to: usize) {
-        let n_y = self.n_y;
-        // TODO: Rustify
-        for y in 0..n_y {
-            let i_from = self.i_cell(x_from, y);
-            let i_to = self.i_cell(x_to, y);
-            self.lattice[i_to] = self.lattice[i_from];
-        }
+        let i_from = self.i_cell(x_from);
+        let i_to = self.i_cell(x_to);
+        self.lattice[i_to] = self.lattice[i_from];
     }
 
     /// Enforce edge boundary conditions.
@@ -112,7 +104,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             // No edge values need be imposed
         } else if params.edge_boundary_is_pinned_y0() {
             // println!("Pinning left y edge");
-            self.pinned_y_edge_values(0, self.edge_values_y.0);
+            self.pinned_y_edge_values(0, self.edge_values_x.1);
         }
 
         // Apply right y-edge b.c.
@@ -120,27 +112,23 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             // No edge values need be imposed
         } else if params.edge_boundary_is_pinned_y1() {
             // println!("Pinning right y edge");
-            self.pinned_y_edge_values(n_x - 1, self.edge_values_y.1);
+            self.pinned_y_edge_values(n_x - 1, self.edge_values_x.1);
         }
     }
 
     /// Enforce constant-value edge b.c. along a y edge.
     fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <C as CellModel1D>::State) {
-        let n_y = self.n_y;
-        // TODO: Rustify
-        for y in 0..n_y {
-            let i_cell = self.i_cell(x, y);
-            self.lattice[i_cell] = pinned_value;
-        }
+        let i_cell = self.i_cell(x);
+        self.lattice[i_cell] = pinned_value;
     }
 
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial<R: Rng>(&mut self, mut rng: &mut R, p: f64) {
         self.lattice = (0..self.n_cells())
             .map(|i_cell| {
-                let (is_in_bounds, x, y) = self.is_in_bounds(i_cell);
+                let (is_in_bounds, x) = self.is_in_bounds(i_cell);
                 let updated_cell = if is_in_bounds {
-                    let nbrhood = self.cell_nbrhood(x, y);
+                    let nbrhood = self.cell_nbrhood(x);
                     self.cell_model.update_state(&mut rng, p, &nbrhood)
                 } else {
                     C::State::default()
@@ -152,33 +140,26 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     }
 
     /// Cell values tripled across (x-1:x+1, y).
-    fn cell_nbrhood(&self, x: usize, y: usize) -> [<C as CellModel1D>::State; 9] {
+    fn cell_nbrhood(&self, x: usize) -> [<C as CellModel1D>::State; 3] {
         let nbrhood = [
-            self.lattice[self.i_cell(x - 1, y + 1)],
-            self.lattice[self.i_cell(x + 0, y + 1)],
-            self.lattice[self.i_cell(x + 1, y + 1)],
-            self.lattice[self.i_cell(x - 1, y + 0)],
-            self.lattice[self.i_cell(x + 0, y + 0)],
-            self.lattice[self.i_cell(x + 1, y + 0)],
-            self.lattice[self.i_cell(x - 1, y - 1)],
-            self.lattice[self.i_cell(x + 0, y - 1)],
-            self.lattice[self.i_cell(x + 1, y - 1)],
+            self.lattice[self.i_cell(x - 1)],
+            self.lattice[self.i_cell(x + 0)],
+            self.lattice[self.i_cell(x + 1)],
         ];
 
         nbrhood
     }
 
     /// Check (x,y) coordinate is within lattice bounds.
-    fn is_in_bounds_xy(&self, x: usize, y: usize) -> bool {
-        x > 0 && y > 0 && x < self.n_x - 1 && y < self.n_y - 1
+    fn is_in_bounds_xy(&self, x: usize) -> bool {
+        x > 0 && x < self.n_x - 1
     }
 
     /// Check cell index is within lattice bounds; return this test and (x, y).
-    fn is_in_bounds(&self, i_cell: usize) -> (bool, usize, usize) {
-        let x = i_cell % self.n_x;
-        let y = i_cell / self.n_x;
+    fn is_in_bounds(&self, i_cell: usize) -> (bool, usize) {
+        let x = i_cell;
 
-        (self.is_in_bounds_xy(x, y), x, y)
+        (self.is_in_bounds_xy(x), x)
     }
 
     /// Evolve the grid by one iteration using chunked parallel processing.
@@ -191,13 +172,13 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
-        let n_rows = self.n_y - 2;
+        let n_rows = 1;
         updated_lattice
             .par_chunks_mut(self.n_x)
             .enumerate()
             .zip(rngs)
-            .skip(1)
-            .take(n_rows)
+            // .skip(1)
+            // .take(n_rows)
             .for_each(|((y, row), rng)| self.update_row(rng, p, y, row));
 
         // Only replace the lattice with the updated version once all the rows
@@ -213,24 +194,14 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
     pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [C::State]) {
-        let i_md = self.i_cell(0, y + 0);
-        let i_up = i_md + self.n_x;
-        let i_dn = i_md - self.n_x;
+        let i_md = self.i_cell(0);
         let row_span = self.n_x - 2;
         let lattice = &self.lattice;
-        for (cell, (dn, (md, up))) in row.iter_mut().skip(1).take(row_span).zip(
-            lattice.split_at(i_dn).1.windows(3).zip(
-                lattice
-                    .split_at(i_md)
-                    .1
-                    .windows(3)
-                    .zip(lattice.split_at(i_up).1.windows(3)),
-            ),
+        for (cell, md) in row.iter_mut().take(row_span).zip(
+            lattice.split_at(i_md).1.windows(3),
         ) {
-            let nbrhood = [
-                up[0], up[1], up[2], md[0], md[1], md[2], dn[0], dn[1], dn[2],
-            ];
-            let nbrhood = nbrhood.as_array::<9>().unwrap();
+            let nbrhood = [md[0], md[1], md[2]];
+            let nbrhood = nbrhood.as_array::<3>().unwrap();
             *cell = self.cell_model.update_state(rng, p, nbrhood);
         }
     }
