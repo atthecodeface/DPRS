@@ -87,6 +87,7 @@ pub struct Parameters {
     pub p0: f64,
     pub seed: usize,
     pub n_iterations: usize,
+    pub sample_rate: usize,
     pub dim: Dimension,
     pub n_x: usize,
     pub n_y: usize,
@@ -102,7 +103,6 @@ pub struct Parameters {
     pub edge_values_z: (bool, bool),
     pub do_edge_buffering: bool,
     pub processing: Processing,
-    pub sample_rate: usize,
     pub n_threads: usize,
 }
 
@@ -166,6 +166,7 @@ impl Parameters {
         println!("Prob @t=0:   {}", self.p0);
         println!("Random seed: {}", self.seed);
         println!("Iterations:  {}", self.n_iterations);
+        println!("Sample rate: {}", self.sample_rate);
         println!("Dimension:   {:?}", self.dim);
         println!("Grid shape:  {:?}", (self.n_x, self.n_y, self.n_z));
         println!("Topology x:  {:?}", self.edge_topology_x);
@@ -179,7 +180,6 @@ impl Parameters {
         println!("Edge z vals: {:?}", self.edge_values_z);
         println!("Edge buffer: {}", self.do_edge_buffering);
         println!("Processing:  {:?}", self.processing);
-        println!("Sample rate: {}", self.sample_rate);
         println!("Num threads: {}", self.n_threads);
         println!();
     }
