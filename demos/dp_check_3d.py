@@ -1,4 +1,5 @@
 from dprs import sim
+from dprs.utils import DP, dp_state as state
 
 print(f"\n{sim}")
 
@@ -18,9 +19,9 @@ class Parameters:
     axis_bcs_x = (sim.BoundaryCondition.Floating, sim.BoundaryCondition.Floating)
     axis_bcs_y = (sim.BoundaryCondition.Floating, sim.BoundaryCondition.Floating)
     axis_bcs_z = (sim.BoundaryCondition.Floating, sim.BoundaryCondition.Floating)
-    axis_bc_values_x = (True, True)
-    axis_bc_values_y = (True, True)
-    axis_bc_values_z = (True, True)
+    axis_bc_values_x = (state(DP.OCCUPIED), state(DP.OCCUPIED))
+    axis_bc_values_y = (state(DP.OCCUPIED), state(DP.OCCUPIED))
+    axis_bc_values_z = (state(DP.OCCUPIED), state(DP.OCCUPIED))
     do_edge_buffering: bool = True
     processing = sim.Processing.Parallel
     n_threads: int = 16
