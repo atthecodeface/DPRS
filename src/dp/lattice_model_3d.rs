@@ -58,6 +58,11 @@ impl<C: CellModel3D> LatticeModel3D<C> {
         &self.lattice
     }
 
+    /// Borrow the lattice mutably.
+    pub fn lattice_mut(&mut self) -> &mut [C::State] {
+        &mut self.lattice
+    }
+
     /// Take the model and the lattice, destroying the rest of the model.
     ///
     /// This is the 'deconstructor', used after simulation to take the lattice

@@ -20,8 +20,9 @@ mod lattice_model_3d;
 mod nbrhood_3d;
 mod run_simulation_3d;
 mod simulation_3d;
-pub(crate) use cell_model_3d::CellModel3D;
-pub(crate) use nbrhood_3d::{Nbrhood3D, RowIterator3D};
+pub use cell_model_3d::CellModel3D;
+pub use lattice_model_3d::LatticeModel3D;
+pub use nbrhood_3d::{Nbrhood3D, RowIterator3D};
 
 use crate::parameters::{DPState, Dimension, Parameters, Processing};
 
