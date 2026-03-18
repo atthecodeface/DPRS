@@ -138,7 +138,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             .collect();
     }
 
-    /// Cell values tripled across (x-1:x+1, y).
+    /// Cell values tripled across (x-1:x+1).
     fn cell_nbrhood(&self, x: usize) -> [<C as CellModel1D>::State; 3] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1)],
@@ -149,12 +149,12 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         nbrhood
     }
 
-    /// Check (x,y) coordinate is within lattice bounds.
+    /// Check (x) coordinate is within lattice bounds.
     fn is_in_bounds_x(&self, x: usize) -> bool {
         x > 0 && x < self.n_x - 1
     }
 
-    /// Check cell index is within lattice bounds; return this test and (x, y).
+    /// Check cell index is within lattice bounds; return this test and (x).
     fn is_in_bounds(&self, i_cell: usize) -> (bool, usize) {
         let x = i_cell;
 

@@ -197,7 +197,7 @@ impl<C: CellModel2D> LatticeModel2D<C> {
             .collect();
     }
 
-    /// Cell values tripled across (x-1:x+1, y).
+    /// Cell values triple-tripled across (x-1:x+1, y-1:y+1).
     fn cell_nbrhood(&self, x: usize, y: usize) -> [<C as CellModel2D>::State; 9] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1, y + 1)],

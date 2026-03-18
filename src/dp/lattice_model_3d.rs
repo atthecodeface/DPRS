@@ -264,7 +264,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
             .collect();
     }
 
-    /// Cell values tripled across (x-1:x+1, y).
+    /// Cell values triple-triple-tripled across (x-1:x+1, y-1:y+1, z-1:z+1).
     fn cell_nbrhood(&self, x: usize, y: usize, z: usize) -> [<C as CellModel3D>::State; 27] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1, y + 1, z + 1)],
@@ -299,7 +299,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
         nbrhood
     }
 
-    /// Check (x,y) coordinate is within lattice bounds.
+    /// Check (x,y,z) coordinate is within lattice bounds.
     fn is_in_bounds_xyz(&self, x: usize, y: usize, z: usize) -> bool {
         x > 0 && y > 0 && z > 0 && x < (self.n_x - 1) && y < (self.n_y - 1) && z < (self.n_z - 1)
     }
@@ -309,7 +309,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
         // TODO: 3d update needed
 
         let x = i_cell % self.n_x;
-        let y = i_cell % (self.n_x * self.n_y);
+        let y = (i_cell / self.n_x) % self.n_y;
         let z = i_cell / (self.n_x * self.n_y);
 
         (self.is_in_bounds_xyz(x, y, z), x, y, z)
