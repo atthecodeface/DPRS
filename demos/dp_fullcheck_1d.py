@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import linregress
 from numpy.typing import NDArray
 from dprs import sim
-from dprs.utils import DP, dp_state as state
+from dprs.utils import DP
 
 print(f"\n{sim}")
 
@@ -22,9 +22,9 @@ class Parameters:
     axis_bcs_x = (sim.BoundaryCondition.Floating, sim.BoundaryCondition.Floating)
     axis_bcs_y = (sim.BoundaryCondition.Floating, sim.BoundaryCondition.Floating)
     axis_bcs_z = (sim.BoundaryCondition.Unspecified, sim.BoundaryCondition.Unspecified)
-    axis_bc_values_x = (state(DP.OCCUPIED), state(DP.OCCUPIED))
-    axis_bc_values_y = (state(DP.EMPTY), state(DP.EMPTY))
-    axis_bc_values_z = (state(DP.EMPTY), state(DP.EMPTY))
+    axis_bc_values_x = (DP.OCCUPIED.state, DP.OCCUPIED.state)
+    axis_bc_values_y = (DP.EMPTY.state, DP.EMPTY.state)
+    axis_bc_values_z = (DP.EMPTY.state, DP.EMPTY.state)
     do_edge_buffering: bool = True
     processing = sim.Processing.Parallel
     n_threads: int = 16

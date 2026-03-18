@@ -18,7 +18,12 @@ class DP(Enum):
     EMPTY = False
     OCCUPIED = True
 
-dp_state = bool
+    @property
+    def state(self):
+        if self is DP.EMPTY:
+            return False
+        elif self is DP.OCCUPIED:
+            return True
 
 def make_title(parameters: Parameters, i_slice: int|None = None): 
     return (
