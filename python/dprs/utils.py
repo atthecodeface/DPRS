@@ -2,7 +2,7 @@
 Useful functions.
 """
 import warnings
-from dprs import sim
+from enum import Enum
 
 warnings.filterwarnings("ignore")
 
@@ -13,6 +13,17 @@ __all__ = [
 ]
 
 class Parameters: {}
+
+class DP(Enum):
+    EMPTY = False
+    OCCUPIED = True
+
+    @property
+    def state(self):
+        if self is DP.EMPTY:
+            return False
+        elif self is DP.OCCUPIED:
+            return True
 
 def make_title(parameters: Parameters, i_slice: int|None = None): 
     return (

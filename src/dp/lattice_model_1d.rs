@@ -96,7 +96,6 @@ impl<C: CellModel1D> LatticeModel1D<C> {
 
     /// Enforce edge boundary conditions.
     pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
-        // let new_lattice: Vec<<C as Model1D>::State> = self.lattice().clone();
         let n_x = self.n_x;
 
         // Apply left y-edge b.c.
@@ -139,7 +138,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             .collect();
     }
 
-    /// Cell values tripled across (x-1:x+1, y).
+    /// Cell values tripled across (x-1:x+1).
     fn cell_nbrhood(&self, x: usize) -> [<C as CellModel1D>::State; 3] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1)],
@@ -150,16 +149,16 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         nbrhood
     }
 
-    /// Check (x,y) coordinate is within lattice bounds.
-    fn is_in_bounds_xy(&self, x: usize) -> bool {
+    /// Check (x) coordinate is within lattice bounds.
+    fn is_in_bounds_x(&self, x: usize) -> bool {
         x > 0 && x < self.n_x - 1
     }
 
-    /// Check cell index is within lattice bounds; return this test and (x, y).
+    /// Check cell index is within lattice bounds; return this test and (x).
     fn is_in_bounds(&self, i_cell: usize) -> (bool, usize) {
         let x = i_cell;
 
-        (self.is_in_bounds_xy(x), x)
+        (self.is_in_bounds_x(x), x)
     }
 
     /// Evolve the grid by one iteration using chunked parallel processing.

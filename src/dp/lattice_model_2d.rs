@@ -19,8 +19,8 @@ pub struct LatticeModel2D<C: CellModel2D> {
     n_x: usize,
     n_y: usize,
     lattice: Vec<C::State>,
-    end_values_y: (C::State, C::State),
     end_values_x: (C::State, C::State),
+    end_values_y: (C::State, C::State),
 }
 
 /// Lattice model methods.
@@ -31,16 +31,16 @@ impl<C: CellModel2D> LatticeModel2D<C> {
         cell_model: C,
         n_x: usize,
         n_y: usize,
-        end_values_y: (C::State, C::State),
         end_values_x: (C::State, C::State),
+        end_values_y: (C::State, C::State),
     ) -> Self {
         Self {
             cell_model,
             n_x,
             n_y,
             lattice: vec![C::State::default(); n_x * n_y],
-            end_values_y,
             end_values_x,
+            end_values_y,
         }
     }
 
@@ -126,7 +126,6 @@ impl<C: CellModel2D> LatticeModel2D<C> {
 
     /// Enforce edge boundary conditions.
     pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
-        // let new_lattice: Vec<<C as Model2D>::State> = self.lattice().clone();
         let n_x = self.n_x;
         let n_y = self.n_y;
 
@@ -198,7 +197,7 @@ impl<C: CellModel2D> LatticeModel2D<C> {
             .collect();
     }
 
-    /// Cell values tripled across (x-1:x+1, y).
+    /// Cell values triple-tripled across (x-1:x+1, y-1:y+1).
     fn cell_nbrhood(&self, x: usize, y: usize) -> [<C as CellModel2D>::State; 9] {
         let nbrhood = [
             self.lattice[self.i_cell(x - 1, y + 1)],
