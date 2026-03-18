@@ -1,6 +1,6 @@
 # Demos
 
-For now, only directed percolation (DP) in 1d and 2d has been implemented.  A series of related models are in development. We are currently working on extending 
+For now, only directed percolation (DP) in 1d and 2d has been implemented.  A series of related models are in development. We are currently working on extending DP to 3d.
 
 ## Directed percolation 
 
