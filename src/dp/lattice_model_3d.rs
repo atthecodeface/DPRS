@@ -309,8 +309,8 @@ impl<C: CellModel3D> LatticeModel3D<C> {
         // TODO: 3d update needed
 
         let x = i_cell % self.n_x;
-        let y = i_cell / self.n_x;
-        let z = i_cell;
+        let y = i_cell % (self.n_x * self.n_y);
+        let z = i_cell / (self.n_x * self.n_y);
 
         (self.is_in_bounds_xyz(x, y, z), x, y, z)
     }
