@@ -83,15 +83,15 @@ pub enum Processing {
 /// Model parameter bundle derived from Python Parameters class instance.
 #[derive(FromPyObject, Debug, Clone)]
 pub struct Parameters {
+    pub dim: Dimension,
+    pub n_x: usize,
+    pub n_y: usize,
+    pub n_z: usize,
     pub p: f64,
     pub p0: f64,
     pub seed: usize,
     pub n_iterations: usize,
     pub sample_rate: usize,
-    pub dim: Dimension,
-    pub n_x: usize,
-    pub n_y: usize,
-    pub n_z: usize,
     pub axis_topology_x: Topology,
     pub axis_topology_y: Topology,
     pub axis_topology_z: Topology,
@@ -162,13 +162,13 @@ impl Parameters {
 
     pub fn print(&self) {
         println!();
+        println!("Dimension:   {:?}", self.dim);
+        println!("Grid shape:  {:?}", (self.n_x, self.n_y, self.n_z));
         println!("Probability: {}", self.p);
         println!("Prob @t=0:   {}", self.p0);
         println!("Random seed: {}", self.seed);
         println!("Iterations:  {}", self.n_iterations);
         println!("Sample rate: {}", self.sample_rate);
-        println!("Dimension:   {:?}", self.dim);
-        println!("Grid shape:  {:?}", (self.n_x, self.n_y, self.n_z));
         println!("Topology x:  {:?}", self.axis_topology_x);
         println!("Topology y:  {:?}", self.axis_topology_y);
         println!("Topology z:  {:?}", self.axis_topology_z);
