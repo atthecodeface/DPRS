@@ -18,19 +18,19 @@ pub struct LatticeModel1D<C: CellModel1D> {
     cell_model: C,
     n_x: usize,
     lattice: Vec<C::State>,
-    edge_values_x: (C::State, C::State),
+    end_values_x: (C::State, C::State),
 }
 
 /// Lattice model methods.
 impl<C: CellModel1D> LatticeModel1D<C> {
     /// Create a fresh grid (vector of C::State cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
-    pub fn new(cell_model: C, n_x: usize, edge_values_x: (C::State, C::State)) -> Self {
+    pub fn new(cell_model: C, n_x: usize, end_values_y: (C::State, C::State)) -> Self {
         Self {
             cell_model,
             n_x,
             lattice: vec![C::State::default(); n_x],
-            edge_values_x,
+            end_values_x: end_values_y,
         }
     }
 
@@ -79,16 +79,16 @@ impl<C: CellModel1D> LatticeModel1D<C> {
 
     /// Enforce edge topology specifications.
     pub fn apply_edge_topology(&mut self, params: &Parameters) {
-        // Apply y-edge boundary topology
-        if params.edge_topology_is_periodic_y() {
+        // Apply x-axis termini topology
+        if params.x_axis_topology_is_periodic() {
             let n_x = self.n_x;
-            self.periodic_y_edges(n_x - 2, 0);
-            self.periodic_y_edges(1, n_x - 1);
+            self.make_axis_periodic_x(n_x - 2, 0);
+            self.make_axis_periodic_x(1, n_x - 1);
         }
     }
 
-    /// Enforce periodic edge topology along the y edges (i.e., in x axis direction).
-    fn periodic_y_edges(&mut self, x_from: usize, x_to: usize) {
+    /// Enforce periodic edge topology for the x-axis.
+    fn make_axis_periodic_x(&mut self, x_from: usize, x_to: usize) {
         let i_from = self.i_cell(x_from);
         let i_to = self.i_cell(x_to);
         self.lattice[i_to] = self.lattice[i_from];
@@ -100,24 +100,24 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         let n_x = self.n_x;
 
         // Apply left y-edge b.c.
-        if params.edge_boundary_is_unconstrained_y0() {
+        if params.axis_is_unconstrained_x0() {
             // No edge values need be imposed
-        } else if params.edge_boundary_is_pinned_y0() {
-            // println!("Pinning left y edge");
-            self.pinned_y_edge_values(0, self.edge_values_x.1);
+        } else if params.axis_is_pinned_x0() {
+            // println!("Pinning left end");
+            self.pin_axis_ends_x(0, self.end_values_x.1);
         }
 
         // Apply right y-edge b.c.
-        if params.edge_boundary_is_unconstrained_y1() {
+        if params.axis_is_unconstrained_x1() {
             // No edge values need be imposed
-        } else if params.edge_boundary_is_pinned_y1() {
-            // println!("Pinning right y edge");
-            self.pinned_y_edge_values(n_x - 1, self.edge_values_x.1);
+        } else if params.axis_is_pinned_x1() {
+            // println!("Pinning right end");
+            self.pin_axis_ends_x(n_x - 1, self.end_values_x.1);
         }
     }
 
-    /// Enforce constant-value edge b.c. along a y edge.
-    fn pinned_y_edge_values(&mut self, x: usize, pinned_value: <C as CellModel1D>::State) {
+    /// Enforce constant-value edge b.c. at ends.
+    fn pin_axis_ends_x(&mut self, x: usize, pinned_value: <C as CellModel1D>::State) {
         let i_cell = self.i_cell(x);
         self.lattice[i_cell] = pinned_value;
     }
@@ -172,14 +172,10 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
-        let n_rows = 1;
         updated_lattice
             .par_chunks_mut(self.n_x)
-            .enumerate()
             .zip(rngs)
-            // .skip(1)
-            // .take(n_rows)
-            .for_each(|((y, row), rng)| self.update_row(rng, p, y, row));
+            .for_each(|(row, rng)| self.update_row(rng, p, row));
 
         // Only replace the lattice with the updated version once all the rows
         // have been updated.
@@ -193,13 +189,15 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
-    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, y: usize, row: &mut [C::State]) {
+    pub fn update_row<R: Rng>(&self, rng: &mut R, p: f64, row: &mut [C::State]) {
         let i_md = self.i_cell(0);
         let row_span = self.n_x - 2;
         let lattice = &self.lattice;
-        for (cell, md) in row.iter_mut().take(row_span).zip(
-            lattice.split_at(i_md).1.windows(3),
-        ) {
+        for (cell, md) in row
+            .iter_mut()
+            .take(row_span)
+            .zip(lattice.split_at(i_md).1.windows(3))
+        {
             let nbrhood = [md[0], md[1], md[2]];
             let nbrhood = nbrhood.as_array::<3>().unwrap();
             *cell = self.cell_model.update_state(rng, p, nbrhood);
