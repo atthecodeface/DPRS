@@ -14,7 +14,7 @@ __all__ = [
 
 class Parameters: {}
 
-def make_title(parameters: Parameters, i_slice: int | None): 
+def make_title(parameters: Parameters, i_slice: int|None = None): 
     return (
         rf"$p={parameters.p:0.6f}$"
         + rf"   $s={parameters.seed}$"

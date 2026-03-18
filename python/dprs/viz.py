@@ -90,13 +90,49 @@ class Viz:
         fig.set_dpi(dpi_)
         return fig
 
+    def image_lattice_history(
+            self,
+            name: str,
+            title: str,
+            lattices: NDArray|None, 
+            p: sim.Parameters,
+            x: int | None=None, 
+            t: int | None=None,
+            fig_size: tuple[float,float]=(6,4,),
+        ) -> tuple[Figure, Any]:
+        """
+        Plot colorized image of 1d lattice history.
+        """
+        _ = self.create_figure(fig_name=name, fig_size=fig_size,)
+        plt.title(title, fontdict={"fontsize": 11.5})
+        color_map = ListedColormap(((0.9, 0.9, 0.9,), (0.65, 0, 0.65),))
+        x = (lattices.shape[0] if x is None else min(x, lattices.shape[0]))
+        t = (lattices.shape[1] if t is None else min(t, lattices.shape[1]))
+        plt.imshow(
+            lattices[0:x, 0:t, ].T, 
+            vmin=0, vmax=1,
+            cmap=color_map, 
+            # origin="lower",
+        )
+        color_bar = plt.colorbar(
+            ticks=(0.25, 0.75,), 
+            shrink=0.5*(t/x)**0.25, 
+            aspect=15,
+            label="cell state",
+        )
+        color_bar.set_ticklabels((0, 1,),)
+        plt.xlabel(r"$x$")
+        plt.ylabel(r"$t$")
+        plt.grid(ls=":")
+        # plt.close()
+
     def image_lattice(
             self,
             name: str,
             title: str,
-            lattices: NDArray, 
+            lattices: NDArray|None, 
             p: sim.Parameters,
-            i_lattice: int=0, 
+            i_lattice: int | None = 0, 
             x: int | None=None, 
             y: int | None=None,
             fig_size: tuple[float,float]=(6,4,),

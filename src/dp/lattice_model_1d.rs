@@ -172,11 +172,11 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
-        let chunk_length = self.n_x / 10;
+        let chunk_length = self.n_x / 1;
         updated_lattice
             .par_chunks_mut(chunk_length)
             .zip(rngs)
-            .for_each(|(row, rng)| self.update_row(rng, p, row));
+            .for_each(|(chunk, rng)| self.update_row(rng, p, chunk));
 
         self.lattice = updated_lattice;
     }
