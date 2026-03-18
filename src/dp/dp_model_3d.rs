@@ -2,7 +2,10 @@
 // //!
 // //!
 
-use crate::{dp::cell_model_3d::CellModel3D, parameters::DPState};
+use crate::{
+    dp::{Nbrhood3D, cell_model_3d::CellModel3D},
+    parameters::DPState,
+};
 use rand::{Rng, RngExt};
 
 /// DPModel1D implements the CellModel1D trait, plus these.
@@ -37,12 +40,7 @@ impl CellModel3D for DPModel3D {
     /// DP rule: this cell will become occupied if:
     ///  (1) a coin toss with probability p says it *may* be occupied
     ///  (2) if one of the 9 neighborhood + here cells were previously occupied
-    fn update_state<R: Rng>(
-        &self,
-        rng: &mut R,
-        p: f64,
-        nbrhood: &[Self::State; 27],
-    ) -> Self::State {
+    fn update_state<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &Nbrhood3D<Self>) -> Self::State {
         let is_any_nbr_occupied = nbrhood.iter().any(Self::from_state_to_bool);
         let do_survive = rng.random_bool(p);
         let do_activate = is_any_nbr_occupied & do_survive;
