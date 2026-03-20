@@ -1,13 +1,14 @@
 import pathlib
 import sys
 
-this_dir = pathlib.Path(__file__).parent.parent.resolve()
-sys.path.append(this_dir.joinpath("target", "release").__str__())
-sys.path.append(this_dir.joinpath("python").__str__())
-print(sys.path)
-import sim
-
-# from dprs import sim
+try:
+    this_dir = pathlib.Path(__file__).parent.parent.resolve()
+    sys.path.append(this_dir.joinpath("target", "release").__str__())
+    sys.path.append(this_dir.joinpath("python").__str__())
+    print(sys.path)
+    import sim
+except Exception:
+    from dprs import sim
 from dprs.utils import DP
 
 print(f"\n{sim}")
@@ -33,7 +34,7 @@ class Parameters:
     axis_bc_values_y = (DP.OCCUPIED.state, DP.OCCUPIED.state)
     axis_bc_values_z = (DP.OCCUPIED.state, DP.OCCUPIED.state)
     do_edge_buffering: bool = True
-    processing = sim.Processing.Serial
+    processing = sim.Processing.Parallel
     n_threads: int = 16
 
 
