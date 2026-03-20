@@ -76,7 +76,8 @@ pub fn simulation<C: CellModel3D, R: Rng>(
             // NB: this could be shortened by 2 (pad width) but we'll
             // keep it full length for now just in case we need buffer RNGs.
             assert!(params.seed > 0);
-            let mut rngs: Vec<StdRng> = (0..params.n_z)
+            // Allow for edge padding by adding two here
+            let mut rngs: Vec<StdRng> = (0..params.n_z+2)
                 .into_iter()
                 .map(|s| StdRng::seed_from_u64((params.seed * (s + 1)) as u64))
                 .collect();
