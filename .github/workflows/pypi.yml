@@ -14,7 +14,7 @@ name: pypi
 on:
   push:
     branches:
-      - testpypi
+      - pypi
     #   - master
     tags:
       - '*'
