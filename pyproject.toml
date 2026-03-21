@@ -16,8 +16,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
     "Intended Audience :: Science/Research",
     "Operating System :: MacOS",
-    # "Operating System :: POSIX :: Linux",
-    # "Operating System :: Microsoft :: Windows"
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows"
 ]
 authors = [
   {name = 'Colin P. Stark', email = 'cstarkjp@gmail.com'},
