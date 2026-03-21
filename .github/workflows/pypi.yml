@@ -3,7 +3,7 @@
 #
 #    maturin generate-ci github
 #
-name: pypi
+name: PyPI
 
 # on:
 #   release:
@@ -14,7 +14,7 @@ name: pypi
 on:
   push:
     branches:
-      - pypi
+      - PyPI
     #   - master
     tags:
       - '*'
