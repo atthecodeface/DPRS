@@ -9,9 +9,9 @@ name: CI
 # master branch, which will never exist
 on:
   push:
-    branches:
-      # - testpypi
-      - master
+    # branches:
+    #   # - testpypi
+    #   - master
     tags:
       - '*'
   pull_request:
