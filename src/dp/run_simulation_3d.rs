@@ -64,7 +64,6 @@ pub fn run_simulation(
     // Stop the clock
     let duration: f64 = time.elapsed().as_secs_f64();
 
-    // TODO: 3d update needed
     // If needed, remove edge buffering before returning the lattice time-slices.
     let lattices = if params.do_edge_buffering {
         // Step through each of the recorded lattices, pruning off by 'pad'

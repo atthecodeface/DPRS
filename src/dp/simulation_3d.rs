@@ -5,6 +5,8 @@
 use crate::dp::{cell_model_3d, lattice_model_3d};
 use crate::parameters::{Parameters, Processing};
 use cell_model_3d::CellModel3D;
+// use indicatif::ProgressBar;
+// use kdam::tqdm;
 use lattice_model_3d::LatticeModel3D;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
@@ -22,6 +24,9 @@ pub fn simulation<C: CellModel3D, R: Rng>(
     n_iterations: usize,
     sample_rate: usize,
 ) -> (usize, Vec<Vec<<C as CellModel3D>::State>>, Vec<Vec<f64>>) {
+    // Create a progress bar
+    // let mut progress_bar = tqdm!(total = n_iterations+1);
+    // progress_bar.update(1)?;
     // Create a model lattice plus metadata
     let mut lm = lattice_model;
     lm.apply_edge_topology(&params);
@@ -53,6 +58,7 @@ pub fn simulation<C: CellModel3D, R: Rng>(
     match processing {
         Processing::Serial => {
             for i in 1..(n_iterations + 1) {
+                // for i in tqdm!(1..(n_iterations + 1)) {
                 lm.next_iteration_serial(rng, params.p);
                 lm.apply_edge_topology(&params);
                 lm.apply_boundary_conditions(&params);
@@ -75,11 +81,14 @@ pub fn simulation<C: CellModel3D, R: Rng>(
             // keep it full length for now just in case we need buffer RNGs.
             assert!(params.seed > 0);
             // Allow for edge padding by adding two here
-            let mut rngs: Vec<StdRng> = (0..params.n_z+2)
+            let mut rngs: Vec<StdRng> = (0..params.n_z + 2)
                 .into_iter()
                 .map(|s| StdRng::seed_from_u64((params.seed * (s + 1)) as u64))
                 .collect();
+            // let progress_bar = ProgressBar::new((n_iterations + 1).try_into().unwrap());
             for i in 1..(n_iterations + 1) {
+                // progress_bar.inc(1);
+                // for i in tqdm!(1..(n_iterations + 1)) {
                 lm.next_iteration_parallel(&mut rngs, params.p);
                 lm.apply_edge_topology(&params);
                 lm.apply_boundary_conditions(&params);
@@ -91,6 +100,7 @@ pub fn simulation<C: CellModel3D, R: Rng>(
                 let rho_mean = lm.mean();
                 tracking[1].push(rho_mean);
             }
+            // progress_bar.finish_with_message("done");
         }
     };
     assert!(n_lattices == lattices.len());
