@@ -1,6 +1,6 @@
 # Jupyter notebooks
 
-DP model simulations are demonstrated in the following Jupyter notebooks:
+Simplified DP-class Domany-Kinzel model simulations are demonstrated in the following Jupyter notebooks:
 
 - [**1d DP** for a very large lattice and large number of iterations, to validate $t$-decay of $\overline\rho(t)$ ](https://github.com/cstarkjp/DPRS/tree/main/notebooks/dp_1d.ipynb)
 
