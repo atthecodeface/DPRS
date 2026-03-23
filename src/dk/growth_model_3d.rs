@@ -8,11 +8,11 @@ use crate::{
 };
 use rand::{Rng, RngExt};
 
-/// GrowthModel1D implements the CellModel1D trait, plus these.
+/// GrowthModel3D implements the CellModel3D trait, plus these.
 #[derive(Clone, Copy, Default, Debug)]
 pub struct GrowthModel3D();
 
-// Implement CellModel3D trait for GrowthModel.
+// Implement CellModel3D trait for GrowthModel3D.
 impl CellModel3D for GrowthModel3D {
     type State = DualState;
 

@@ -133,8 +133,8 @@ fn test_sim() {
     }
     let (_, lattices, _) = crate::dk::simulation_3d(
         lm,
-        &mut StdRng::seed_from_u64(1),
-        &Processing::Parallel,
+        // &mut StdRng::seed_from_u64(1),
+        Processing::Parallel,
         &parameters,
         parameters.n_iterations,
         parameters.sample_period,

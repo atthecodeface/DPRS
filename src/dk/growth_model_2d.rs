@@ -5,11 +5,11 @@
 use crate::{dk::cell_model_2d::CellModel2D, parameters::DualState};
 use rand::{Rng, RngExt};
 
-/// GrowthModel1D implements the CellModel1D trait, plus these.
+/// GrowthModel2D implements the CellModel2D trait, plus these.
 #[derive(Clone, Copy, Default, Debug)]
 pub struct GrowthModel2D();
 
-// Implement CellModel2D trait for GrowthModel.
+// Implement CellModel2D trait for GrowthModel2D.
 impl CellModel2D for GrowthModel2D {
     type State = DualState;
 
