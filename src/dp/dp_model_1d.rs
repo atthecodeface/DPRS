@@ -37,7 +37,7 @@ impl CellModel1D for DPModel1D {
     /// Simplistic Domany-Kinzel rule: this cell will become occupied if:
     ///  (1) a coin toss with probability p says it *may* be occupied
     ///  (2) if one of the 3 neighborhood + here cells were previously occupied
-    fn dk_update_state<R: Rng>(
+    fn simplistic_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
         p: f64,
