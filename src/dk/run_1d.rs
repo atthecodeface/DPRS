@@ -13,10 +13,8 @@ pub fn run(params: &Parameters) -> (f64, usize, Vec<Vec<DualState>>, Vec<Vec<f64
         .num_threads(params.n_threads)
         .build()
         .unwrap();
-
     // Start the timer
     let time = Instant::now();
-
     // Do the simulation
     let (n_lattices, lattices, tracking) = pool.install(|| simulation(&params));
     // Stop the clock
