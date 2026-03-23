@@ -17,7 +17,7 @@ use rand::{Rng, SeedableRng};
 pub fn simulation<C: CellModel3D, R: Rng>(
     lattice_model: LatticeModel3D<C>,
     rng: &mut R,             /* Should be removed - serial should create its own */
-    processing: &Processing, /* Should not be a reference */
+    processing: Processing,
     params: &Parameters,
     n_iterations: usize,
     sample_period: usize,

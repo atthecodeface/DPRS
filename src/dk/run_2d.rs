@@ -14,7 +14,7 @@ use std::time::Instant;
 /// Run a simulation and record how long the computation takes.
 pub fn run(
     params: &Parameters,
-    processing: &Processing,
+    processing: Processing,
 ) -> (f64, usize, Vec<Vec<DualState>>, Vec<Vec<f64>>) {
     let dp_cell_model = GrowthModel2D::default();
     // Buffer lattice edges

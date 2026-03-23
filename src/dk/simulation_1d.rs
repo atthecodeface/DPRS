@@ -17,7 +17,7 @@ use rand::{Rng, SeedableRng};
 pub fn simulation<C: CellModel1D, R: Rng>(
     lattice_model: LatticeModel1D<C>,
     rng: &mut R,
-    processing: &Processing,
+    processing: Processing,
     params: &Parameters,
     n_iterations: usize,
     sample_period: usize,

@@ -33,12 +33,12 @@ pub fn sim_dk(params: Parameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>,
     params.print();
     println!();
     let (t_run_time, n_lattices, lattices, tracking) = match (&params.processing, &params.dim) {
-        (Processing::Serial, Dimension::D1) => run_1d::run(&params, &Processing::Serial),
-        (Processing::Parallel, Dimension::D1) => run_1d::run(&params, &Processing::Parallel),
-        (Processing::Serial, Dimension::D2) => run_2d::run(&params, &Processing::Serial),
-        (Processing::Parallel, Dimension::D2) => run_2d::run(&params, &Processing::Parallel),
-        (Processing::Serial, Dimension::D3) => run_3d::run(&params, &Processing::Serial),
-        (Processing::Parallel, Dimension::D3) => run_3d::run(&params, &Processing::Parallel),
+        (Processing::Serial, Dimension::D1) => run_1d::run(&params, Processing::Serial),
+        (Processing::Parallel, Dimension::D1) => run_1d::run(&params, Processing::Parallel),
+        (Processing::Serial, Dimension::D2) => run_2d::run(&params, Processing::Serial),
+        (Processing::Parallel, Dimension::D2) => run_2d::run(&params, Processing::Parallel),
+        (Processing::Serial, Dimension::D3) => run_3d::run(&params, Processing::Serial),
+        (Processing::Parallel, Dimension::D3) => run_3d::run(&params, Processing::Parallel),
     };
     match params.processing {
         Processing::Serial => println!(
