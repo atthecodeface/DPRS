@@ -61,7 +61,10 @@ def make_title(parameters: Parameters, i_slice: int|None = None, z_slice: int|No
             else rf"$p={parameters.p:0.6f}$"
         )
         + rf"   $s={parameters.seed}$"
-        + rf"   $n_x={parameters.n_x}$"
+        + (
+            rf"   $n_x={parameters.n_x}$" if parameters.n_x>=10000
+            else rf"   $n_x={parameters.n_x}$"
+        )
         + (
             rf"   $n_y={parameters.n_y}$" if parameters.n_y>1
            else ""

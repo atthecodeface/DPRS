@@ -30,6 +30,7 @@ impl CellModel3D for Model3D {
     }
 }
 
+// Purely used for testing here
 fn value(
     parameters: &Parameters,
     i: usize,
