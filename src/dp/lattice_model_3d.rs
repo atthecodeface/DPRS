@@ -262,7 +262,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
                 let (is_in_bounds, x, y, z) = self.is_in_bounds(i_cell);
                 let updated_cell = if is_in_bounds {
                     let nbrhood = self.cell_nbrhood(x, y, z);
-                    self.cell_model.update_state(&mut rng, p, &nbrhood)
+                    self.cell_model.dk_update_state(&mut rng, p, &nbrhood)
                 } else {
                     C::State::default()
                 };
@@ -356,7 +356,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
             for cell in row.iter_mut().skip(1).take(row_span) {
                 *cell = self
                     .cell_model
-                    .update_state(rng, p, lattice_window.nbrhood());
+                    .dk_update_state(rng, p, lattice_window.nbrhood());
                 if !lattice_window.next() {
                     break;
                 }

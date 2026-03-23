@@ -37,10 +37,15 @@ impl CellModel3D for DPModel3D {
         Self::from_bool_to_state(&b)
     }
 
-    /// DP rule: this cell will become occupied if:
+    /// Simplistic Domany-Kinzel rule: this cell will become occupied if:
     ///  (1) a coin toss with probability p says it *may* be occupied
     ///  (2) if one of the 9 neighborhood + here cells were previously occupied
-    fn update_state<R: Rng>(&self, rng: &mut R, p: f64, nbrhood: &Nbrhood3D<Self>) -> Self::State {
+    fn dk_update_state<R: Rng>(
+        &self,
+        rng: &mut R,
+        p: f64,
+        nbrhood: &Nbrhood3D<Self>,
+    ) -> Self::State {
         let is_any_nbr_occupied = nbrhood.iter().any(Self::from_state_to_bool);
         let do_survive = rng.random_bool(p);
         let do_activate = is_any_nbr_occupied & do_survive;
