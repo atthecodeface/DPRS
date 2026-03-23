@@ -85,7 +85,7 @@ pub fn simulation(parameters: &Parameters) -> (usize, Vec<Vec<DualState>>, Vec<V
         Processing::Parallel => {
             // Create a vector of RNGs of length n_y,
             // i.e., of length = number of lattice rows,
-            // each seeded by params.random_seed + their index.
+            // each seeded by parameters.random_seed + their index.
             // Each RNG element of this vec will be used,
             // one per row, to generate coin tosses for DP cell updates.
             // NB: this could be shortened by 2 (pad width) but we'll
