@@ -6,7 +6,7 @@ use rand::Rng;
 
 use super::Nbrhood3D;
 
-/// The trait required for a model to run in 2D.
+/// The trait required for a model to run in 3D.
 ///
 /// This must be [Sync] as the model can be accessed by
 /// different threads at the same time in the parallel working.

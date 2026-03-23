@@ -5,17 +5,15 @@
 use crate::dk::{cell_model_3d, lattice_model_3d};
 use crate::parameters::{Parameters, Processing};
 use cell_model_3d::CellModel3D;
-// use indicatif::ProgressBar;
-// use kdam::tqdm;
 use lattice_model_3d::LatticeModel3D;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 
-/// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel
+/// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
 ///
 /// Returns the number of lattices sampled, the sampled lattices, and tracking
 /// which is a Vec with first entry a vec of iteration numbers and the second
-/// entry a vec of mean density for the respective iteration
+/// entry a vec of mean density for the respective iteration.
 pub fn simulation<C: CellModel3D, R: Rng>(
     lattice_model: LatticeModel3D<C>,
     rng: &mut R,             /* Should be removed - serial should create its own */

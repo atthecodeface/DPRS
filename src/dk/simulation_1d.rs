@@ -9,7 +9,11 @@ use lattice_model_1d::LatticeModel1D;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 
-/// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel
+/// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
+///
+/// Returns the number of lattices sampled, the sampled lattices, and tracking
+/// which is a Vec with first entry a vec of iteration numbers and the second
+/// entry a vec of mean density for the respective iteration.
 pub fn simulation<C: CellModel1D, R: Rng>(
     lattice_model: LatticeModel1D<C>,
     rng: &mut R,
