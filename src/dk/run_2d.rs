@@ -50,7 +50,6 @@ pub fn run(
     let (n_lattices, lattices, tracking) = pool.install(|| {
         simulation(
             lattice_model_2d,
-            &mut rng,
             processing,
             &params,
             params.n_iterations,

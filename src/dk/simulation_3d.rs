@@ -6,17 +6,16 @@ use crate::dk::{cell_model_3d, lattice_model_3d};
 use crate::parameters::{Parameters, Processing};
 use cell_model_3d::CellModel3D;
 use lattice_model_3d::LatticeModel3D;
+use rand::SeedableRng;
 use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
 
 /// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
 ///
 /// Returns the number of lattices sampled, the sampled lattices, and tracking
 /// which is a Vec with first entry a vec of iteration numbers and the second
 /// entry a vec of mean density for the respective iteration.
-pub fn simulation<C: CellModel3D, R: Rng>(
+pub fn simulation<C: CellModel3D>(
     lattice_model: LatticeModel3D<C>,
-    rng: &mut R,             /* Should be removed - serial should create its own */
     processing: Processing,
     params: &Parameters,
     n_iterations: usize,
@@ -27,6 +26,8 @@ pub fn simulation<C: CellModel3D, R: Rng>(
     // progress_bar.update(1)?;
     // Create a model lattice plus metadata
     let mut lm = lattice_model;
+    let mut rng = StdRng::seed_from_u64(params.seed as u64);
+    lm.randomized_lattice(&mut rng, params.p0);
     lm.apply_edge_topology(&params);
     lm.apply_boundary_conditions(&params);
 
@@ -60,7 +61,7 @@ pub fn simulation<C: CellModel3D, R: Rng>(
         Processing::Serial => {
             for i in 1..(n_iterations + 1) {
                 // for i in tqdm!(1..(n_iterations + 1)) {
-                lm.next_iteration_serial(rng, params.p);
+                lm.next_iteration_serial(&mut rng, params.p);
                 lm.apply_edge_topology(&params);
                 lm.apply_boundary_conditions(&params);
                 if sample_period > 0 && i % sample_period == 0 {
