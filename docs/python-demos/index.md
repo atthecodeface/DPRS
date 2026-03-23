@@ -1,5 +1,6 @@
 # Python demos
 
+Simplified DP-class Domany-Kinzel model simulations are demonstrated in the Python scripts below.
 
 ![2d DP $t$-decay of mean order parameter $\overline\rho(t)$, for $p_c \approx p=0.163145$, $n_x=30000$, $n_y=30000$, $t=50000$](../images/ρmean_p0p163145_s1_nx30000_ny30000.png){width=500}
 
