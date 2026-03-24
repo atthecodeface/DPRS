@@ -16,27 +16,8 @@ pub struct GrowthModel3D();
 impl CellModel3D for GrowthModel3D {
     type State = DualState;
 
-    fn empty_state() -> Self::State {
-        DualState::Occupied
-    }
-
-    fn occupied_state() -> Self::State {
-        DualState::Occupied
-    }
-
-    fn from_bool_to_state(b: &bool) -> Self::State {
-        match b {
-            false => DualState::Empty,
-            true => DualState::Occupied,
-        }
-    }
-
-    fn from_state_to_bool(state: &Self::State) -> bool {
-        match state {
-            DualState::Empty => false,
-            DualState::Occupied => true,
-        }
-    }
+    const EMPTY: DualState = DualState::Empty;
+    const OCCUPIED: DualState = DualState::Occupied;
 
     // Sample Bernoulli distribution with probability p to randomize cell state.
     fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64) -> Self::State {
