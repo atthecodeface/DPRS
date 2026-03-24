@@ -28,10 +28,11 @@ impl CellModel3D for GrowthModel3D {
         p: f64,
         nbrhood: &Nbrhood3D<Self>,
     ) -> Self::State {
-        let is_any_nbr_occupied = nbrhood.is_any_occupied();
         let do_survive = rng.random_bool(p);
-        let do_activate = is_any_nbr_occupied & do_survive;
-
-        do_activate.into()
+        if do_survive {
+            nbrhood.is_any_occupied().into()
+        } else {
+            Self::EMPTY
+        }
     }
 }
