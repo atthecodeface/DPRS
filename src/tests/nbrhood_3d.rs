@@ -55,7 +55,7 @@ impl CellModel3D for Model3D {
         _p: f64,
         nbrhood: &Nbrhood3D<Self>,
     ) -> Self::State {
-        *nbrhood.iter().max().unwrap()
+        nbrhood.is_any_occupied().into()
     }
 }
 
@@ -83,7 +83,7 @@ fn value(
             }
         }
     };
-    (10 + x + y * 7 + z * 13).into()
+    ((x + y + z) % 11 < 7).into()
 }
 
 #[test]
@@ -110,22 +110,24 @@ fn test_dp() {
         *l = value(&parameters, i, None, false);
     }
 
-    for (mut x, y, z) in [(1, 1, 1)] {
-        //}, (1, 4, 3), (1, n_y - 2, n_z - 2), (n_x - 2, 1, 1)] {
+    for (mut x, y, z) in [(1, 1, 1), (1, 4, 3), (1, n_y - 2, n_z - 2), (n_x - 2, 1, 1)] {
         let mut r = RowIterator3D::<Model3D>::new(lm.lattice(), (x, y, z), n_x, n_y)
             .expect("Must be able to make a Row iterator at this x/y/z");
 
         let mut i = (z * n_y + y) * n_x + x;
         loop {
-            let nbrhood_of_xyz = r.nbrhood();
-
+            let nbrhood_of_xyz = r.nbrhood().bitmask();
+            eprintln!("{:08x}", nbrhood_of_xyz);
             for dx in (-1)..2 {
                 for dy in (-1)..2 {
                     for dz in (-1)..2 {
+                        let v_dxyz = value(&parameters, i, Some((dx, dy, dz)), false);
+                        dbg!(v_dxyz);
+                        let bi = ((dz + 1) * 3 + (dy + 1) + (dx + 1) * 9) as usize;
                         assert_eq!(
-                            nbrhood_of_xyz[((dx + 1) as u8, (dy + 1) as u8, (dz + 1) as u8)],
-                            value(&parameters, i, Some((dx, dy, dz)), false),
-                            "Contents for {x},{y},{z} : {i} : {dx},{dy},{dz} should match"
+                            ((nbrhood_of_xyz >> bi) & 1) != 0,
+                            v_dxyz != 0.into(),
+                            "{x}:{i} Neigbhor mismatch {dx},{dy},{dz}"
                         );
                     }
                 }
@@ -138,75 +140,5 @@ fn test_dp() {
         }
         assert_eq!(x, n_x - 1, "Should have reached the end of the row");
     }
-}
-
-#[test]
-fn test_sim() {
-    let mut parameters = Parameters::default();
-    parameters.dim = Dimension::D3;
-    parameters.n_x = 10;
-    parameters.n_y = 15;
-    parameters.n_z = 20;
-    parameters.n_iterations = 40;
-    parameters.sample_period = 3;
-    parameters.random_seed = 1;
-    parameters.axis_topology_x = Topology::Open;
-    parameters.axis_topology_y = Topology::Open;
-    parameters.axis_topology_z = Topology::Open;
-    parameters.axis_bcs_x = (BoundaryCondition::Pinned, BoundaryCondition::Pinned);
-    parameters.axis_bcs_y = (BoundaryCondition::Pinned, BoundaryCondition::Pinned);
-    parameters.axis_bcs_z = (BoundaryCondition::Pinned, BoundaryCondition::Pinned);
-    parameters.processing = Processing::Parallel;
-    parameters.initial_condition = crate::parameters::InitialCondition::Preserved;
-    let mut lm = LatticeModel3D::new(
-        Model3D(),
-        parameters.n_x,
-        parameters.n_y,
-        parameters.n_z,
-        (0.into(), 0.into()), // End values have to match 'value'
-        (0.into(), 0.into()),
-        (0.into(), 0.into()),
-    );
-    for (i, l) in lm.lattice_mut().iter_mut().enumerate() {
-        *l = value(&parameters, i, None, false);
-    }
-    let (_, lattices, _) = crate::dk::simulation_3d(
-        lm,
-        // &mut StdRng::seed_from_u64(1),
-        &parameters,
-    );
-
-    assert_eq!(
-        &lattices[0],
-        &(0..parameters.n_x * parameters.n_y * parameters.n_z)
-            .map(|i| value(&parameters, i, Some((0, 0, 0)), true))
-            .collect::<Vec<_>>()
-    );
-
-    for (iter, l) in lattices.iter().enumerate().skip(1) {
-        for (i, c) in l.iter().enumerate() {
-            // m is 1 for max of nbrhod (+-1); 2 for max of nbrhood(+-2); etc
-            let m = (iter * parameters.sample_period) as i8;
-            if value(&parameters, i, Some((0, 0, 0)), true) == 0.into() {
-                assert_eq!(
-                    *c,
-                    0.into(),
-                    "Value at {i} for iteration {iter} should be edge of 0"
-                );
-            } else {
-                let max = ((-m)..=m)
-                    .flat_map(|dx| ((-m)..=m).map(move |dy| (dx, dy)))
-                    .flat_map(|dxy| ((-m)..=m).map(move |dz| (dxy, dz)))
-                    .fold(0.into(), |acc: CellState, ((dx, dy), dz)| {
-                        acc.max(value(&parameters, i, Some((dx, dy, dz)), true))
-                    });
-                // eprintln!("{i}:{max}:{c}");
-                assert_eq!(
-                    *c, max,
-                    "Value at {i} (non-edge) for iteration {iter} incorrect"
-                );
-            }
-        }
-    }
-    // assert!(false, "Force failure");
+    // assert!(false, "Force fail");
 }

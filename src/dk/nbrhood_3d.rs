@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use super::CellModel3D;
 
 /// The 3-by-3-by-3 neighbourhood around a cell
@@ -26,20 +28,17 @@ use super::CellModel3D;
 ///
 #[derive(Debug, Clone)]
 pub struct Nbrhood3D<C: CellModel3D + ?Sized> {
-    nbrhood: [C::State; 27],
+    cells_ne: u32,
+    phantom: PhantomData<C::State>,
 }
 
 impl<C: CellModel3D + ?Sized> std::default::Default for Nbrhood3D<C> {
     fn default() -> Self {
-        let nbrhood = [C::State::default(); 27];
-        Self { nbrhood }
-    }
-}
-
-impl<C: CellModel3D + ?Sized> std::ops::Index<(u8, u8, u8)> for Nbrhood3D<C> {
-    type Output = C::State;
-    fn index(&self, (x, y, z): (u8, u8, u8)) -> &Self::Output {
-        &self.nbrhood[(x * 9 + y + z * 3) as usize]
+        let cells_ne = 0;
+        Self {
+            cells_ne,
+            phantom: PhantomData,
+        }
     }
 }
 
@@ -68,16 +67,19 @@ impl<C: CellModel3D + ?Sized> Nbrhood3D<C> {
     ) {
         assert!(X_OFS < 3, "The Nbrhood3D has dimensions of 3 by 3 by 3");
         let lattice_window = &lattice_window[X_OFS..];
-        for (nbrhood_z, layer_z) in self.nbrhood[X_OFS * 9..]
-            .chunks_exact_mut(3)
-            .take(3)
-            .zip(lattice_window.chunks(n_x * n_y))
-        {
-            // for y in -1 to +1... in essence
-            nbrhood_z[0] = layer_z[0];
-            nbrhood_z[1] = layer_z[n_x];
-            nbrhood_z[2] = layer_z[n_x * 2];
+        let mut layer_ne = 0;
+        for (z, layer_z) in lattice_window.chunks(n_x * n_y).take(3).enumerate() {
+            if layer_z[0].into() {
+                layer_ne |= 1 << (3 * z);
+            }
+            if layer_z[n_x].into() {
+                layer_ne |= 1 << (3 * z + 1);
+            }
+            if layer_z[n_x * 2].into() {
+                layer_ne |= 1 << (3 * z + 2);
+            }
         }
+        self.cells_ne |= layer_ne << (X_OFS * 9);
     }
 
     /// Shift the current neighborhood down by one 'X', and load the X=2 offset
@@ -85,18 +87,18 @@ impl<C: CellModel3D + ?Sized> Nbrhood3D<C> {
     /// given the current neighborhood is at (x,y.z) and the lattice_window
     /// provided is *for* (x+1,y,z) - i.e. starts at (x,y-1,z-1)
     pub fn shift_slice(&mut self, lattice_window: &[C::State], n_x: usize, n_y: usize) {
-        self.nbrhood.copy_within(9.., 0);
+        self.cells_ne = self.cells_ne >> 9;
         self.fill_slice::<2>(lattice_window, n_x, n_y);
-    }
-
-    /// Iterate through the neighborhood
-    pub fn iter(&self) -> impl ExactSizeIterator<Item = &C::State> {
-        self.nbrhood.iter()
     }
 
     /// Return true if any of the neighborhood is occupied
     pub fn is_any_occupied(&self) -> bool {
-        self.nbrhood.iter().any(|s| (*s).into())
+        self.cells_ne != 0
+    }
+
+    /// Return the bitmask of 'occupied' neigbhors (y, z, x as minor, middle and major)
+    pub fn bitmask(&self) -> u32 {
+        self.cells_ne
     }
 }
 
@@ -137,10 +139,6 @@ impl<'a, C: CellModel3D> RowIterator3D<'a, C> {
             window_start + window_size <= lattice.len(),
             "XYZ must be in the correct range, so the window does not extend beyond the lattice"
         );
-        // eprintln!(
-        //            "Window at {xyz:?} given n_x:{n_x} n_y:{n_y}:{} is @{window_start}+{window_size}",
-        //            lattice.len()
-        //        );
         let mut row_iter = lattice
             .split_at(window_start)
             .1
