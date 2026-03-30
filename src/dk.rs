@@ -24,16 +24,18 @@ mod simulation_3d;
 pub use cell_model_3d::CellModel3D;
 pub use lattice_model_3d::LatticeModel3D;
 pub use nbrhood_3d::{Nbrhood3D, RowIterator3D};
-pub use simulation_3d::simulation as simulation_3d;
+pub use run_1d::Run1D;
 
-use crate::parameters::{Dimension, DualState, Parameters, Processing};
+use crate::parameters::{Dimension, DualState, Parameters, Processing, SimParameters};
 
 /// Entry point to this module.
 pub fn sim_dk(parameters: Parameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
-    parameters.print();
+    let sim_parameters = SimParameters::fill(&parameters);
+    sim_parameters.print();
     println!();
+    let run_1d = Run1D::new(sim_parameters);
     let (t_run_time, n_lattices, lattices, tracking) = match &parameters.dim {
-        Dimension::D1 => run_1d::run(&parameters),
+        Dimension::D1 => run_1d.run(),
         Dimension::D2 => run_2d::run(&parameters),
         Dimension::D3 => run_3d::run(&parameters),
     };
