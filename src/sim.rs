@@ -19,14 +19,14 @@ mod sim {
     use crate::parameters::GrowthModel;
     #[pymodule_export]
     use crate::parameters::InitialCondition;
-    use crate::parameters::Parameters;
     #[pymodule_export]
     use crate::parameters::Processing;
+    use crate::parameters::PyParameters;
     #[pymodule_export]
     use crate::parameters::Topology;
 
     #[pyfunction]
-    fn dk(params: Parameters) -> PyResult<(usize, Vec<Vec<bool>>, Vec<Vec<f64>>, f64)> {
+    fn dk(params: PyParameters) -> PyResult<(usize, Vec<Vec<bool>>, Vec<Vec<f64>>, f64)> {
         let (n_lattices, lattices, tracking, t_run_time) = sim_dk(params);
         // Translation layer between DualState and bool lattice cell types.
         let mut bool_lattices: Vec<Vec<bool>> = Vec::new();

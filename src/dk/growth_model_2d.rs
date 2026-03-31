@@ -6,8 +6,26 @@ use crate::{dk::cell_model_2d::CellModel2D, parameters::DualState};
 use rand::{Rng, RngExt};
 
 /// GrowthModel2D implements the CellModel2D trait, plus these.
-#[derive(Clone, Copy, Default, Debug)]
-pub struct GrowthModel2D();
+#[derive(Clone, Copy, Debug)]
+pub struct GrowthModel2D {
+    pub p_1: f64,
+    #[allow(dead_code)]
+    pub p_2: f64,
+    pub p_initial: f64,
+    #[allow(dead_code)]
+    pub iteration: usize,
+}
+
+impl GrowthModel2D {
+    pub fn new(p_1: f64, p_2: f64, p_initial: f64, iteration: usize) -> Self {
+        Self {
+            p_1,
+            p_2,
+            p_initial,
+            iteration,
+        }
+    }
+}
 
 // Implement CellModel2D trait for GrowthModel2D.
 impl CellModel2D for GrowthModel2D {
@@ -15,11 +33,15 @@ impl CellModel2D for GrowthModel2D {
     const EMPTY: DualState = DualState::Empty;
     const OCCUPIED: DualState = DualState::Occupied;
 
+    /// Sample Bernoulli distribution with probability p to randomize cell state.
+    fn randomize_initial_state<R: Rng>(&self, rng: &mut R) -> Self::State {
+        rng.random_bool(self.p_initial).into()
+    }
+
     /// Adapted Domany-Kinzel rule: this cell will become occupied if...
     fn adapted_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        p: f64,
         nbrhood: &[Self::State; 9],
     ) -> Self::State {
         let n_neighbors: usize = nbrhood
@@ -28,10 +50,10 @@ impl CellModel2D for GrowthModel2D {
             .into_iter()
             .sum();
         let has_nearest_neighbor: bool = nbrhood[4].into();
-        let p1 = p;
-        let p2 = p / 3.;
-        let do_survive = (n_neighbors > 0 && rng.random_bool(p1))
-            | (has_nearest_neighbor && n_neighbors > 1 && rng.random_bool(p2));
+        let p_1 = self.p_1;
+        let p_2 = p_1 / 3.;
+        let do_survive = (n_neighbors > 0 && rng.random_bool(p_1))
+            | (has_nearest_neighbor && n_neighbors > 1 && rng.random_bool(p_2));
 
         do_survive.into()
     }
@@ -42,9 +64,9 @@ impl CellModel2D for GrowthModel2D {
     fn simplistic_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        p: f64,
         nbrhood: &[Self::State; 9],
     ) -> Self::State {
+        let p = self.p_1;
         let is_any_nbr_occupied = nbrhood.iter().any(|s| (*s).into());
         let do_survive = is_any_nbr_occupied & rng.random_bool(p);
 

@@ -24,20 +24,31 @@ mod simulation_3d;
 pub use cell_model_3d::CellModel3D;
 pub use lattice_model_3d::LatticeModel3D;
 pub use nbrhood_3d::{Nbrhood3D, RowIterator3D};
-pub use simulation_3d::simulation as simulation_3d;
+pub use run_1d::Run1D;
+pub use run_2d::Run2D;
+pub use run_3d::Run3D;
 
-use crate::parameters::{Dimension, DualState, Parameters, Processing};
+use crate::parameters::{Dimension, DualState, Processing, PyParameters, SimParameters};
 
 /// Entry point to this module.
-pub fn sim_dk(parameters: Parameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
-    parameters.print();
-    println!();
-    let (t_run_time, n_lattices, lattices, tracking) = match &parameters.dim {
-        Dimension::D1 => run_1d::run(&parameters),
-        Dimension::D2 => run_2d::run(&parameters),
-        Dimension::D3 => run_3d::run(&parameters),
+pub fn sim_dk(py_parameters: PyParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
+    let sim_parameters = SimParameters::fill(&py_parameters);
+    sim_parameters.print();
+    let (t_run_time, n_lattices, lattices, tracking) = match &py_parameters.dim {
+        Dimension::D1 => {
+            let run_1d = Run1D::new(sim_parameters);
+            run_1d.run()
+        }
+        Dimension::D2 => {
+            let run_2d = Run2D::new(sim_parameters);
+            run_2d.run()
+        }
+        Dimension::D3 => {
+            let run_3d = Run3D::new(sim_parameters);
+            run_3d.run()
+        }
     };
-    match parameters.processing {
+    match py_parameters.processing {
         Processing::Serial => println!(
             "Simulation run time (serial processing): {:4.3}s",
             t_run_time

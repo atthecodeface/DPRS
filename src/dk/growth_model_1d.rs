@@ -6,7 +6,7 @@ use crate::{dk::cell_model_1d::CellModel1D, parameters::DualState};
 use rand::{Rng, RngExt};
 
 /// GrowthModel1D implements the CellModel1D trait, plus these.
-#[derive(Clone, Copy, Default, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct GrowthModel1D {
     pub p_1: f64,
     #[allow(dead_code)]
@@ -73,7 +73,6 @@ impl CellModel1D for GrowthModel1D {
     fn simplistic_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        // p: f64,
         nbrhood: &[Self::State; 3],
     ) -> Self::State {
         let p = self.p_1;

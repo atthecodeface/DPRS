@@ -26,7 +26,7 @@ pub trait CellModel1D: Sync {
         (*state).into() as usize
     }
 
-    /// Sample Bernoulli distribution with probability p to randomize cell state.
+    /// Sample Bernoulli distribution to randomize cell state.
     fn randomize_initial_state<R: Rng>(&self, rng: &mut R) -> Self::State;
 
     #[allow(dead_code)]

@@ -4,18 +4,15 @@
 
 use super::growth_model_1d::GrowthModel1D;
 use crate::dk::lattice_model_1d;
-use crate::parameters::DualState;
-use crate::parameters::{InitialCondition, Parameters, Processing};
+use crate::parameters::{DualState, InitialCondition, Processing, SimParameters};
 use lattice_model_1d::LatticeModel1D;
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 
-/// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
-///
 /// Returns the number of lattices sampled, the sampled lattices, and tracking
 /// which is a Vec with first entry a vec of iteration numbers and the second
 /// entry a vec of mean density for the respective iteration.
-pub fn simulation(parameters: &Parameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>) {
+pub fn simulation(parameters: &SimParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>) {
     let pad: usize = match parameters.do_edge_buffering {
         true => 1,
         false => 0,
@@ -23,9 +20,10 @@ pub fn simulation(parameters: &Parameters) -> (usize, Vec<Vec<DualState>>, Vec<V
     let pruned_n_x = parameters.n_x;
     let n_x: usize = pruned_n_x + pad * 2;
 
-    // Growth model and parameters
+    // Growth model and its parameters
     let mut growth_model =
         GrowthModel1D::new(parameters.p_1, parameters.p_2, parameters.p_initial, 0);
+    // Lattice model and its parameters
     let mut lm = LatticeModel1D::new(
         growth_model,
         n_x,
@@ -85,7 +83,7 @@ pub fn simulation(parameters: &Parameters) -> (usize, Vec<Vec<DualState>>, Vec<V
                 lm.next_iteration_serial(&mut rng);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                if sample_period > 0 && i % sample_period == 0 {
+                if sample_period > 0 && i.is_multiple_of(sample_period) {
                     lattices.push(lm.lattice().clone());
                 };
                 let t = i as f64;
@@ -113,7 +111,7 @@ pub fn simulation(parameters: &Parameters) -> (usize, Vec<Vec<DualState>>, Vec<V
                 lm.next_iteration_parallel(&mut rngs);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                if sample_period > 0 && i % sample_period == 0 {
+                if sample_period > 0 && i.is_multiple_of(sample_period) {
                     lattices.push(lm.lattice().clone());
                 };
                 let t = i as f64;
