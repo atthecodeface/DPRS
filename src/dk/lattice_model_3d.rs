@@ -295,15 +295,14 @@ impl<C: CellModel3D> LatticeModel3D<C> {
         self.lattice = (0..self.n_cells())
             .map(|i_cell| {
                 let (is_in_bounds, x, y, z) = self.is_in_bounds(i_cell);
-                let updated_cell = if is_in_bounds {
+
+                if is_in_bounds {
                     let nbrhood = self.cell_nbrhood(x, y, z);
                     self.cell_model
                         .simplistic_dk_update_state(&mut rng, &nbrhood)
                 } else {
                     C::State::default()
-                };
-
-                updated_cell
+                }
             })
             .collect();
     }
