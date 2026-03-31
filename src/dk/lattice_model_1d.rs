@@ -67,21 +67,11 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         (self.cell_model, self.lattice)
     }
 
-    /// Count the total number of cells in the grid.
-    fn n_cells(&self) -> usize {
-        self.n_x
-    }
-
     /// Compute the mean cell occupancy
     pub fn mean(&self) -> f64 {
         let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
 
-        (total as f64) / (self.n_cells() as f64)
-    }
-
-    /// Compute the cell index of a given (x, y) coordinate.
-    fn i_cell(&self, x: usize) -> usize {
-        x
+        (total as f64) / (self.n_x as f64)
     }
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
@@ -163,13 +153,14 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     /// TODO: Does it make sense to pass the probability p like this?
     /// Wouldn't it be better to set it on the model struct?
     pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
-        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
         // Split the lattice into n_y rows each of length n_x and
         // update these rows in parallel using par_chunks_mut().
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
+        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
         let chunk_length = self.n_x;
+        let num_chunks = (self.n_x + chunk_length - 1) / self.n_x;
         updated_lattice
             .par_chunks_mut(chunk_length)
             .zip(rngs)
