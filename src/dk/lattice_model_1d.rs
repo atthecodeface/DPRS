@@ -114,7 +114,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial<R: Rng>(&mut self, rng: &mut R) {
         let mut updated_lattice = vec![C::State::default(); self.n_x];
-        self.update_row(rng, &mut updated_lattice, 0, true, true);
+        self.update_portion_of_row(rng, &mut updated_lattice, 0, true, true);
         self.lattice = updated_lattice;
     }
 
@@ -135,18 +135,36 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             .zip(rngs)
             .enumerate()
             .for_each(|(i, (chunk, rng))| {
-                self.update_row(rng, chunk, i * chunk_length, i == 0, i + 1 == num_chunks)
+                self.update_portion_of_row(
+                    rng,
+                    chunk,
+                    i * chunk_length,
+                    i == 0,
+                    i + 1 == num_chunks,
+                )
             });
         self.lattice = updated_lattice;
     }
 
-    /// Update a row of cells.
+    /// Update a *portion* of a row of cells.
     ///
     /// This zips across the row using 3-cell windows centred on each cell.
     ///
-    /// By using iterators we can guarantee safe access without (unnecessary)
-    /// range checks.
-    pub fn update_row<R: Rng>(
+    /// The row should be a portion of a *new* lattice.
+    ///
+    /// * If 'skip_left' is true then the *first* cell in the row will *NOT* be updated.
+    ///
+    /// * If 'skip_right' is true then the *last* cell in the row will *NOT* be updated.
+    ///
+    /// The lattice_offset should correspond to the offset from the start of the
+    /// lattice that *row* begins at. To use the neighborhood (one left, one
+    /// right) of the row the lattice cells corresponding to the row are
+    /// required; this will be lattice_offset-1 to lattice_offset+1+row_len()
+    ///
+    /// Since lattice_offset-1 is invalid at the start of a row, 'skip_left'
+    /// enables the actual iteration to take place *just* on the contents of the
+    /// lattice (hence not requiring buffer underflow...)
+    pub fn update_portion_of_row<R: Rng>(
         &self,
         rng: &mut R,
         row: &mut [C::State],
