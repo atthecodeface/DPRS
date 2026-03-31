@@ -1,4 +1,4 @@
-use rand::{Rng, RngExt};
+use rand::Rng;
 
 use super::Nbrhood3D;
 
@@ -28,15 +28,12 @@ pub trait CellModel3D: Sync {
         (*state).into() as usize
     }
 
-    /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_initial_state<R: Rng>(&self, rng: &mut R, p: f64) -> Self::State {
-        rng.random_bool(p).into()
-    }
+    /// Sample Bernoulli distribution to randomize cell state.
+    fn randomize_initial_state<R: Rng>(&self, rng: &mut R) -> Self::State;
 
     fn simplistic_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        p: f64,
         nbrhood: &Nbrhood3D<Self>,
     ) -> Self::State;
 }
