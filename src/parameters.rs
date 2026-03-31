@@ -152,7 +152,7 @@ pub struct PyParameters {
     pub n_threads: usize,
 }
 
-/// Mirror parameter bundle.
+/// Mirror Python-side parameter bundle.
 #[derive(Debug, Clone, Default)]
 pub struct SimParameters {
     pub growth_model: GrowthModel,

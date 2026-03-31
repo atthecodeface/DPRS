@@ -99,7 +99,7 @@ pub fn simulation(parameters: &SimParameters) -> (usize, Vec<Vec<DualState>>, Ve
                 lm.next_iteration_serial(&mut rng);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                if sample_period > 0 && i % sample_period == 0 {
+                if sample_period > 0 && i.is_multiple_of(sample_period) {
                     lattices.push(lm.lattice().clone());
                 };
                 let t = i as f64;
@@ -130,7 +130,7 @@ pub fn simulation(parameters: &SimParameters) -> (usize, Vec<Vec<DualState>>, Ve
                 lm.next_iteration_parallel(&mut rngs);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                if sample_period > 0 && (i % sample_period) == 0 {
+                if sample_period > 0 && i.is_multiple_of(sample_period) {
                     lattices.push(lm.lattice().clone());
                 };
                 let t = i as f64;
