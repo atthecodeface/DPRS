@@ -139,24 +139,21 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     /// Enforce edge topology specifications.
     pub fn apply_edge_topology(&mut self) {
         // Apply x_axis termini topology
-        if self.x_axis_topology_is_periodic() {
-            let n_x = self.n_x;
-            self.make_axis_periodic_x(n_x - 2, 0);
-            self.make_axis_periodic_x(1, n_x - 1);
+        if self.axis_topology_x.is_periodic() {
+            self.make_axis_periodic_x(self.n_x - 2, 0);
+            self.make_axis_periodic_x(1, self.n_x - 1);
         }
 
         // Apply y_axis termini topology
-        if self.y_axis_topology_is_periodic() {
-            let n_y = self.n_y;
-            self.make_axis_periodic_y(n_y - 2, 0);
-            self.make_axis_periodic_y(1, n_y - 1);
+        if self.axis_topology_y.is_periodic() {
+            self.make_axis_periodic_y(self.n_y - 2, 0);
+            self.make_axis_periodic_y(1, self.n_y - 1);
         }
 
         // Apply z_axis termini topology
-        if self.z_axis_topology_is_periodic() {
-            let n_z = self.n_z;
-            self.make_axis_periodic_z(n_z - 2, 0);
-            self.make_axis_periodic_z(1, n_z - 1);
+        if self.axis_topology_z.is_periodic() {
+            self.make_axis_periodic_z(self.n_z - 2, 0);
+            self.make_axis_periodic_z(1, self.n_z - 1);
         }
     }
 
@@ -206,49 +203,49 @@ impl<C: CellModel3D> LatticeModel3D<C> {
         let n_z = self.n_z;
 
         // Apply left yz-edge b.c.
-        if self.axis_is_unconstrained_x0() {
+        if self.axis_bcs_x.0.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_x0() {
+        } else if self.axis_bcs_x.0.is_pinned() {
             // println!("Pinning left yz edge");
             self.pin_axis_ends_x(0, self.end_values_x.0);
         }
 
         // Apply right yz-edge b.c.
-        if self.axis_is_unconstrained_x1() {
+        if self.axis_bcs_x.1.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_x1() {
+        } else if self.axis_bcs_x.1.is_pinned() {
             // println!("Pinning right yz edge");
             self.pin_axis_ends_x(n_x - 1, self.end_values_x.1);
         }
 
         // Apply bottom xz-edge b.c.
-        if self.axis_is_unconstrained_y0() {
+        if self.axis_bcs_y.0.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_y0() {
+        } else if self.axis_bcs_y.0.is_pinned() {
             // println!("Pinning bottom xz edge");
             self.pin_axis_ends_y(0, self.end_values_y.0);
         }
 
         // Apply top xz-edge b.c.
-        if self.axis_is_unconstrained_y1() {
+        if self.axis_bcs_y.1.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_y1() {
+        } else if self.axis_bcs_y.1.is_pinned() {
             // println!("Pinning top xz edge");
             self.pin_axis_ends_y(n_y - 1, self.end_values_y.1);
         }
 
         // Apply bottom xy-edge b.c.
-        if self.axis_is_unconstrained_z0() {
+        if self.axis_bcs_z.0.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_z0() {
+        } else if self.axis_bcs_z.0.is_pinned() {
             // println!("Pinning bottom xy edge");
             self.pin_axis_ends_z(0, self.end_values_z.0);
         }
 
         // Apply top xy-edge b.c.
-        if self.axis_is_unconstrained_z1() {
+        if self.axis_bcs_z.1.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_z1() {
+        } else if self.axis_bcs_z.1.is_pinned() {
             // println!("Pinning top xy edge");
             self.pin_axis_ends_z(n_z - 1, self.end_values_z.1);
         }
@@ -398,83 +395,5 @@ impl<C: CellModel3D> LatticeModel3D<C> {
                 }
             }
         }
-    }
-
-    fn x_axis_topology_is_periodic(&self) -> bool {
-        matches![self.axis_topology_x, Topology::Periodic]
-    }
-
-    fn y_axis_topology_is_periodic(&self) -> bool {
-        matches![self.axis_topology_y, Topology::Periodic]
-    }
-
-    fn z_axis_topology_is_periodic(&self) -> bool {
-        matches![self.axis_topology_z, Topology::Periodic]
-    }
-
-    fn axis_is_unconstrained_x0(&self) -> bool {
-        matches![
-            self.axis_bcs_x.0,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_unconstrained_x1(&self) -> bool {
-        matches![
-            self.axis_bcs_x.1,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_unconstrained_y0(&self) -> bool {
-        matches![
-            self.axis_bcs_y.0,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_unconstrained_y1(&self) -> bool {
-        matches![
-            self.axis_bcs_y.1,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_unconstrained_z0(&self) -> bool {
-        matches![
-            self.axis_bcs_z.0,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_unconstrained_z1(&self) -> bool {
-        matches![
-            self.axis_bcs_z.1,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_pinned_x0(&self) -> bool {
-        matches![self.axis_bcs_x.0, BoundaryCondition::Pinned]
-    }
-
-    fn axis_is_pinned_x1(&self) -> bool {
-        matches![self.axis_bcs_x.1, BoundaryCondition::Pinned]
-    }
-
-    fn axis_is_pinned_y0(&self) -> bool {
-        matches![self.axis_bcs_y.0, BoundaryCondition::Pinned]
-    }
-
-    fn axis_is_pinned_y1(&self) -> bool {
-        matches![self.axis_bcs_y.1, BoundaryCondition::Pinned]
-    }
-
-    fn axis_is_pinned_z0(&self) -> bool {
-        matches![self.axis_bcs_z.0, BoundaryCondition::Pinned]
-    }
-
-    fn axis_is_pinned_z1(&self) -> bool {
-        matches![self.axis_bcs_z.1, BoundaryCondition::Pinned]
     }
 }
