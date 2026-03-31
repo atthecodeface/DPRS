@@ -164,8 +164,10 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         updated_lattice
             .par_chunks_mut(chunk_length)
             .zip(rngs)
-            .for_each(|(chunk, rng)| self.update_row(rng, chunk));
-
+            .enumerate()
+            .for_each(|(i, (chunk, rng))| {
+                self.update_row(rng, chunk, i * chunk_length, i == 0, i + 1 == num_chunks)
+            });
         self.lattice = updated_lattice;
     }
 
@@ -175,19 +177,27 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
-    pub fn update_row<R: Rng>(&self, rng: &mut R, row: &mut [C::State]) {
-        let lattice = &self.lattice;
-        let row_span = self.n_x - 2;
+    pub fn update_row<R: Rng>(
+        &self,
+        rng: &mut R,
+        row: &mut [C::State],
+        lattice_offset: usize,
+        skip_left: bool,
+        skip_right: bool,
+    ) {
+        let lattice = self
+            .lattice
+            .split_at(lattice_offset + (skip_left as usize - 1))
+            .1;
+        let row_span = row.len();
         for (cell, window) in row
             .iter_mut()
-            .skip(1)
-            .take(row_span)
+            .take(row_span - (skip_right as usize))
+            .skip(skip_left as usize)
             .zip(lattice.windows(3))
         {
             let nbrhood = [window[0], window[1], window[2]];
-            let nbrhood = nbrhood.as_array::<3>().unwrap();
-            *cell = self.cell_model.adapted_dk_update_state(rng, nbrhood);
-            // *cell = self.cell_model.simplistic_dk_update_state(rng, p, nbrhood);
+            *cell = self.cell_model.adapted_dk_update_state(rng, &nbrhood);
         }
     }
 }
