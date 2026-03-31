@@ -37,7 +37,7 @@ impl CellModel3D for GrowthModel3D {
     const OCCUPIED: DualState = DualState::Occupied;
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_initial_state<R: Rng>(&self, rng: &mut R) -> Self::State {
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State {
         rng.random_bool(self.p_initial).into()
     }
 

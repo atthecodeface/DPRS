@@ -32,7 +32,7 @@ pub trait CellModel3D: Sync {
     }
 
     /// Sample Bernoulli distribution to randomize cell state.
-    fn randomize_initial_state<R: Rng>(&self, rng: &mut R) -> Self::State;
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State;
 
     fn simplistic_dk_update_state<R: Rng>(
         &self,

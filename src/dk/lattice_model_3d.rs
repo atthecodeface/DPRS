@@ -125,7 +125,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     /// from a de-facto Bernoulli distribution.
     pub fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
         self.lattice = (0..self.n_cells())
-            .map(|_| self.cell_model.randomize_initial_state(rng))
+            .map(|_| self.cell_model.randomize_state(rng))
             .collect();
     }
 
