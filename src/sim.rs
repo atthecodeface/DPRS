@@ -11,6 +11,9 @@ use pyo3::prelude::*;
 mod sim {
     use super::*;
 
+    use crate::py_parameters::PyParameters;
+    use crate::sim_parameters::SimParameters;
+
     #[pymodule_export]
     use crate::py_parameters::BoundaryCondition;
     #[pymodule_export]
@@ -21,10 +24,8 @@ mod sim {
     use crate::py_parameters::InitialCondition;
     #[pymodule_export]
     use crate::py_parameters::Processing;
-    use crate::py_parameters::PyParameters;
     #[pymodule_export]
     use crate::py_parameters::Topology;
-    use crate::sim_parameters::SimParameters;
 
     #[pyfunction]
     fn dk(py_parameters: PyParameters) -> PyResult<(usize, Vec<Vec<bool>>, Vec<Vec<f64>>, f64)> {
