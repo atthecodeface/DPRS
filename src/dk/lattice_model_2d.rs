@@ -212,34 +212,31 @@ impl<C: CellModel2D> LatticeModel2D<C> {
         self.lattice = (0..self.n_cells())
             .map(|i_cell| {
                 let (is_in_bounds, x, y) = self.is_in_bounds(i_cell);
-                let updated_cell = if is_in_bounds {
+
+                if is_in_bounds {
                     let nbrhood = self.cell_nbrhood(x, y);
                     self.cell_model
                         .simplistic_dk_update_state(&mut rng, &nbrhood)
                 } else {
                     C::State::default()
-                };
-
-                updated_cell
+                }
             })
             .collect();
     }
 
     /// Cell values triple-tripled across (x-1:x+1, y-1:y+1).
     fn cell_nbrhood(&self, x: usize, y: usize) -> [<C as CellModel2D>::State; 9] {
-        let nbrhood = [
+        [
             self.lattice[self.i_cell(x - 1, y + 1)],
-            self.lattice[self.i_cell(x + 0, y + 1)],
+            self.lattice[self.i_cell(x, y + 1)],
             self.lattice[self.i_cell(x + 1, y + 1)],
-            self.lattice[self.i_cell(x - 1, y + 0)],
-            self.lattice[self.i_cell(x + 0, y + 0)],
-            self.lattice[self.i_cell(x + 1, y + 0)],
+            self.lattice[self.i_cell(x - 1, y)],
+            self.lattice[self.i_cell(x, y)],
+            self.lattice[self.i_cell(x + 1, y)],
             self.lattice[self.i_cell(x - 1, y - 1)],
-            self.lattice[self.i_cell(x + 0, y - 1)],
+            self.lattice[self.i_cell(x, y - 1)],
             self.lattice[self.i_cell(x + 1, y - 1)],
-        ];
-
-        nbrhood
+        ]
     }
 
     /// Check (x,y) coordinate is within lattice bounds.

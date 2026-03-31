@@ -91,7 +91,7 @@ impl<C: CellModel3D + ?Sized> CellNbrhood3D<C> {
     /// given the current neighborhood is at (x,y.z) and the lattice_window
     /// provided is *for* (x+1,y,z) - i.e. starts at (x,y-1,z-1)
     pub fn shift_slice(&mut self, lattice_window: &[C::State], n_x: usize, n_y: usize) {
-        self.cells_ne = self.cells_ne >> 9;
+        self.cells_ne >>= 9;
         self.fill_slice::<2>(lattice_window, n_x, n_y);
     }
 

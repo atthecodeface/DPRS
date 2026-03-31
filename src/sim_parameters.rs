@@ -1,7 +1,7 @@
 use crate::py_parameters::PyParameters;
 
 /// Lattice growth model type.
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GrowthModelChoice {
     #[default]
     DomanyKinzel,
@@ -11,7 +11,7 @@ pub enum GrowthModelChoice {
 }
 
 /// Lattice dimension.
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Dimension {
     #[default]
     D1,
@@ -20,7 +20,7 @@ pub enum Dimension {
 }
 
 /// Choice of processing type: will become a Py-passable parameter.
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Processing {
     #[default]
     Serial,
@@ -37,7 +37,7 @@ impl std::fmt::Display for Processing {
 }
 
 /// Initial lattice condition.
-#[derive(PartialEq, Debug, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum InitialCondition {
     #[default]
     Randomized,
@@ -46,7 +46,7 @@ pub enum InitialCondition {
 }
 
 /// Edge topology.
-#[derive(Eq, PartialEq, Debug, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Topology {
     /// No copying etc is done from one edge to another
     Unspecified,
@@ -60,7 +60,7 @@ pub enum Topology {
 /// Edge boundary conditions
 ///
 /// This is in essence what is around the outside of the lattice
-#[derive(Eq, PartialEq, Debug, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BoundaryCondition {
     Unspecified,
     /// The outside of the lattice could be anything
@@ -74,7 +74,7 @@ pub enum BoundaryCondition {
 }
 
 /// Cell state behavior for DP.
-#[derive(Default, PartialEq, Clone, Copy, Debug)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
 pub enum DualState {
     #[default]

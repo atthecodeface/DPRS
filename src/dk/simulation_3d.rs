@@ -38,15 +38,15 @@ pub fn simulation(parameters: &SimParameters) -> (usize, Vec<Vec<DualState>>, Ve
         (DualState::Empty, DualState::Empty),
         (DualState::Empty, DualState::Empty),
         (DualState::Empty, DualState::Empty),
-        parameters.axis_topology_x.clone(),
-        parameters.axis_topology_y.clone(),
-        parameters.axis_topology_z.clone(),
-        parameters.axis_bcs_x.clone(),
-        parameters.axis_bcs_y.clone(),
-        parameters.axis_bcs_z.clone(),
-        parameters.axis_bc_values_x.clone(),
-        parameters.axis_bc_values_y.clone(),
-        parameters.axis_bc_values_z.clone(),
+        parameters.axis_topology_x,
+        parameters.axis_topology_y,
+        parameters.axis_topology_z,
+        parameters.axis_bcs_x,
+        parameters.axis_bcs_y,
+        parameters.axis_bcs_z,
+        parameters.axis_bc_values_x,
+        parameters.axis_bc_values_y,
+        parameters.axis_bc_values_z,
         parameters.do_edge_buffering,
     );
 
@@ -119,7 +119,6 @@ pub fn simulation(parameters: &SimParameters) -> (usize, Vec<Vec<DualState>>, Ve
             assert!(parameters.random_seed > 0);
             // Allow for edge padding by adding two here
             let mut rngs: Vec<StdRng> = (0..parameters.n_z + 2)
-                .into_iter()
                 .map(|s| StdRng::seed_from_u64((parameters.random_seed * (s + 1)) as u64))
                 .collect();
             // let progress_bar = ProgressBar::new((n_iterations + 1).try_into().unwrap());

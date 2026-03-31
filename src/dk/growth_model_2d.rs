@@ -44,11 +44,7 @@ impl CellModel2D for GrowthModel2D {
         rng: &mut R,
         nbrhood: &[Self::State; 9],
     ) -> Self::State {
-        let n_neighbors: usize = nbrhood
-            .iter()
-            .map(|s| Self::from_state_to_usize(s))
-            .into_iter()
-            .sum();
+        let n_neighbors: usize = nbrhood.iter().map(Self::from_state_to_usize).sum();
         let has_nearest_neighbor: bool = nbrhood[4].into();
         let p_1 = self.p_1;
         let p_2 = p_1 / 3.;
