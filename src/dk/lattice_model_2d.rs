@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use crate::{dk::cell_model_2d::CellModel2D, parameters::Parameters};
+use crate::{dk::cell_model_2d::CellModel2D, parameters::PyParameters};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -91,7 +91,7 @@ impl<C: CellModel2D> LatticeModel2D<C> {
     }
 
     /// Enforce edge topology specifications.
-    pub fn apply_edge_topology(&mut self, params: &Parameters) {
+    pub fn apply_edge_topology(&mut self, params: &PyParameters) {
         // Apply x_axis termini topology
         if params.x_axis_topology_is_periodic() {
             let n_x = self.n_x;
@@ -128,7 +128,7 @@ impl<C: CellModel2D> LatticeModel2D<C> {
     }
 
     /// Enforce edge boundary conditions.
-    pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
+    pub fn apply_boundary_conditions(&mut self, params: &PyParameters) {
         let n_x = self.n_x;
         let n_y = self.n_y;
 

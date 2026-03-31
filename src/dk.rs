@@ -26,10 +26,10 @@ pub use lattice_model_3d::LatticeModel3D;
 pub use nbrhood_3d::{Nbrhood3D, RowIterator3D};
 pub use run_1d::Run1D;
 
-use crate::parameters::{Dimension, DualState, Parameters, Processing, SimParameters};
+use crate::parameters::{Dimension, DualState, Processing, PyParameters, SimParameters};
 
 /// Entry point to this module.
-pub fn sim_dk(parameters: Parameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
+pub fn sim_dk(parameters: PyParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
     let sim_parameters = SimParameters::fill(&parameters);
     sim_parameters.print();
     println!();

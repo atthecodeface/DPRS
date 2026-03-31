@@ -3,11 +3,11 @@
 // //!
 
 use crate::dk::simulation_2d::simulation;
-use crate::parameters::{DualState, Parameters};
+use crate::parameters::{DualState, PyParameters};
 use std::time::Instant;
 
 /// Run a simulation and record how long the computation takes.
-pub fn run(parameters: &Parameters) -> (f64, usize, Vec<Vec<DualState>>, Vec<Vec<f64>>) {
+pub fn run(parameters: &PyParameters) -> (f64, usize, Vec<Vec<DualState>>, Vec<Vec<f64>>) {
     // Set up thread pool of size set by user
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(parameters.n_threads)

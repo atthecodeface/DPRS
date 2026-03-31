@@ -4,7 +4,7 @@
 
 use crate::{
     dk::{CellModel3D, LatticeModel3D, Nbrhood3D, RowIterator3D},
-    parameters::{BoundaryCondition, Dimension, Parameters, Processing, Topology},
+    parameters::{BoundaryCondition, Dimension, PyParameters, Processing, Topology},
 };
 
 #[derive(Debug)]
@@ -61,7 +61,7 @@ impl CellModel3D for Model3D {
 
 // Purely used for testing here
 fn value(
-    parameters: &Parameters,
+    parameters: &PyParameters,
     i: usize,
     opt_dxyz: Option<(i8, i8, i8)>,
     zero_edge: bool,
@@ -92,7 +92,7 @@ fn test_dp() {
     let n_y = 15;
     let n_z = 20;
 
-    let mut parameters = Parameters::default();
+    let mut parameters = PyParameters::default();
     parameters.n_x = n_x;
     parameters.n_y = n_y;
     parameters.n_z = n_z;

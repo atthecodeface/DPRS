@@ -125,7 +125,7 @@ fn guarantee_dpstate_is_u8() {
 
 /// Model parameter bundle derived from Python Parameters class instance.
 #[derive(FromPyObject, Debug, Clone, Default)]
-pub struct Parameters {
+pub struct PyParameters {
     pub growth_model: GrowthModel,
     pub dim: Dimension,
     pub n_x: usize,
@@ -153,7 +153,7 @@ pub struct Parameters {
 }
 
 /// Edge topology and boundary condition checking.
-impl Parameters {
+impl PyParameters {
     pub fn x_axis_topology_is_periodic(&self) -> bool {
         matches![self.axis_topology_x, Topology::Periodic]
     }
@@ -291,7 +291,7 @@ pub struct SimParameters {
 
 /// Edge topology and boundary condition checking.
 impl SimParameters {
-    pub fn fill(parameters: &Parameters) -> Self {
+    pub fn fill(parameters: &PyParameters) -> Self {
         let p = parameters.clone();
         Self {
             growth_model: p.growth_model,

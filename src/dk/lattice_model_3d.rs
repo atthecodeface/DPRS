@@ -4,7 +4,7 @@
 
 use crate::{
     dk::{Nbrhood3D, RowIterator3D, cell_model_3d::CellModel3D},
-    parameters::Parameters,
+    parameters::PyParameters,
 };
 use rand::Rng;
 use rayon::prelude::*;
@@ -105,7 +105,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     }
 
     /// Enforce edge topology specifications.
-    pub fn apply_edge_topology(&mut self, params: &Parameters) {
+    pub fn apply_edge_topology(&mut self, params: &PyParameters) {
         // Apply x_axis termini topology
         if params.x_axis_topology_is_periodic() {
             let n_x = self.n_x;
@@ -168,7 +168,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     }
 
     /// Enforce edge boundary conditions.
-    pub fn apply_boundary_conditions(&mut self, params: &Parameters) {
+    pub fn apply_boundary_conditions(&mut self, params: &PyParameters) {
         let n_x = self.n_x;
         let n_y = self.n_y;
         let n_z = self.n_z;
