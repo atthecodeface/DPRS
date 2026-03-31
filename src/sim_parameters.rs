@@ -19,8 +19,8 @@ pub enum GrowthModelChoice {
     TwoSpeciesContactProcess,
 }
 impl From<PyGrowthModelChoice> for GrowthModelChoice {
-    fn from(processing: PyGrowthModelChoice) -> Self {
-        match processing {
+    fn from(choice: PyGrowthModelChoice) -> Self {
+        match choice {
             PyGrowthModelChoice::DomanyKinzel => Self::DomanyKinzel,
             PyGrowthModelChoice::ContactProcess => Self::ContactProcess,
             PyGrowthModelChoice::PairContactProcess => Self::PairContactProcess,
@@ -93,8 +93,8 @@ pub enum Topology {
     Periodic,
 }
 impl From<PyTopology> for Topology {
-    fn from(ic: PyTopology) -> Self {
-        match ic {
+    fn from(topol: PyTopology) -> Self {
+        match topol {
             PyTopology::Unspecified => Self::Unspecified,
             PyTopology::Open => Self::Open,
             PyTopology::Periodic => Self::Periodic,
@@ -118,8 +118,8 @@ pub enum BoundaryCondition {
     Reflecting, // NYI
 }
 impl From<PyBoundaryCondition> for BoundaryCondition {
-    fn from(ic: PyBoundaryCondition) -> Self {
-        match ic {
+    fn from(bc: PyBoundaryCondition) -> Self {
+        match bc {
             PyBoundaryCondition::Unspecified => Self::Unspecified,
             PyBoundaryCondition::Floating => Self::Floating,
             PyBoundaryCondition::Pinned => Self::Pinned,
