@@ -57,6 +57,13 @@ pub enum Topology {
     Periodic,
 }
 
+impl Topology {
+    /// Return true if the topology is periodic
+    pub fn is_periodic(&self) -> bool {
+        matches![self, Self::Periodic]
+    }
+}
+
 /// Edge boundary conditions
 ///
 /// This is in essence what is around the outside of the lattice
@@ -71,6 +78,18 @@ pub enum BoundaryCondition {
     Pinned,
     Extended,   // NYI
     Reflecting, // NYI
+}
+
+impl BoundaryCondition {
+    /// Return true if the boundary condition is unconstrained
+    pub fn is_unconstrained(&self) -> bool {
+        matches![self, Self::Unspecified | Self::Floating]
+    }
+
+    /// Return true if the boundary condition is pinned
+    pub fn is_pinned(&self) -> bool {
+        matches![self, Self::Pinned]
+    }
 }
 
 /// Cell state behavior for DP.

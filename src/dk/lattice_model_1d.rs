@@ -101,11 +101,10 @@ impl<C: CellModel1D> LatticeModel1D<C> {
 
     /// Enforce edge topology specifications.
     pub fn apply_edge_topology(&mut self) {
-        // Apply x-axis termini topology
-        if self.x_axis_topology_is_periodic() {
-            let n_x = self.n_x;
-            self.make_axis_periodic_x(n_x - 2, 0);
-            self.make_axis_periodic_x(1, n_x - 1);
+        // Apply x_axis termini topology
+        if self.axis_topology_x.is_periodic() {
+            self.make_axis_periodic_x(self.n_x - 2, 0);
+            self.make_axis_periodic_x(1, self.n_x - 1);
         }
     }
 
@@ -116,48 +115,22 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         self.lattice[i_to] = self.lattice[i_from];
     }
 
-    fn x_axis_topology_is_periodic(&self) -> bool {
-        matches![self.axis_topology_x, Topology::Periodic]
-    }
-
-    fn axis_is_unconstrained_x0(&self) -> bool {
-        matches![
-            self.axis_bcs_x.0,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_unconstrained_x1(&self) -> bool {
-        matches![
-            self.axis_bcs_x.1,
-            BoundaryCondition::Unspecified | BoundaryCondition::Floating
-        ]
-    }
-
-    fn axis_is_pinned_x0(&self) -> bool {
-        matches![self.axis_bcs_x.0, BoundaryCondition::Pinned]
-    }
-
-    fn axis_is_pinned_x1(&self) -> bool {
-        matches![self.axis_bcs_x.1, BoundaryCondition::Pinned]
-    }
-
     /// Enforce edge boundary conditions.
     pub fn apply_boundary_conditions(&mut self) {
         let n_x = self.n_x;
 
         // Apply left y-edge b.c.
-        if self.axis_is_unconstrained_x0() {
+        if self.axis_bcs_x.0.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_x0() {
+        } else if self.axis_bcs_x.0.is_pinned() {
             // println!("Pinning left end");
-            self.pin_axis_ends_x(0, self.end_values_x.1);
+            self.pin_axis_ends_x(0, self.end_values_x.0);
         }
 
         // Apply right y-edge b.c.
-        if self.axis_is_unconstrained_x1() {
+        if self.axis_bcs_x.1.is_unconstrained() {
             // No edge values need be imposed
-        } else if self.axis_is_pinned_x1() {
+        } else if self.axis_bcs_x.1.is_pinned() {
             // println!("Pinning right end");
             self.pin_axis_ends_x(n_x - 1, self.end_values_x.1);
         }
