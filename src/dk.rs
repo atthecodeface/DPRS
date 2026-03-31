@@ -31,11 +31,10 @@ pub use run_3d::Run3D;
 use crate::parameters::{Dimension, DualState, Processing, PyParameters, SimParameters};
 
 /// Entry point to this module.
-pub fn sim_dk(parameters: PyParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
-    let sim_parameters = SimParameters::fill(&parameters);
+pub fn sim_dk(py_parameters: PyParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<f64>>, f64) {
+    let sim_parameters = SimParameters::fill(&py_parameters);
     sim_parameters.print();
-    println!();
-    let (t_run_time, n_lattices, lattices, tracking) = match &parameters.dim {
+    let (t_run_time, n_lattices, lattices, tracking) = match &py_parameters.dim {
         Dimension::D1 => {
             let run_1d = Run1D::new(sim_parameters);
             run_1d.run()
@@ -49,7 +48,7 @@ pub fn sim_dk(parameters: PyParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<
             run_3d.run()
         }
     };
-    match parameters.processing {
+    match py_parameters.processing {
         Processing::Serial => println!(
             "Simulation run time (serial processing): {:4.3}s",
             t_run_time
