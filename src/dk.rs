@@ -25,6 +25,8 @@ pub use cell_model_3d::CellModel3D;
 pub use lattice_model_3d::LatticeModel3D;
 pub use nbrhood_3d::{Nbrhood3D, RowIterator3D};
 pub use run_1d::Run1D;
+pub use run_2d::Run2D;
+pub use run_3d::Run3D;
 
 use crate::parameters::{Dimension, DualState, Processing, PyParameters, SimParameters};
 
@@ -33,11 +35,19 @@ pub fn sim_dk(parameters: PyParameters) -> (usize, Vec<Vec<DualState>>, Vec<Vec<
     let sim_parameters = SimParameters::fill(&parameters);
     sim_parameters.print();
     println!();
-    let run_1d = Run1D::new(sim_parameters);
     let (t_run_time, n_lattices, lattices, tracking) = match &parameters.dim {
-        Dimension::D1 => run_1d.run(),
-        Dimension::D2 => run_2d::run(&parameters),
-        Dimension::D3 => run_3d::run(&parameters),
+        Dimension::D1 => {
+            let run_1d = Run1D::new(sim_parameters);
+            run_1d.run()
+        }
+        Dimension::D2 => {
+            let run_2d = Run2D::new(sim_parameters);
+            run_2d.run()
+        }
+        Dimension::D3 => {
+            let run_3d = Run3D::new(sim_parameters);
+            run_3d.run()
+        }
     };
     match parameters.processing {
         Processing::Serial => println!(
