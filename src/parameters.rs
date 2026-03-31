@@ -152,36 +152,6 @@ pub struct PyParameters {
     pub n_threads: usize,
 }
 
-/// Edge topology and boundary condition checking.
-impl PyParameters {
-    pub fn print(&self) {
-        println!();
-        println!("Growth model:  {:?}", self.growth_model);
-        println!("Dimension:     {:?}", self.dim);
-        println!("Grid shape:    {:?}", (self.n_x, self.n_y, self.n_z));
-        println!("Prob. p_1:     {}", self.p_1);
-        println!("Prob. p_2:     {}", self.p_2);
-        println!("Iterations:    {}", self.n_iterations);
-        println!("Sample period: {}", self.sample_period);
-        println!("Initial cond.: {:?}", self.initial_condition);
-        println!("Initial prob.: {}", self.p_initial);
-        println!("Random seed:   {}", self.random_seed);
-        println!("Topology x:    {:?}", self.axis_topology_x);
-        println!("Topology y:    {:?}", self.axis_topology_y);
-        println!("Topology z:    {:?}", self.axis_topology_z);
-        println!("Axis BCs x:    {:?}", self.axis_bcs_x);
-        println!("Axis BCs y:    {:?}", self.axis_bcs_y);
-        println!("Axis BCs z:    {:?}", self.axis_bcs_z);
-        println!("BC values x:   {:?}", self.axis_bc_values_x);
-        println!("BC values y:   {:?}", self.axis_bc_values_y);
-        println!("BC values z:   {:?}", self.axis_bc_values_z);
-        println!("Edge buffer:   {}", self.do_edge_buffering);
-        println!("Processing:    {:?}", self.processing);
-        println!("Num. threads:  {}", self.n_threads);
-        println!();
-    }
-}
-
 /// Mirror parameter bundle.
 #[derive(Debug, Clone, Default)]
 pub struct SimParameters {
@@ -211,8 +181,39 @@ pub struct SimParameters {
     pub n_threads: usize,
 }
 
-/// Edge topology and boundary condition checking.
+/// Report Python-side parameters.
+impl PyParameters {
+    pub fn print(&self) {
+        println!();
+        println!("Growth model:  {:?}", self.growth_model);
+        println!("Dimension:     {:?}", self.dim);
+        println!("Grid shape:    {:?}", (self.n_x, self.n_y, self.n_z));
+        println!("Prob. p_1:     {}", self.p_1);
+        println!("Prob. p_2:     {}", self.p_2);
+        println!("Iterations:    {}", self.n_iterations);
+        println!("Sample period: {}", self.sample_period);
+        println!("Initial cond.: {:?}", self.initial_condition);
+        println!("Initial prob.: {}", self.p_initial);
+        println!("Random seed:   {}", self.random_seed);
+        println!("Topology x:    {:?}", self.axis_topology_x);
+        println!("Topology y:    {:?}", self.axis_topology_y);
+        println!("Topology z:    {:?}", self.axis_topology_z);
+        println!("Axis BCs x:    {:?}", self.axis_bcs_x);
+        println!("Axis BCs y:    {:?}", self.axis_bcs_y);
+        println!("Axis BCs z:    {:?}", self.axis_bcs_z);
+        println!("BC values x:   {:?}", self.axis_bc_values_x);
+        println!("BC values y:   {:?}", self.axis_bc_values_y);
+        println!("BC values z:   {:?}", self.axis_bc_values_z);
+        println!("Edge buffer:   {}", self.do_edge_buffering);
+        println!("Processing:    {:?}", self.processing);
+        println!("Num. threads:  {}", self.n_threads);
+        println!();
+    }
+}
+
+/// Simulation parameters methods.
 impl SimParameters {
+    /// Copy Python-facing parameters.
     pub fn fill(parameters: &PyParameters) -> Self {
         let p = parameters.clone();
         Self {
@@ -243,6 +244,7 @@ impl SimParameters {
         }
     }
 
+    /// Report simulation parameters.
     pub fn print(&self) {
         println!();
         println!("Growth model:  {:?}", self.growth_model);
