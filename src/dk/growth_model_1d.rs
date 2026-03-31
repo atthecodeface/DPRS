@@ -73,7 +73,6 @@ impl CellModel1D for GrowthModel1D {
     fn simplistic_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        // p: f64,
         nbrhood: &[Self::State; 3],
     ) -> Self::State {
         let p = self.p_1;

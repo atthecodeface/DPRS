@@ -46,7 +46,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             cell_model,
             n_x,
             lattice: vec![C::State::default(); n_x],
-            end_values_x: end_values_x,
+            end_values_x,
             axis_topology_x,
             axis_bcs_x,
             axis_bc_values_x,

@@ -1,4 +1,4 @@
-use rand::{Rng, RngExt};
+use rand::Rng;
 
 /// The trait required for a model to run in 2D.
 ///
@@ -27,20 +27,17 @@ pub trait CellModel2D: Sync {
     }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_initial_state<R: Rng>(&self, rng: &mut R, p: f64) -> Self::State {
-        rng.random_bool(p).into()
-    }
+    fn randomize_initial_state<R: Rng>(&self, rng: &mut R) -> Self::State;
 
     fn adapted_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        p: f64,
         nbrhood: &[Self::State; 9],
     ) -> Self::State;
+
     fn simplistic_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
-        p: f64,
         nbrhood: &[Self::State; 9],
     ) -> Self::State;
 }
