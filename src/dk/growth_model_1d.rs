@@ -52,7 +52,7 @@ impl CellModel1D for GrowthModel1D {
         let has_nearest_neighbor = nbrhood[1].into();
         // TODO
         let p_1 = self.p_1;
-        let p_2 = p_1 / 1.4142135623730951;
+        let p_2 = p_1 * std::f64::consts::FRAC_1_SQRT_2;
         let do_survive = (n_neighbors > 0 && rng.random_bool(p_2))
             | (has_nearest_neighbor && rng.random_bool(p_1));
         // let do_survive = (n_neighbors > 0 && rng.random_bool(p1))
