@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use crate::dk::{CellModel3D, Nbrhood3D};
+use crate::dk::{CellModel3D, CellNbrhood3D};
 use rand::RngExt;
 
 #[derive(Clone, Copy, Debug)]
@@ -68,14 +68,14 @@ impl CellModel3D for Model3D {
     const OCCUPIED: CellState = CellState(1);
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_initial_state<R: rand::Rng>(&self, rng: &mut R) -> Self::State {
+    fn randomize_state<R: rand::Rng>(&self, rng: &mut R) -> Self::State {
         rng.random_bool(self.p_initial).into()
     }
 
     fn simplistic_dk_update_state<R: rand::Rng>(
         &self,
         _rng: &mut R,
-        nbrhood: &Nbrhood3D<Self>,
+        nbrhood: &CellNbrhood3D<Self>,
     ) -> Self::State {
         nbrhood.is_any_occupied().into()
     }
