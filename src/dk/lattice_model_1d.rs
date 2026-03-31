@@ -112,41 +112,10 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     }
 
     /// Evolve the grid by one iteration using serial processing.
-    pub fn next_iteration_serial<R: Rng>(&mut self, mut rng: &mut R) {
-        self.lattice = (0..self.n_cells())
-            .map(|i_cell| {
-                let (is_in_bounds, x) = self.is_in_bounds(i_cell);
-
-                if is_in_bounds {
-                    let nbrhood = self.cell_nbrhood(x);
-                    self.cell_model
-                        .simplistic_dk_update_state(&mut rng, &nbrhood)
-                } else {
-                    C::State::default()
-                }
-            })
-            .collect();
-    }
-
-    /// Cell values tripled across (x-1:x+1).
-    fn cell_nbrhood(&self, x: usize) -> [<C as CellModel1D>::State; 3] {
-        [
-            self.lattice[self.i_cell(x - 1)],
-            self.lattice[self.i_cell(x)],
-            self.lattice[self.i_cell(x + 1)],
-        ]
-    }
-
-    /// Check (x) coordinate is within lattice bounds.
-    fn is_in_bounds_x(&self, x: usize) -> bool {
-        x > 0 && x < self.n_x - 1
-    }
-
-    /// Check cell index is within lattice bounds; return this test and (x).
-    fn is_in_bounds(&self, i_cell: usize) -> (bool, usize) {
-        let x = i_cell;
-
-        (self.is_in_bounds_x(x), x)
+    pub fn next_iteration_serial<R: Rng>(&mut self, rng: &mut R) {
+        let mut updated_lattice = vec![C::State::default(); self.n_x];
+        self.update_row(rng, &mut updated_lattice, 0, true, true);
+        self.lattice = updated_lattice;
     }
 
     /// Evolve the grid by one iteration using chunked parallel processing.
