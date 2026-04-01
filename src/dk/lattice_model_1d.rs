@@ -77,13 +77,6 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         (self.cell_model, self.lattice)
     }
 
-    // /// Compute the mean cell occupancy
-    // pub fn mean(&self) -> f64 {
-    //     let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-    //     (total as f64) / (self.n_x as f64)
-    // }
-
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
     pub fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
@@ -202,7 +195,8 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             .zip(lattice.windows(3))
         {
             let nbrhood = [window[0], window[1], window[2]];
-            *cell = self.cell_model.adapted_dk_update_state(rng, &nbrhood);
+            // *cell = self.cell_model.adapted_dk_update_state(rng, &nbrhood);
+            *cell = self.cell_model.simplistic_dk_update_state(rng, &nbrhood);
         }
     }
 }

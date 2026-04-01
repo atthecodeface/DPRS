@@ -2,6 +2,9 @@
 // //!
 // //!
 
+mod traits;
+mod utils;
+
 mod cell_model_1d;
 mod growth_model_1d;
 mod lattice_model_1d;
@@ -20,9 +23,6 @@ mod growth_model_3d;
 mod lattice_model_3d;
 mod run_3d;
 mod simulation_3d;
-
-mod traits;
-mod utils;
 
 use crate::sim_parameters::{Dimension, DualState, SimParameters};
 pub use cell_model_3d::CellModel3D;
