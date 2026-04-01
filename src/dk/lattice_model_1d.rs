@@ -34,7 +34,7 @@ impl<C: CellModel1D> HasMean for LatticeModel1D<C> {
     fn mean(&self) -> f64 {
         let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
 
-        (total as f64) / (self.n_x as f64)
+        (total as f64) / (self.n_cells() as f64)
     }
 }
 
@@ -76,11 +76,16 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     pub fn take(self) -> (C, Vec<C::State>) {
         (self.cell_model, self.lattice)
     }
+    
+    /// Count the total number of cells in the grid.
+    fn n_cells(&self) -> usize {
+        self.n_x
+    }
 
     /// Generate a randomized grid with cell values of 0 or 1 sampled
     /// from a de-facto Bernoulli distribution.
     pub fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
-        self.lattice = (0..self.n_x)
+        self.lattice = (0..self.n_cells())
             .map(|_| self.cell_model.randomize_state(rng))
             .collect();
     }
