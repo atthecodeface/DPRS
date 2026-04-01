@@ -39,12 +39,6 @@ impl<C: CellModel1D> HasMean for LatticeModel1D<C> {
     }
 }
 
-// impl<C: CellModel1D> HasLattice for LatticeModel1D<C> {
-//     fn lattice<S: CellModel1D::State>(&self) -> &Vec<S> {
-//         &self.lattice
-//     }
-// }
-
 /// Lattice model methods.
 impl<C: CellModel1D> LatticeModel1D<C> {
     /// Create a fresh grid (vector of C::State cells) with all values=false,
@@ -129,16 +123,14 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     }
 
     /// Evolve the grid by one iteration using serial processing.
-    pub fn next_iteration_serial<R: Rng>(&mut self, rng: &mut R) {
+    pub fn next_iteration_serial<R: Rng>(&mut self, rng: &mut R, iteration: usize) {
         let mut updated_lattice = vec![C::State::default(); self.n_x];
-        self.update_portion_of_row(rng, &mut updated_lattice, 0, true, true);
+        self.update_portion_of_row(rng, &mut updated_lattice, 0, true, true, iteration);
         self.lattice = updated_lattice;
     }
 
     /// Evolve the grid by one iteration using chunked parallel processing.
-    /// TODO: Does it make sense to pass the probability p like this?
-    /// Wouldn't it be better to set it on the model struct?
-    pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
+    pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R], iteration: usize) {
         // Split the lattice into n_y rows each of length n_x and
         // update these rows in parallel using par_chunks_mut().
         // Before passing to next_row() to perform the update,
@@ -155,7 +147,14 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             .zip(rngs)
             .enumerate()
             .for_each(|(i, (chunk, rng))| {
-                self.update_portion_of_row(rng, chunk, i * chunk_length, i == 0, i + 1 == n_chunks)
+                self.update_portion_of_row(
+                    rng,
+                    chunk,
+                    i * chunk_length,
+                    i == 0,
+                    i + 1 == n_chunks,
+                    iteration,
+                )
             });
         self.lattice = updated_lattice;
     }
@@ -185,6 +184,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         lattice_offset: usize,
         skip_left: bool,
         skip_right: bool,
+        iteration: usize,
     ) {
         let lattice = self
             .lattice
@@ -202,9 +202,9 @@ impl<C: CellModel1D> LatticeModel1D<C> {
                 GrowthModelChoice::SimplifiedDomanyKinzel => {
                     self.cell_model.simplified_dk_update_state(rng, &nbrhood)
                 }
-                GrowthModelChoice::StaggeredDomanyKinzel => {
-                    self.cell_model.staggered_dk_update_state(rng, &nbrhood)
-                }
+                GrowthModelChoice::StaggeredDomanyKinzel => self
+                    .cell_model
+                    .staggered_dk_update_state(rng, &nbrhood, iteration),
                 _ => todo!(),
             }
         }

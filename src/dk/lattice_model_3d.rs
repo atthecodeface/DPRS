@@ -233,15 +233,22 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     }
 
     /// Evolve the grid by one iteration using serial processing.
-    pub fn next_iteration_serial<R: Rng>(&mut self, mut rng: &mut R) {
+    pub fn next_iteration_serial<R: Rng>(&mut self, mut rng: &mut R, iteration: usize) {
         self.lattice = (0..self.n_cells())
             .map(|i_cell| {
                 let (is_in_bounds, x, y, z) = self.is_in_bounds(i_cell);
 
                 if is_in_bounds {
                     let nbrhood = self.cell_nbrhood(x, y, z);
-                    self.cell_model
-                        .simplified_dk_update_state(&mut rng, &nbrhood)
+                    match self.growth_model_choice {
+                        GrowthModelChoice::SimplifiedDomanyKinzel => self
+                            .cell_model
+                            .simplified_dk_update_state(&mut rng, &nbrhood),
+                        GrowthModelChoice::StaggeredDomanyKinzel => self
+                            .cell_model
+                            .staggered_dk_update_state(&mut rng, &nbrhood, iteration),
+                        _ => todo!(),
+                    }
                 } else {
                     C::State::default()
                 }
@@ -283,9 +290,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     }
 
     /// Evolve the grid by one iteration using chunked parallel processing.
-    /// TODO: Does it make sense to pass the probability p like this?
-    /// Wouldn't it be better to set it on the model struct?
-    pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
+    pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R], iteration: usize) {
         assert!(
             rngs.len() >= self.n_z,
             "Must have at least n_z RNGs supplied to 3D parallel iteration"
@@ -303,7 +308,7 @@ impl<C: CellModel3D> LatticeModel3D<C> {
             .zip(rngs)
             .skip(1)
             .take(n_layers)
-            .for_each(|((z, layer), rng)| self.update_layer(rng, z, layer));
+            .for_each(|((z, layer), rng)| self.update_layer(rng, z, layer, iteration));
 
         // Only replace the lattice with the updated version once all the rows
         // have been updated.
@@ -317,7 +322,13 @@ impl<C: CellModel3D> LatticeModel3D<C> {
     /// Each row is handled with a [RowIterator3D] which efficiently moves along
     /// a row gathering new neighbors into its neighborhood, dropping older ones
     /// out.
-    pub fn update_layer<R: Rng>(&self, rng: &mut R, z: usize, layer: &mut [C::State]) {
+    pub fn update_layer<R: Rng>(
+        &self,
+        rng: &mut R,
+        z: usize,
+        layer: &mut [C::State],
+        iteration: usize,
+    ) {
         let row_span = self.n_x - 2;
         for (y, row) in layer
             .chunks_exact_mut(self.n_x)
@@ -331,9 +342,15 @@ impl<C: CellModel3D> LatticeModel3D<C> {
                 return;
             };
             for cell in row.iter_mut().skip(1).take(row_span) {
-                *cell = self
-                    .cell_model
-                    .simplified_dk_update_state(rng, lattice_window.nbrhood());
+                *cell = match self.growth_model_choice {
+                    GrowthModelChoice::SimplifiedDomanyKinzel => self
+                        .cell_model
+                        .simplified_dk_update_state(rng, lattice_window.nbrhood()),
+                    GrowthModelChoice::StaggeredDomanyKinzel => self
+                        .cell_model
+                        .staggered_dk_update_state(rng, lattice_window.nbrhood(), iteration),
+                    _ => todo!(),
+                };
                 if !lattice_window.next() {
                     break;
                 }

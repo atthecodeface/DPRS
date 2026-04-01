@@ -29,9 +29,10 @@ impl GrowthModel3D {
         }
     }
 
-    /// Update simulation step counter.
-    pub fn increment(&mut self) {
+    /// Update simulation step counter and return.
+    pub fn increment(&mut self) -> usize {
         self.iteration += 1;
+        self.iteration
     }
 }
 
@@ -54,6 +55,23 @@ impl CellModel3D for GrowthModel3D {
         rng: &mut R,
         nbrhood: &CellNbrhood3D<Self>,
     ) -> Self::State {
+        let p_1 = self.p_1;
+        let do_survive = rng.random_bool(p_1);
+        if do_survive {
+            nbrhood.is_any_occupied().into()
+        } else {
+            Self::EMPTY
+        }
+    }
+
+    // TODO!!!
+    fn staggered_dk_update_state<R: Rng>(
+        &self,
+        rng: &mut R,
+        nbrhood: &CellNbrhood3D<Self>,
+        iteration: usize,
+    ) -> Self::State {
+        let _is_even_step = iteration.is_multiple_of(2);
         let p_1 = self.p_1;
         let do_survive = rng.random_bool(p_1);
         if do_survive {
