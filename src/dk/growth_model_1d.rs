@@ -47,12 +47,11 @@ impl CellModel1D for GrowthModel1D {
 
     fn dk_update_state<R: Rng>(&self, rng: &mut R, nbrhood: &[Self::State; 3]) -> Self::State {
         let do_survive = if self.do_staggered {
-            //TODO: flip between (0,1) and (1,2) nbrhood portions depending on is_even_step
             let is_even_step = self.iteration.is_multiple_of(2);
             let is_any_nbr_occupied = if is_even_step {
-                nbrhood.iter().skip(1).any(|s| (*s).into())
-            } else {
                 nbrhood.iter().take(2).any(|s| (*s).into())
+            } else {
+                nbrhood.iter().skip(1).any(|s| (*s).into())
             };
             is_any_nbr_occupied & rng.random_bool(self.p_1)
         } else {
