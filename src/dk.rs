@@ -4,7 +4,6 @@
 
 mod traits;
 mod types;
-mod utils;
 
 mod cell_model_1d;
 mod growth_model_1d;
@@ -26,7 +25,7 @@ mod run_3d;
 mod simulation_3d;
 
 use crate::{
-    dk::types::{LatticeSlices, TrackingHistory},
+    dk::types::{LatticeSlices, Tracking},
     sim_parameters::{Dimension, SimParameters},
 };
 pub use cell_model_3d::CellModel3D;
@@ -37,7 +36,7 @@ pub use run_2d::Run2D;
 pub use run_3d::Run3D;
 
 /// Entry point to this module.
-pub fn sim_dk(sim_parameters: SimParameters) -> (usize, LatticeSlices, TrackingHistory, f64) {
+pub fn sim_dk(sim_parameters: SimParameters) -> (usize, LatticeSlices, Tracking, f64) {
     println!();
     println!("{sim_parameters}");
     println!();

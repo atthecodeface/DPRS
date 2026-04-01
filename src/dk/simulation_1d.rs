@@ -4,8 +4,7 @@
 
 use super::growth_model_1d::GrowthModel1D;
 use crate::dk::lattice_model_1d;
-use crate::dk::types::{LatticeHistory, LatticeSlices, TrackingHistory};
-use crate::dk::utils::update_statistics;
+use crate::dk::types::{LatticeHistory, LatticeSlices, Tracking, TrackingHistory};
 use crate::sim_parameters::{DualState, InitialCondition, Processing, SimParameters};
 use lattice_model_1d::LatticeModel1D;
 use rand::SeedableRng;
@@ -16,7 +15,7 @@ use rand::rngs::StdRng;
 /// Returns the number of lattices sampled, the sampled lattices, and tracking
 /// which is a Vec with first entry a vec of iteration numbers and the second
 /// entry a vec of mean density for the respective iteration.
-pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, TrackingHistory) {
+pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking) {
     let pad: usize = match parameters.do_edge_buffering {
         true => 1,
         false => 0,
@@ -61,19 +60,11 @@ pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking
     };
     // Record the initial lattice
     let mut lattice_history = LatticeHistory::default();
-    lattice_history.record(&lm.lattice(), growth_model.iteration, sample_period);
+    lattice_history.record(lm.lattice(), growth_model.iteration, sample_period);
 
     // Start recording lattice stats
-    let mut tracking = Vec::new();
-    let t_tracking = Vec::new();
-    let rho_mean_tracking = Vec::new();
-    let radius_mean_tracking = Vec::new();
-    let radius_stddev_tracking = Vec::new();
-    tracking.push(t_tracking);
-    tracking.push(rho_mean_tracking);
-    tracking.push(radius_mean_tracking);
-    tracking.push(radius_stddev_tracking);
-    update_statistics(growth_model.iteration, &lm, &mut tracking);
+    let mut tracking_history = TrackingHistory::default();
+    tracking_history.update(growth_model.iteration, &lm);
 
     // Evolve the lattice for n_iterations
     //
@@ -87,9 +78,9 @@ pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking
                 lm.next_iteration_serial(&mut rng);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                lattice_history.record(&lm.lattice(), growth_model.iteration, sample_period);
                 growth_model.increment();
-                update_statistics(growth_model.iteration, &lm, &mut tracking);
+                lattice_history.record(lm.lattice(), growth_model.iteration, sample_period);
+                tracking_history.update(growth_model.iteration, &lm);
             }
         }
         Processing::Parallel => {
@@ -109,14 +100,14 @@ pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking
                 lm.next_iteration_parallel(&mut rngs);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                lattice_history.record(&lm.lattice(), growth_model.iteration, sample_period);
                 growth_model.increment();
-                update_statistics(growth_model.iteration, &lm, &mut tracking);
+                lattice_history.record(lm.lattice(), growth_model.iteration, sample_period);
+                tracking_history.update(growth_model.iteration, &lm);
             }
         }
     };
     assert!(n_iterations == growth_model.iteration);
     assert!(n_lattices == 0 || n_lattices == lattice_history.len());
 
-    (n_lattices, lattice_history.take(), tracking)
+    (n_lattices, lattice_history.take(), tracking_history.take())
 }

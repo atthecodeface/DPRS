@@ -2,36 +2,61 @@
 // //!
 // //!
 
-use crate::sim_parameters::DualState;
+use crate::{dk::traits::HasMean, sim_parameters::DualState};
 
 pub type LatticeSlices = Vec<Vec<DualState>>;
-pub type TrackingHistory = Vec<Vec<f64>>;
+pub type Tracking = Vec<Vec<f64>>;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct LatticeHistory {
-    pub lattice_history: LatticeSlices,
-}
-
-impl Default for LatticeHistory {
-    fn default() -> Self {
-        Self {
-            lattice_history: Vec::new(),
-        }
-    }
+    pub lattice_slices: LatticeSlices,
 }
 
 impl LatticeHistory {
     pub fn record(&mut self, lattice: &Vec<DualState>, i: usize, sample_period: usize) {
         if sample_period > 0 && i.is_multiple_of(sample_period) {
-            self.lattice_history.push(lattice.clone());
+            self.lattice_slices.push(lattice.clone());
         }
     }
 
     pub fn len(&self) -> usize {
-        self.lattice_history.len()
+        self.lattice_slices.len()
     }
 
     pub fn take(self) -> LatticeSlices {
-        self.lattice_history
+        self.lattice_slices
+    }
+}
+
+#[derive(Debug)]
+pub struct TrackingHistory {
+    pub tracking: Tracking,
+}
+
+impl Default for TrackingHistory {
+    fn default() -> Self {
+        let mut tracking = Vec::new();
+        let t_tracking = Vec::new();
+        let rho_mean_tracking = Vec::new();
+        let radius_mean_tracking = Vec::new();
+        let radius_stddev_tracking = Vec::new();
+        tracking.push(t_tracking);
+        tracking.push(rho_mean_tracking);
+        tracking.push(radius_mean_tracking);
+        tracking.push(radius_stddev_tracking);
+        Self { tracking }
+    }
+}
+
+impl TrackingHistory {
+    pub fn update<T: HasMean>(&mut self, i: usize, lattice_model: &T) {
+        let t = i as f64;
+        self.tracking[0].push(t);
+        let rho_mean = lattice_model.mean();
+        self.tracking[1].push(rho_mean);
+    }
+
+    pub fn take(self) -> Tracking {
+        self.tracking
     }
 }

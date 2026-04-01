@@ -146,7 +146,9 @@ impl<C: CellModel1D> LatticeModel1D<C> {
         // and then omit the first and last rows.
         let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
         let n_chunks = rngs.len();
-        let chunk_length = (self.n_x + n_chunks - 1) / n_chunks;
+        // let chunk_length = (self.n_x + n_chunks - 1) / n_chunks;
+        // Clippy recommendation:
+        let chunk_length = self.n_x.div_ceil(n_chunks);
 
         updated_lattice
             .par_chunks_mut(chunk_length)
