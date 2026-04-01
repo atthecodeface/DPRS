@@ -67,7 +67,8 @@ pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking
     };
     // Record the initial lattice
     let mut lattice_history = LatticeHistory::default();
-    lattice_history.record(lm.lattice(), growth_model.iteration, sample_period);
+    lattice_history.set_sample_period(sample_period);
+    lattice_history.record(lm.lattice(), growth_model.iteration);
 
     // Start recording lattice stats
     let mut tracking_history = TrackingHistory::default();
@@ -85,7 +86,7 @@ pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
                 growth_model.increment();
-                lattice_history.record(lm.lattice(), growth_model.iteration, sample_period);
+                lattice_history.record(lm.lattice(), growth_model.iteration);
                 tracking_history.update(growth_model.iteration, &lm);
             }
         }
@@ -106,7 +107,7 @@ pub fn simulation(parameters: &SimParameters) -> (usize, LatticeSlices, Tracking
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
                 growth_model.increment();
-                lattice_history.record(lm.lattice(), growth_model.iteration, sample_period);
+                lattice_history.record(lm.lattice(), growth_model.iteration);
                 tracking_history.update(growth_model.iteration, &lm);
             }
         }

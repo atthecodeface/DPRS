@@ -9,12 +9,17 @@ pub type Tracking = Vec<Vec<f64>>;
 
 #[derive(Debug, Default)]
 pub struct LatticeHistory {
+    pub sample_period: usize,
     pub lattice_slices: LatticeSlices,
 }
 
 impl LatticeHistory {
-    pub fn record(&mut self, lattice: &Vec<DualState>, i: usize, sample_period: usize) {
-        if sample_period > 0 && i.is_multiple_of(sample_period) {
+    pub fn set_sample_period(&mut self, sample_period: usize) {
+        self.sample_period = sample_period;
+    }
+
+    pub fn record(&mut self, lattice: &Vec<DualState>, i: usize) {
+        if self.sample_period > 0 && i.is_multiple_of(self.sample_period) {
             self.lattice_slices.push(lattice.clone());
         }
     }
