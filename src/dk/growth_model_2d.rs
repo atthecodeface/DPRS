@@ -26,9 +26,10 @@ impl GrowthModel2D {
         }
     }
 
-    /// Update simulation step counter.
-    pub fn increment(&mut self) {
+    /// Update simulation step counter and return.
+    pub fn increment(&mut self) -> usize {
         self.iteration += 1;
+        self.iteration
     }
 }
 
@@ -43,22 +44,6 @@ impl CellModel2D for GrowthModel2D {
         rng.random_bool(self.p_initial).into()
     }
 
-    /// Adapted Domany-Kinzel rule: this cell will become occupied if...
-    fn staggered_dk_update_state<R: Rng>(
-        &self,
-        rng: &mut R,
-        nbrhood: &[Self::State; 9],
-    ) -> Self::State {
-        let n_neighbors: usize = nbrhood.iter().map(Self::from_state_to_usize).sum();
-        let has_nearest_neighbor: bool = nbrhood[4].into();
-        let p_1 = self.p_1;
-        let p_2 = p_1 / 3.;
-        let do_survive = (n_neighbors > 0 && rng.random_bool(p_1))
-            | (has_nearest_neighbor && n_neighbors > 1 && rng.random_bool(p_2));
-
-        do_survive.into()
-    }
-
     /// Simplistic Domany-Kinzel rule: this cell will become occupied if:
     ///  (1) a coin toss with probability p says it *may* be occupied
     ///  (2) if one of the 9 neighborhood + here cells were previously occupied
@@ -70,6 +55,24 @@ impl CellModel2D for GrowthModel2D {
         let p = self.p_1;
         let is_any_nbr_occupied = nbrhood.iter().any(|s| (*s).into());
         let do_survive = is_any_nbr_occupied & rng.random_bool(p);
+
+        do_survive.into()
+    }
+
+    /// Staggered Domany-Kinzel rule
+    fn staggered_dk_update_state<R: Rng>(
+        &self,
+        rng: &mut R,
+        nbrhood: &[Self::State; 9],
+        iteration: usize,
+    ) -> Self::State {
+        let _is_even_step = iteration.is_multiple_of(2);
+        let n_neighbors: usize = nbrhood.iter().map(Self::from_state_to_usize).sum();
+        let has_nearest_neighbor: bool = nbrhood[4].into();
+        let p_1 = self.p_1;
+        let p_2 = p_1 / 3.;
+        let do_survive = (n_neighbors > 0 && rng.random_bool(p_1))
+            | (has_nearest_neighbor && n_neighbors > 1 && rng.random_bool(p_2));
 
         do_survive.into()
     }

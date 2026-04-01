@@ -54,8 +54,8 @@ impl Default for TrackingHistory {
 }
 
 impl TrackingHistory {
-    pub fn update<T: HasMean>(&mut self, i: usize, lattice_model: &T) {
-        let t = i as f64;
+    pub fn update<T: HasMean>(&mut self, iteration: usize, lattice_model: &T) {
+        let t = iteration as f64;
         self.tracking[0].push(t);
         let rho_mean = lattice_model.mean();
         self.tracking[1].push(rho_mean);

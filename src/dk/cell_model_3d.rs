@@ -39,4 +39,11 @@ pub trait CellModel3D: Sync {
         rng: &mut R,
         nbrhood: &CellNbrhood3D<Self>,
     ) -> Self::State;
+
+    fn staggered_dk_update_state<R: Rng>(
+        &self,
+        rng: &mut R,
+        nbrhood: &CellNbrhood3D<Self>,
+        iteration: usize,
+    ) -> Self::State;
 }

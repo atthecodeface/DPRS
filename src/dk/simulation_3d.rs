@@ -74,14 +74,16 @@ pub fn simulation_3d(parameters: &SimParameters) -> (usize, LatticeSlices, Track
         true => n_iterations / sample_period + 1,
         false => 0,
     };
+    let iteration = growth_model.iteration;
+
     // Record the initial lattice
     let mut lattice_history = LatticeHistory::default();
     lattice_history.set_sample_period(sample_period);
-    lattice_history.record(lm.lattice(), growth_model.iteration);
+    lattice_history.record(lm.lattice(), iteration);
 
     // Start recording lattice stats
     let mut tracking_history = TrackingHistory::default();
-    tracking_history.update(growth_model.iteration, &lm);
+    tracking_history.update(iteration, &lm);
 
     // Evolve the lattice for n_iterations
     //
@@ -91,13 +93,12 @@ pub fn simulation_3d(parameters: &SimParameters) -> (usize, LatticeSlices, Track
     match parameters.processing {
         Processing::Serial => {
             for _ in 1..(n_iterations + 1) {
-                // for i in tqdm!(1..(n_iterations + 1)) {
-                lm.next_iteration_serial(&mut rng);
+                let iteration = growth_model.increment();
+                lm.next_iteration_serial(&mut rng, iteration);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                growth_model.increment();
-                lattice_history.record(lm.lattice(), growth_model.iteration);
-                tracking_history.update(growth_model.iteration, &lm);
+                lattice_history.record(lm.lattice(), iteration);
+                tracking_history.update(iteration, &lm);
             }
         }
         Processing::Parallel => {
@@ -113,18 +114,14 @@ pub fn simulation_3d(parameters: &SimParameters) -> (usize, LatticeSlices, Track
             let mut rngs: Vec<StdRng> = (0..(parameters.n_z + pad * 2))
                 .map(|s| StdRng::seed_from_u64((parameters.random_seed * (s + 1)) as u64))
                 .collect();
-            // let progress_bar = ProgressBar::new((n_iterations + 1).try_into().unwrap());
             for _ in 1..(n_iterations + 1) {
-                // progress_bar.inc(1);
-                // for i in tqdm!(1..(n_iterations + 1)) {
-                lm.next_iteration_parallel(&mut rngs);
+                let iteration = growth_model.increment();
+                lm.next_iteration_parallel(&mut rngs, iteration);
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
-                growth_model.increment();
-                lattice_history.record(lm.lattice(), growth_model.iteration);
-                tracking_history.update(growth_model.iteration, &lm);
+                lattice_history.record(lm.lattice(), iteration);
+                tracking_history.update(iteration, &lm);
             }
-            // progress_bar.finish_with_message("done");
         }
     };
     assert!(n_iterations == growth_model.iteration);

@@ -33,16 +33,16 @@ pub trait CellModel2D: Sync {
     /// Sample Bernoulli distribution to randomize cell state.
     fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State;
 
-    #[allow(dead_code)]
-    fn staggered_dk_update_state<R: Rng>(
+    fn simplified_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
         nbrhood: &[Self::State; 9],
     ) -> Self::State;
 
-    fn simplified_dk_update_state<R: Rng>(
+    fn staggered_dk_update_state<R: Rng>(
         &self,
         rng: &mut R,
         nbrhood: &[Self::State; 9],
+        iteration: usize,
     ) -> Self::State;
 }
