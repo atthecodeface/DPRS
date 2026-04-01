@@ -3,7 +3,7 @@
 // //!
 
 use crate::dk::simulation_1d::simulation;
-use crate::dk::types::{LatticeHistory, TrackingHistory};
+use crate::dk::types::{LatticeSlices, TrackingHistory};
 use crate::sim_parameters::SimParameters;
 use std::time::Instant;
 
@@ -21,7 +21,7 @@ impl Run1D {
     }
 
     /// Run a simulation and record how long the computation takes.
-    pub fn run(&self) -> (f64, usize, LatticeHistory, TrackingHistory) {
+    pub fn run(&self) -> (f64, usize, LatticeSlices, TrackingHistory) {
         // Set up thread pool of size set by user
         let pool = rayon::ThreadPoolBuilder::new()
             .num_threads(self.parameters.n_threads)

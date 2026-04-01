@@ -25,7 +25,10 @@ mod lattice_model_3d;
 mod run_3d;
 mod simulation_3d;
 
-use crate::{dk::types::{LatticeHistory, TrackingHistory}, sim_parameters::{Dimension, SimParameters}};
+use crate::{
+    dk::types::{LatticeSlices, TrackingHistory},
+    sim_parameters::{Dimension, SimParameters},
+};
 pub use cell_model_3d::CellModel3D;
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
 pub use lattice_model_3d::LatticeModel3D;
@@ -34,11 +37,11 @@ pub use run_2d::Run2D;
 pub use run_3d::Run3D;
 
 /// Entry point to this module.
-pub fn sim_dk(sim_parameters: SimParameters) -> (usize, LatticeHistory, TrackingHistory, f64) {
+pub fn sim_dk(sim_parameters: SimParameters) -> (usize, LatticeSlices, TrackingHistory, f64) {
     println!();
     println!("{sim_parameters}");
     println!();
-    let (t_run_time, n_lattices, lattices, tracking) = match &sim_parameters.dim {
+    let (t_run_time, n_lattices, lattice_slices, tracking) = match &sim_parameters.dim {
         Dimension::D1 => {
             let run_1d = Run1D::new(&sim_parameters);
             run_1d.run()
@@ -57,5 +60,5 @@ pub fn sim_dk(sim_parameters: SimParameters) -> (usize, LatticeHistory, Tracking
         sim_parameters.processing, t_run_time
     );
 
-    (n_lattices, lattices, tracking, t_run_time)
+    (n_lattices, lattice_slices, tracking, t_run_time)
 }

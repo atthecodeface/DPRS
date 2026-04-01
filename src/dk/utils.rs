@@ -10,7 +10,3 @@ pub fn update_statistics<T: HasMean>(i: usize, lattice_model: &T, tracking: &mut
     let rho_mean = lattice_model.mean();
     tracking[1].push(rho_mean);
 }
-
-pub fn do_slice(i: usize, sample_period: usize) -> bool {
-    sample_period > 0 && i.is_multiple_of(sample_period)
-}

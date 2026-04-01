@@ -39,6 +39,12 @@ impl<C: CellModel1D> HasMean for LatticeModel1D<C> {
     }
 }
 
+// impl<C: CellModel1D> HasLattice for LatticeModel1D<C> {
+//     fn lattice<S: CellModel1D::State>(&self) -> &Vec<S> {
+//         &self.lattice
+//     }
+// }
+
 /// Lattice model methods.
 impl<C: CellModel1D> LatticeModel1D<C> {
     /// Create a fresh grid (vector of C::State cells) with all values=false,
