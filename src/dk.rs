@@ -2,6 +2,9 @@
 // //!
 // //!
 
+mod traits;
+mod utils;
+
 mod cell_model_1d;
 mod growth_model_1d;
 mod lattice_model_1d;

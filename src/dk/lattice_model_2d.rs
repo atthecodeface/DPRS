@@ -1,5 +1,6 @@
 use crate::{
-    dk::cell_model_2d::CellModel2D, sim_parameters::BoundaryCondition, sim_parameters::Topology,
+    dk::{cell_model_2d::CellModel2D, traits::HasMean},
+    sim_parameters::{BoundaryCondition, Topology},
 };
 use rand::Rng;
 use rayon::prelude::*;
@@ -27,6 +28,15 @@ pub struct LatticeModel2D<C: CellModel2D> {
     axis_bc_values_x: (bool, bool),
     axis_bc_values_y: (bool, bool),
     do_edge_buffering: bool,
+}
+
+impl<C: CellModel2D> HasMean for LatticeModel2D<C> {
+    /// Compute the mean cell occupancy
+    fn mean(&self) -> f64 {
+        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
+
+        (total as f64) / (self.n_cells() as f64)
+    }
 }
 
 /// Lattice model methods.
@@ -81,13 +91,6 @@ impl<C: CellModel2D> LatticeModel2D<C> {
     /// Count the total number of cells in the grid.
     fn n_cells(&self) -> usize {
         self.n_x * self.n_y
-    }
-
-    /// Compute the mean cell occupancy
-    pub fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-        (total as f64) / (self.n_cells() as f64)
     }
 
     /// Compute the cell index of a given (x, y) coordinate.
@@ -263,8 +266,8 @@ impl<C: CellModel2D> LatticeModel2D<C> {
             let nbrhood = [
                 up[0], up[1], up[2], md[0], md[1], md[2], dn[0], dn[1], dn[2],
             ];
-            *cell = self.cell_model.adapted_dk_update_state(rng, &nbrhood);
-            // *cell = self.cell_model.simplistic_dk_update_state(rng, p, &nbrhood);
+            // *cell = self.cell_model.adapted_dk_update_state(rng, &nbrhood);
+            *cell = self.cell_model.simplistic_dk_update_state(rng, &nbrhood);
         }
     }
 }
