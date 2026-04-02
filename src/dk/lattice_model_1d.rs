@@ -1,11 +1,9 @@
 // #![warn(missing_docs)]
 // //!
 // //!
+use super::{Cell1D, CellModel};
 
-use crate::{
-    dk::{cell_model_1d::CellModel1D, traits::HasMean},
-    sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology},
-};
+use crate::sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -15,7 +13,7 @@ use rayon::prelude::*;
 /// the boolean lattice (true=occupied) stored as a linear vector;
 /// birth and survival rules as a set of constants.
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct LatticeModel1D<C: CellModel1D> {
+pub struct LatticeModel1D<C: CellModel<Cell1D>> {
     /// The model that provides the cells and the mapping between
     /// 3x1 cell neighborhoods in one time step and the next.
     cell_model: C,
@@ -30,17 +28,8 @@ pub struct LatticeModel1D<C: CellModel1D> {
     do_edge_buffering: bool,
 }
 
-impl<C: CellModel1D> HasMean for LatticeModel1D<C> {
-    /// Compute the mean cell occupancy
-    fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-        (total as f64) / (self.n_cells() as f64)
-    }
-}
-
 /// Lattice model methods.
-impl<C: CellModel1D> LatticeModel1D<C> {
+impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     /// Create a fresh grid (vector of C::State cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
@@ -81,7 +70,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     }
 
     /// Count the total number of cells in the grid.
-    fn n_cells(&self) -> usize {
+    pub fn n_cells(&self) -> usize {
         self.n_x
     }
 
@@ -194,8 +183,8 @@ impl<C: CellModel1D> LatticeModel1D<C> {
             .skip(skip_left as usize)
             .zip(lattice.windows(3))
         {
-            let nbrhood = [window[0], window[1], window[2]];
-            *cell = self.cell_model.dk_update_state(rng, &nbrhood);
+            let nbrhood = [window[0].into(), window[1].into(), window[2].into()];
+            *cell = self.cell_model.update_state(rng, &nbrhood);
         }
     }
 }
