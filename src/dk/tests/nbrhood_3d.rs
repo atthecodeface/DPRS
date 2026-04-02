@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use crate::dk::{CellModel3D, CellNbrhood3D};
+use super::{CellModel3D, CellNbrhood3D};
 use rand::RngExt;
 
 #[derive(Clone, Copy, Debug)]

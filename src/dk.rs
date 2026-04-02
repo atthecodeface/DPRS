@@ -24,15 +24,22 @@ mod lattice_model_3d;
 mod run_3d;
 mod simulation_3d;
 
+#[cfg(test)]
+mod tests;
+
 // mod simulation;
 
 use crate::{
     dk::types::{LatticeSlices, Tracking},
     sim_parameters::{Dimension, SimParameters},
 };
-pub use cell_model_3d::CellModel3D;
+pub(self) use cell_model_1d::CellModel1D;
+pub(self) use cell_model_2d::CellModel2D;
+pub(self) use cell_model_3d::CellModel3D;
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
-pub use lattice_model_3d::LatticeModel3D;
+pub(self) use lattice_model_1d::LatticeModel1D;
+pub(self) use lattice_model_2d::LatticeModel2D;
+pub(self) use lattice_model_3d::LatticeModel3D;
 pub use run_1d::Run1D;
 pub use run_2d::Run2D;
 pub use run_3d::Run3D;

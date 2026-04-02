@@ -30,15 +30,6 @@ pub struct LatticeModel1D<C: CellModel1D> {
     do_edge_buffering: bool,
 }
 
-impl<C: CellModel1D> DramaticallySimulatable for LatticeModel1D<C> {
-    /// Compute the mean cell occupancy
-    fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-        (total as f64) / (self.n_cells() as f64)
-    }
-}
-
 /// Lattice model methods.
 impl<C: CellModel1D> LatticeModel1D<C> {
     /// Create a fresh grid (vector of C::State cells) with all values=false,
@@ -81,7 +72,7 @@ impl<C: CellModel1D> LatticeModel1D<C> {
     }
 
     /// Count the total number of cells in the grid.
-    fn n_cells(&self) -> usize {
+    pub fn n_cells(&self) -> usize {
         self.n_x
     }
 
