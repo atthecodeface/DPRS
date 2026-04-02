@@ -1,5 +1,7 @@
 use crate::{
-    dk::{CellNbrhood3D, RowIterator3D, cell_model_3d::CellModel3D, traits::HasMean},
+    dk::{
+        CellNbrhood3D, RowIterator3D, cell_model_3d::CellModel3D, traits::DramaticallySimulatable,
+    },
     sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology},
 };
 use rand::Rng;
@@ -36,7 +38,7 @@ pub struct LatticeModel3D<C: CellModel3D> {
     do_edge_buffering: bool,
 }
 
-impl<C: CellModel3D> HasMean for LatticeModel3D<C> {
+impl<C: CellModel3D> DramaticallySimulatable for LatticeModel3D<C> {
     /// Compute the mean cell occupancy
     fn mean(&self) -> f64 {
         let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();

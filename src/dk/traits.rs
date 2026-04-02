@@ -2,7 +2,7 @@
 // //!
 // //!
 
-pub trait HasMean {
+pub trait DramaticallySimulatable {
     fn mean(&self) -> f64;
 }
 

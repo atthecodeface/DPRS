@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use crate::{dk::traits::HasMean, sim_parameters::DualState};
+use crate::{dk::traits::DramaticallySimulatable, sim_parameters::DualState};
 
 pub type LatticeSlices = Vec<Vec<DualState>>;
 pub type Tracking = Vec<Vec<f64>>;
@@ -54,7 +54,7 @@ impl Default for TrackingHistory {
 }
 
 impl TrackingHistory {
-    pub fn update<T: HasMean>(&mut self, iteration: usize, lattice_model: &T) {
+    pub fn update<T: DramaticallySimulatable>(&mut self, iteration: usize, lattice_model: &T) {
         let t = iteration as f64;
         self.tracking[0].push(t);
         let rho_mean = lattice_model.mean();

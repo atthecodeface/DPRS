@@ -3,7 +3,7 @@
 // //!
 
 use crate::{
-    dk::{cell_model_1d::CellModel1D, traits::HasMean},
+    dk::{cell_model_1d::CellModel1D, traits::DramaticallySimulatable},
     sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology},
 };
 use rand::Rng;
@@ -30,7 +30,7 @@ pub struct LatticeModel1D<C: CellModel1D> {
     do_edge_buffering: bool,
 }
 
-impl<C: CellModel1D> HasMean for LatticeModel1D<C> {
+impl<C: CellModel1D> DramaticallySimulatable for LatticeModel1D<C> {
     /// Compute the mean cell occupancy
     fn mean(&self) -> f64 {
         let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
