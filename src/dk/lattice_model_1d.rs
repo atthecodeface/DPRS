@@ -16,7 +16,7 @@ use rayon::prelude::*;
 pub struct LatticeModel1D<C: CellModel<Cell1D>> {
     /// The model that provides the cells and the mapping between
     /// 3x1 cell neighborhoods in one time step and the next.
-    cell_model: C,
+    pub cell_model: C,
     n_x: usize,
     lattice: Vec<C::State>,
     end_values_x: (C::State, C::State),
