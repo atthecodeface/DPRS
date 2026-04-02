@@ -102,6 +102,13 @@ pub enum DualState {
     Occupied,
 }
 
+impl From<DualState> for usize {
+    fn from(state: DualState) -> usize {
+        let b: bool = state.into();
+        b as usize
+    }
+}
+
 impl From<bool> for DualState {
     fn from(b: bool) -> Self {
         match b {

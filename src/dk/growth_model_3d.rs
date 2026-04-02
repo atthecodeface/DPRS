@@ -27,26 +27,28 @@ impl GrowthModel3D {
             do_staggered,
         }
     }
-
-    /// Update simulation step counter and return.
+    /// Deprecated - remove me
     pub fn increment(&mut self) -> usize {
-        self.iteration += 1;
-        self.iteration
+        self.next_iteration();
+        self.iteration()
     }
 }
 
 // Implement CellModel3D trait for GrowthModel3D.
 impl CellModel<Cell3D> for GrowthModel3D {
-    type State = DualState;
-    const EMPTY: DualState = DualState::Empty;
-    const OCCUPIED: DualState = DualState::Occupied;
+    fn next_iteration(&mut self) {
+        self.iteration += 1;
+    }
+    fn iteration(&self) -> usize {
+        self.iteration
+    }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State {
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
         rng.random_bool(self.p_initial).into()
     }
 
-    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &CellNbrhood3D) -> Self::State {
+    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &CellNbrhood3D) -> DualState {
         if self.do_staggered {
             //TODO: flip between (0,1) and (1,2) nbrhood portions depending on is_even_step
             let _is_even_step = self.iteration.is_multiple_of(2);
@@ -56,7 +58,7 @@ impl CellModel<Cell3D> for GrowthModel3D {
         if do_survive {
             nbrhood.is_any_occupied().into()
         } else {
-            Self::EMPTY
+            DualState::Empty
         }
     }
 

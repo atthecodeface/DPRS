@@ -1,5 +1,5 @@
 use super::{Cell2D, CellModel};
-use crate::sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology};
+use crate::sim_parameters::{BoundaryCondition, DualState, GrowthModelChoice, Topology};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -15,9 +15,9 @@ pub struct LatticeModel2D<C: CellModel<Cell2D>> {
     cell_model: C,
     n_x: usize,
     n_y: usize,
-    lattice: Vec<C::State>,
-    end_values_x: (C::State, C::State),
-    end_values_y: (C::State, C::State),
+    lattice: Vec<DualState>,
+    end_values_x: (DualState, DualState),
+    end_values_y: (DualState, DualState),
     // From Parameters
     growth_model_choice: GrowthModelChoice,
     axis_topology_x: Topology,
@@ -31,14 +31,14 @@ pub struct LatticeModel2D<C: CellModel<Cell2D>> {
 
 /// Lattice model methods.
 impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
-    /// Create a fresh grid (vector of C::State cells) with all values=false,
+    /// Create a fresh grid (vector of DualState cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
         cell_model: C,
         n_x: usize,
         n_y: usize,
-        end_values_x: (C::State, C::State),
-        end_values_y: (C::State, C::State),
+        end_values_x: (DualState, DualState),
+        end_values_y: (DualState, DualState),
         growth_model_choice: GrowthModelChoice,
         axis_topology_x: Topology,
         axis_topology_y: Topology,
@@ -52,7 +52,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
             cell_model,
             n_x,
             n_y,
-            lattice: vec![C::State::default(); n_x * n_y],
+            lattice: vec![DualState::default(); n_x * n_y],
             end_values_x,
             end_values_y,
             growth_model_choice,
@@ -67,7 +67,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
     }
 
     /// Borrow the lattice.
-    pub fn lattice(&self) -> &Vec<C::State> {
+    pub fn lattice(&self) -> &Vec<DualState> {
         &self.lattice
     }
 
@@ -76,7 +76,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
     /// This is the 'deconstructor', used after simulation to take the lattice
     /// (and potentially the model, if that is useful too).
     #[allow(dead_code)]
-    pub fn take(self) -> (C, Vec<C::State>) {
+    pub fn take(self) -> (C, Vec<DualState>) {
         (self.cell_model, self.lattice)
     }
 
@@ -91,7 +91,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
     }
 
     /// Get a mutable reference to one of the rows of the lattice
-    fn lattice_row_mut(&mut self, y: usize) -> &mut [C::State] {
+    fn lattice_row_mut(&mut self, y: usize) -> &mut [DualState] {
         &mut self.lattice[(y * self.n_x)..((y + 1) * self.n_x)]
     }
 
@@ -105,9 +105,9 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
 
     /// Seed the simulation with a central patch.
     pub fn create_seeded_lattice(&mut self) {
-        self.lattice = vec![C::State::default(); self.n_cells()];
+        self.lattice = vec![DualState::default(); self.n_cells()];
         let i = self.i_cell(self.n_x / 2, self.n_y / 2);
-        self.lattice[i] = C::OCCUPIED;
+        self.lattice[i] = DualState::Occupied;
     }
 
     /// Enforce edge topology specifications.
@@ -174,7 +174,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
                     let nbrhood = self.cell_nbrhood(x, y);
                     self.cell_model.update_state(rng, &nbrhood)
                 } else {
-                    C::State::default()
+                    DualState::default()
                 }
             })
             .collect();
@@ -210,7 +210,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
 
     /// Evolve the grid by one iteration using chunked parallel processing.
     pub fn next_iteration_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
-        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
+        let mut updated_lattice = vec![DualState::default(); self.lattice.len()];
         // Split the lattice into n_y rows each of length n_x and
         // update these rows in parallel using par_chunks_mut().
         // Before passing to next_row() to perform the update,
@@ -237,7 +237,7 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
     ///
     /// By using iterators we can guarantee safe access without (unnecessary)
     /// range checks.
-    pub fn update_row<R: Rng>(&self, rng: &mut R, y: usize, row: &mut [C::State]) {
+    pub fn update_row<R: Rng>(&self, rng: &mut R, y: usize, row: &mut [DualState]) {
         let lattice = &self.lattice;
         let row_span = self.n_x - 2;
         let i_md = self.i_cell(0, y);

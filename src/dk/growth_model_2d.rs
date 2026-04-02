@@ -27,26 +27,28 @@ impl GrowthModel2D {
             do_staggered,
         }
     }
-
-    /// Update simulation step counter and return.
+    /// Deprecated - remove me
     pub fn increment(&mut self) -> usize {
-        self.iteration += 1;
-        self.iteration
+        self.next_iteration();
+        self.iteration()
     }
 }
 
 // Implement CellModel2D trait for GrowthModel2D.
 impl CellModel<Cell2D> for GrowthModel2D {
-    type State = DualState;
-    const EMPTY: DualState = DualState::Empty;
-    const OCCUPIED: DualState = DualState::Occupied;
+    fn next_iteration(&mut self) {
+        self.iteration += 1;
+    }
+    fn iteration(&self) -> usize {
+        self.iteration
+    }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State {
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
         rng.random_bool(self.p_initial).into()
     }
 
-    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &[bool; 9]) -> Self::State {
+    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &[bool; 9]) -> DualState {
         if self.do_staggered {
             //TODO: flip between (0,1) and (1,2) nbrhood portions depending on is_even_step
             let _is_even_step = self.iteration.is_multiple_of(2);

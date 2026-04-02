@@ -3,7 +3,7 @@
 // //!
 use super::{Cell1D, CellModel};
 
-use crate::sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology};
+use crate::sim_parameters::{BoundaryCondition, DualState, GrowthModelChoice, Topology};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -18,8 +18,8 @@ pub struct LatticeModel1D<C: CellModel<Cell1D>> {
     /// 3x1 cell neighborhoods in one time step and the next.
     pub cell_model: C,
     n_x: usize,
-    lattice: Vec<C::State>,
-    end_values_x: (C::State, C::State),
+    lattice: Vec<DualState>,
+    end_values_x: (DualState, DualState),
     // From Parameters
     growth_model_choice: GrowthModelChoice,
     axis_topology_x: Topology,
@@ -30,12 +30,12 @@ pub struct LatticeModel1D<C: CellModel<Cell1D>> {
 
 /// Lattice model methods.
 impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
-    /// Create a fresh grid (vector of C::State cells) with all values=false,
+    /// Create a fresh grid (vector of DualState cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
         cell_model: C,
         n_x: usize,
-        end_values_x: (C::State, C::State),
+        end_values_x: (DualState, DualState),
         growth_model_choice: GrowthModelChoice,
         axis_topology_x: Topology,
         axis_bcs_x: (BoundaryCondition, BoundaryCondition),
@@ -45,7 +45,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
         Self {
             cell_model,
             n_x,
-            lattice: vec![C::State::default(); n_x],
+            lattice: vec![DualState::default(); n_x],
             end_values_x,
             growth_model_choice,
             axis_topology_x,
@@ -56,7 +56,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     }
 
     /// Borrow the lattice.
-    pub fn lattice(&self) -> &Vec<C::State> {
+    pub fn lattice(&self) -> &[DualState] {
         &self.lattice
     }
 
@@ -65,7 +65,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     /// This is the 'deconstructor', used after simulation to take the lattice
     /// (and potentially the model, if that is useful too).
     #[allow(dead_code)]
-    pub fn take(self) -> (C, Vec<C::State>) {
+    pub fn take(self) -> (C, Vec<DualState>) {
         (self.cell_model, self.lattice)
     }
 
@@ -84,9 +84,9 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
 
     /// Seed the simulation with a central patch.
     pub fn create_seeded_lattice(&mut self) {
-        self.lattice = vec![C::State::default(); self.n_cells()];
+        self.lattice = vec![DualState::default(); self.n_cells()];
         let i = self.n_x / 2;
-        self.lattice[i] = C::OCCUPIED;
+        self.lattice[i] = DualState::Occupied;
     }
 
     /// Enforce edge topology specifications.
@@ -113,7 +113,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
 
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial<R: Rng>(&mut self, rng: &mut R) {
-        let mut updated_lattice = vec![C::State::default(); self.n_x];
+        let mut updated_lattice = vec![DualState::default(); self.n_x];
         self.update_portion_of_row(rng, &mut updated_lattice, 0, true, true);
         self.lattice = updated_lattice;
     }
@@ -125,7 +125,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
-        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
+        let mut updated_lattice = vec![DualState::default(); self.lattice.len()];
         let n_chunks = rngs.len();
         // let chunk_length = (self.n_x + n_chunks - 1) / n_chunks;
         // Clippy recommendation:
@@ -167,7 +167,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     pub fn update_portion_of_row<R: Rng>(
         &self,
         rng: &mut R,
-        row: &mut [C::State],
+        row: &mut [DualState],
         lattice_offset: usize,
         skip_left: bool,
         skip_right: bool,

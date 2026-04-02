@@ -55,31 +55,10 @@ impl CellDim for Cell3D {
 /// This must be [Sync] as the model can be accessed by
 /// different threads at the same time in the parallel working.
 pub trait CellModel<Dim: CellDim>: Sync {
-    /// The value in each cell.
-    ///
-    /// This must be [Send] to support the 'parallel' versions;
-    /// the Cell is passed to a work thread.
-    ///
-    /// This must be [Sync] to support the 'parallel' versions;
-    /// the array of cells is accessed by many threads at once.
-    ///
-    type State: Default + std::fmt::Debug + Copy + Send + Sync + PartialEq + From<bool> + Into<bool>;
-
-    /// The value of State for an empty cell
-    #[allow(dead_code)]
-    const EMPTY: Self::State;
-
-    /// The value of State for an occupied cell
-    const OCCUPIED: Self::State;
-
-    fn from_state_to_usize(state: &Self::State) -> usize {
-        (*state).into() as usize
-    }
-
-    /// Sample Bernoulli distribution to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State;
-
-    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &Dim::Nbrhood) -> Self::State;
+    fn next_iteration(&mut self);
+    fn iteration(&self) -> usize;
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState;
+    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &Dim::Nbrhood) -> DualState;
 }
 
 pub trait DramaticallySimulatable<D: CellDim>: Sized {
@@ -94,6 +73,7 @@ pub trait DramaticallySimulatable<D: CellDim>: Sized {
     fn iteration(&self) -> usize {
         0
     }
+    fn lattice(&self) -> &[DualState];
     fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {}
     fn create_seeded_lattice(&mut self) {}
     fn apply_edge_topology(&mut self) {}
@@ -105,20 +85,25 @@ pub trait DramaticallySimulatable<D: CellDim>: Sized {
 // pub trait HasLattice: Sync {
 //     fn lattice<T>(&self) -> &Vec<T>;
 // }
-
 impl DramaticallySimulatable<Cell1D> for LatticeModel1D<GrowthModel1D> {
     /// Compute the mean cell occupancy
     fn mean(&self) -> f64 {
         let total: usize = self
             .lattice()
             .iter()
-            .map(GrowthModel1D::from_state_to_usize)
+            .map(|s| {
+                let u: usize = (*s).into();
+                u
+            })
             .sum();
 
         (total as f64) / (self.n_cells() as f64)
     }
     fn iteration(&self) -> usize {
         self.cell_model.iteration
+    }
+    fn lattice(&self) -> &[DualState] {
+        self.lattice()
     }
     fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
         // Growth model and its parameters
@@ -162,6 +147,7 @@ impl DramaticallySimulatable<Cell1D> for LatticeModel1D<GrowthModel1D> {
         self.next_iteration_serial(rng);
     }
     fn iterate_once_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
+        self.cell_model.increment();
         self.next_iteration_parallel(rngs);
     }
 }
@@ -169,17 +155,37 @@ impl DramaticallySimulatable<Cell1D> for LatticeModel1D<GrowthModel1D> {
 impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C> {
     /// Compute the mean cell occupancy
     fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
+        let total: usize = self
+            .lattice()
+            .iter()
+            .map(|s| {
+                let u: usize = (*s).into();
+                u
+            })
+            .sum();
 
         (total as f64) / (self.n_cells() as f64)
+    }
+    fn lattice(&self) -> &[DualState] {
+        self.lattice()
     }
 }
 
 impl<C: CellModel<Cell3D>> DramaticallySimulatable<Cell3D> for LatticeModel3D<C> {
     /// Compute the mean cell occupancy
     fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
+        let total: usize = self
+            .lattice()
+            .iter()
+            .map(|s| {
+                let u: usize = (*s).into();
+                u
+            })
+            .sum();
 
         (total as f64) / (self.n_cells() as f64)
+    }
+    fn lattice(&self) -> &[DualState] {
+        self.lattice()
     }
 }
