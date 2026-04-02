@@ -33,15 +33,15 @@ use crate::{
     sim_parameters::{Dimension, SimParameters},
 };
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
-pub(self) use growth_model_1d::GrowthModel1D;
+pub use growth_model_1d::GrowthModel1D;
 
-pub(self) use lattice_model_1d::LatticeModel1D;
-pub(self) use lattice_model_2d::LatticeModel2D;
-pub(self) use lattice_model_3d::LatticeModel3D;
+pub use lattice_model_1d::LatticeModel1D;
+pub use lattice_model_2d::LatticeModel2D;
+pub use lattice_model_3d::LatticeModel3D;
 pub use run_1d::Run1D;
 pub use run_2d::Run2D;
 pub use run_3d::Run3D;
-pub(self) use traits::{Cell1D, Cell2D, Cell3D, CellDim, CellModel, DramaticallySimulatable};
+pub use traits::{Cell1D, Cell2D, Cell3D, CellDim, CellModel, DramaticallySimulatable};
 
 /// Entry point to this module.
 pub fn sim_dk(sim_parameters: SimParameters) -> (usize, LatticeSlices, Tracking, f64) {

@@ -1,5 +1,8 @@
+use super::{Cell1D, CellDim, DramaticallySimulatable};
 use super::{Cell2D, CellModel};
-use crate::sim_parameters::{BoundaryCondition, DualState, GrowthModelChoice, Topology};
+use crate::sim_parameters::{
+    BoundaryCondition, DualState, GrowthModelChoice, SimParameters, Topology,
+};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -265,5 +268,68 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
             ];
             *cell = self.cell_model.update_state(rng, &nbrhood);
         }
+    }
+}
+
+impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C> {
+    /// Compute the mean cell occupancy
+    fn mean(&self) -> f64 {
+        let total: usize = self
+            .lattice()
+            .iter()
+            .map(|s| {
+                let u: usize = (*s).into();
+                u
+            })
+            .sum();
+
+        (total as f64) / (self.n_cells() as f64)
+    }
+    fn iteration(&self) -> usize {
+        self.cell_model.iteration()
+    }
+    fn num_parallel_rngs(&self, parameters: &SimParameters) -> usize {
+        parameters.n_y_with_pad()
+    }
+    fn lattice(&self) -> &[DualState] {
+        self.lattice()
+    }
+    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
+        // Lattice model and its parameters
+        Ok(Self::new(
+            C::create_from_parameters(parameters)?,
+            parameters.n_x_with_pad(),
+            parameters.n_y_with_pad(),
+            (DualState::Empty, DualState::Empty),
+            (DualState::Empty, DualState::Empty),
+            parameters.growth_model_choice,
+            parameters.axis_topology_x,
+            parameters.axis_topology_y,
+            parameters.axis_bcs_x,
+            parameters.axis_bcs_y,
+            parameters.axis_bc_values_x,
+            parameters.axis_bc_values_y,
+            parameters.do_edge_buffering,
+        ))
+    }
+    fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
+        self.create_randomized_lattice(rng);
+    }
+    fn create_seeded_lattice(&mut self) {
+        self.create_seeded_lattice();
+    }
+    fn apply_edge_topology(&mut self) {
+        self.apply_edge_topology();
+    }
+    fn apply_boundary_conditions(&mut self) {
+        self.apply_boundary_conditions();
+    }
+    fn iterate_once_serial<R: Rng>(&mut self, rng: &mut R) {
+        self.cell_model.next_iteration();
+        self.next_iteration_serial(rng);
+    }
+    fn iterate_once_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
+        self.cell_model.next_iteration();
+        self.next_iteration_parallel(rngs);
     }
 }

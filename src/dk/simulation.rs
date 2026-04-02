@@ -19,7 +19,7 @@ use rand::rngs::StdRng;
 /// Returns the number of lattices sampled, the sampled lattices, and tracking
 /// which is a Vec with first entry a vec of iteration numbers and the second
 /// entry a vec of mean density for the respective iteration.
-pub fn simulation<LM: DramaticallySimulatable<Cell1D>>(
+pub fn simulation<D: CellDim, LM: DramaticallySimulatable<D>>(
     parameters: &SimParameters,
 ) -> Result<(usize, LatticeSlices, Tracking), ()> {
     let mut lm = LM::create_from_parameters(parameters)?;
@@ -80,7 +80,8 @@ pub fn simulation<LM: DramaticallySimulatable<Cell1D>>(
             // NB: this could be shortened by 2 (pad width) but we'll
             // keep it full length for now just in case we need buffer RNGs.
             assert!(parameters.random_seed > 0);
-            let mut rngs: Vec<StdRng> = (0..parameters.n_threads)
+
+            let mut rngs: Vec<StdRng> = (0..lm.num_parallel_rngs(parameters))
                 .map(|s| StdRng::seed_from_u64((parameters.random_seed * (s + 1)) as u64))
                 .collect();
             for _ in 1..(n_iterations + 1) {

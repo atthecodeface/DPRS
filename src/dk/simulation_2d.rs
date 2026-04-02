@@ -2,6 +2,7 @@
 // //!
 // //!
 
+use super::Cell2D;
 use super::growth_model_2d::GrowthModel2D;
 use crate::dk::lattice_model_2d;
 use crate::dk::types::{LatticeHistory, LatticeSlices, Tracking, TrackingHistory};
@@ -124,7 +125,7 @@ pub fn simulation_2d(parameters: &SimParameters) -> (usize, LatticeSlices, Track
                 lm.apply_edge_topology();
                 lm.apply_boundary_conditions();
                 lattice_history.record(lm.lattice(), iteration);
-                tracking_history.update(iteration, &lm);
+                tracking_history.update::<Cell2D, _>(iteration, &lm);
             }
         }
     };

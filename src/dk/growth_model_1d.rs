@@ -3,7 +3,9 @@
 // //!
 
 use super::{Cell1D, CellModel};
-use crate::sim_parameters::DualState;
+use crate::sim_parameters::{
+    DualState, GrowthModelChoice, InitialCondition, Processing, SimParameters,
+};
 use rand::{Rng, RngExt};
 
 /// GrowthModel1D implements the CellModel1D trait, plus these.
@@ -36,6 +38,23 @@ impl GrowthModel1D {
 
 // Implement CellModel1D trait for GrowthModel.
 impl CellModel<Cell1D> for GrowthModel1D {
+    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
+        // Growth model and its parameters
+        let do_staggered = match parameters.growth_model_choice {
+            GrowthModelChoice::SimplifiedDomanyKinzel => false,
+            GrowthModelChoice::StaggeredDomanyKinzel => true,
+            _ => todo!(),
+        };
+        let mut growth_model = GrowthModel1D::new(
+            parameters.p_1,
+            parameters.p_2,
+            parameters.p_initial,
+            0,
+            do_staggered,
+        );
+        Ok(growth_model)
+    }
+
     fn next_iteration(&mut self) {
         self.iteration += 1;
     }
