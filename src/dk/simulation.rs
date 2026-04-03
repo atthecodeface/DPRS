@@ -83,17 +83,24 @@ pub fn simulation_nd<D: CellDim, LM: DramaticallySimulatable<D>>(
                 .map(|s| StdRng::seed_from_u64((parameters.random_seed * (s + 1)) as u64))
                 .collect();
             for _ in 1..(n_iterations + 1) {
-                let iteration = lm.iteration();
                 lm.iterate_once_parallel(&mut rngs);
                 lm.apply_axial_topologies();
                 lm.apply_boundary_conditions();
+                let iteration = lm.iteration();
                 lattice_history.record(|| lm.lattice().to_vec(), iteration);
                 tracking_history.update(iteration, &lm);
             }
         }
     };
     assert!(n_iterations == lm.iteration());
-    assert!(n_lattices == 0 || n_lattices == lattice_history.len());
+    /* Why is this assert here?
+     * If iterations = 13*7 and sample period is 13*7+1 then this assert fails
+     */
+    assert!(
+        n_lattices == 0 || n_lattices == lattice_history.len(),
+        "Num lattices {n_lattices} and lattice_history is {}",
+        lattice_history.len()
+    );
 
     Ok((n_lattices, lattice_history.take(), tracking_history.take()))
 }

@@ -1,4 +1,4 @@
-pub use super::{Cell1D, Cell2D, Cell3D, CellModel, run_nd, simulation_nd};
+pub use super::{Cell1D, Cell2D, CellModel, run_nd, simulation_nd};
 pub use super::{LatticeModel1D, LatticeModel2D};
 pub use crate::sim_parameters::{self, DualState, SimParameters};
 

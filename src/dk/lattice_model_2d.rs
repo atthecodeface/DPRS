@@ -109,8 +109,8 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
 
     /// Check cell index is within lattice bounds; return this test and (x, y).
     fn is_in_bounds(&self, i_cell: usize) -> (bool, usize, usize) {
-        let x = i_cell % self.parameters.n_x;
-        let y = i_cell / self.parameters.n_x;
+        let x = i_cell % self.lattice_n_x;
+        let y = i_cell / self.lattice_n_x;
 
         (self.is_in_bounds_xy(x, y), x, y)
     }
@@ -202,14 +202,13 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
 
     fn mean(&self) -> f64 {
         let total: usize = self
-            .lattice()
+            .lattice
             .iter()
             .map(|s| {
                 let u: usize = (*s).into();
                 u
             })
             .sum();
-
         (total as f64) / (self.n_cells() as f64)
     }
 
@@ -246,8 +245,8 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
         if self.parameters.topology_x.is_periodic() {
             let n_x = self.lattice_n_x;
             for row in self.lattice.chunks_exact_mut(n_x) {
-                row[n_x - 2] = row[0];
-                row[1] = row[n_x - 1];
+                row[0] = row[n_x - 2];
+                row[n_x - 1] = row[1];
             }
         }
 
@@ -290,7 +289,6 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
 
     fn iterate_once_serial<R: Rng>(&mut self, rng: &mut R) {
         self.next_iteration_serial(rng);
-        eprintln!("{self}");
     }
 
     fn iterate_once_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
