@@ -51,7 +51,11 @@ fn test_1d() {
     );
     parameters.n_iterations = 10;
     parameters.sample_period = 1;
-    let (history_len, lattices, tracking) =
+    parameters.do_edge_buffering = true;
+    let (history_len, lattices, _tracking) =
         simulation_nd::<Cell1D, LatticeModel1D<MoveRightModel1D>>(&parameters).unwrap();
-    assert_eq!(history_len, 0);
+    assert_eq!(history_len, parameters.n_iterations + 1);
+
+    assert_eq!(lattices[0], lattices[10]);
+    assert_eq!(lattices[0][0..8], lattices[1][1..9]);
 }
