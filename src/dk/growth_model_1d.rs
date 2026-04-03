@@ -3,7 +3,9 @@
 // //!
 
 use super::{Cell1D, CellModel};
-use crate::sim_parameters::DualState;
+use crate::sim_parameters::{
+    DualState, GrowthModelChoice, SimParameters,
+};
 use rand::{Rng, RngExt};
 
 /// GrowthModel1D implements the CellModel1D trait, plus these.
@@ -27,26 +29,44 @@ impl GrowthModel1D {
             do_staggered,
         }
     }
-
-    /// Update simulation step counter and return.
+    /// Deprecated - remove me
     pub fn increment(&mut self) -> usize {
-        self.iteration += 1;
-        self.iteration
+        self.next_iteration();
+        self.iteration()
     }
 }
 
 // Implement CellModel1D trait for GrowthModel.
 impl CellModel<Cell1D> for GrowthModel1D {
-    type State = DualState;
-    const EMPTY: DualState = DualState::Empty;
-    const OCCUPIED: DualState = DualState::Occupied;
+    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
+        // Growth model and its parameters
+        let do_staggered = match parameters.growth_model_choice {
+            GrowthModelChoice::SimplifiedDomanyKinzel => false,
+            GrowthModelChoice::StaggeredDomanyKinzel => true,
+            _ => todo!(),
+        };
+        Ok(Self::new(
+            parameters.p_1,
+            parameters.p_2,
+            parameters.p_initial,
+            0,
+            do_staggered,
+        ))
+    }
+
+    fn next_iteration(&mut self) {
+        self.iteration += 1;
+    }
+    fn iteration(&self) -> usize {
+        self.iteration
+    }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State {
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
         rng.random_bool(self.p_initial).into()
     }
 
-    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &[bool; 3]) -> Self::State {
+    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &[bool; 3]) -> DualState {
         let do_survive = match self.do_staggered {
             true => {
                 let is_even_step = self.iteration.is_multiple_of(2);

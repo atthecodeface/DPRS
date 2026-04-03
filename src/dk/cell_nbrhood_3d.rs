@@ -2,7 +2,7 @@
 // //!
 // //!
 
-use super::{Cell3D, CellModel};
+use crate::sim_parameters::DualState;
 
 /// The 3-by-3-by-3 neighbourhood around a cell
 ///
@@ -112,7 +112,7 @@ impl CellNbrhood3D {
 }
 
 /// An iterator over a lattice centred on a cell (x,y,z), with a 'move X by +1' method
-pub struct RowIterator3D<'a, C: CellModel<Cell3D>> {
+pub struct RowIterator3D<'a> {
     /// The 3-by-3-by-3 neighbourhood around a cell
     nbrhood: CellNbrhood3D,
     /// A windowed iterator over the 'X' row in the lattice, starting at the cell
@@ -123,17 +123,17 @@ pub struct RowIterator3D<'a, C: CellModel<Cell3D>> {
     /// The 'next' function must move one along the 'X'; to achieve this from a
     /// 'windows' method on a slice that is of n_x by n_y by n_z with Z major, X
     /// minor, this just requires `windows(...)'
-    row_iter: std::iter::Take<std::slice::Windows<'a, C::State>>,
+    row_iter: std::iter::Take<std::slice::Windows<'a, DualState>>,
     /// The most recent window produce by row_iter
-    lattice_window: Option<&'a [C::State]>,
+    lattice_window: Option<&'a [DualState]>,
     n_x: usize,
     n_y: usize,
 }
 
-impl<'a, C: CellModel<Cell3D>> RowIterator3D<'a, C> {
+impl<'a> RowIterator3D<'a> {
     /// Create a new 'X row iterator' which provides a neighborhood for (x,y,z), then (x+1,y,z), etc
     pub fn new(
-        lattice: &'a [C::State],
+        lattice: &'a [DualState],
         xyz: (usize, usize, usize),
         n_x: usize,
         n_y: usize,

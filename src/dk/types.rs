@@ -2,7 +2,10 @@
 // //!
 // //!
 
-use crate::{dk::traits::DramaticallySimulatable, sim_parameters::DualState};
+use crate::{
+    dk::traits::{CellDim, DramaticallySimulatable},
+    sim_parameters::DualState,
+};
 
 pub type LatticeSlices = Vec<Vec<DualState>>;
 pub type Tracking = Vec<Vec<f64>>;
@@ -18,9 +21,9 @@ impl LatticeHistory {
         self.sample_period = sample_period;
     }
 
-    pub fn record(&mut self, lattice: &Vec<DualState>, i: usize) {
+    pub fn record(&mut self, lattice: &[DualState], i: usize) {
         if self.sample_period > 0 && i.is_multiple_of(self.sample_period) {
-            self.lattice_slices.push(lattice.clone());
+            self.lattice_slices.push(lattice.to_vec());
         }
     }
 
@@ -54,7 +57,11 @@ impl Default for TrackingHistory {
 }
 
 impl TrackingHistory {
-    pub fn update<T: DramaticallySimulatable>(&mut self, iteration: usize, lattice_model: &T) {
+    pub fn update<D: CellDim, T: DramaticallySimulatable<D>>(
+        &mut self,
+        iteration: usize,
+        lattice_model: &T,
+    ) {
         let t = iteration as f64;
         self.tracking[0].push(t);
         let rho_mean = lattice_model.mean();

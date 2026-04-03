@@ -102,6 +102,13 @@ pub enum DualState {
     Occupied,
 }
 
+impl From<DualState> for usize {
+    fn from(state: DualState) -> usize {
+        let b: bool = state.into();
+        b as usize
+    }
+}
+
 impl From<bool> for DualState {
     fn from(b: bool) -> Self {
         match b {
@@ -228,6 +235,24 @@ impl SimParameters {
             do_edge_buffering: p.do_edge_buffering,
             processing: Processing::from(p.processing),
             n_threads: p.n_threads,
+        }
+    }
+    pub fn n_x_with_pad(&self) -> usize {
+        match self.do_edge_buffering {
+            true => self.n_x + 2,
+            false => self.n_x,
+        }
+    }
+    pub fn n_y_with_pad(&self) -> usize {
+        match self.do_edge_buffering {
+            true => self.n_y + 2,
+            false => self.n_y,
+        }
+    }
+    pub fn n_z_with_pad(&self) -> usize {
+        match self.do_edge_buffering {
+            true => self.n_z + 2,
+            false => self.n_z,
         }
     }
 }

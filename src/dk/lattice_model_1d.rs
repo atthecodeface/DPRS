@@ -1,9 +1,11 @@
 // #![warn(missing_docs)]
 // //!
 // //!
-use super::{Cell1D, CellModel};
+use super::{Cell1D, CellModel, DramaticallySimulatable};
 
-use crate::sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology};
+use crate::sim_parameters::{
+    BoundaryCondition, DualState, GrowthModelChoice, SimParameters, Topology,
+};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -16,10 +18,10 @@ use rayon::prelude::*;
 pub struct LatticeModel1D<C: CellModel<Cell1D>> {
     /// The model that provides the cells and the mapping between
     /// 3x1 cell neighborhoods in one time step and the next.
-    cell_model: C,
+    pub cell_model: C,
     n_x: usize,
-    lattice: Vec<C::State>,
-    end_values_x: (C::State, C::State),
+    lattice: Vec<DualState>,
+    end_values_x: (DualState, DualState),
     // From Parameters
     growth_model_choice: GrowthModelChoice,
     axis_topology_x: Topology,
@@ -30,12 +32,12 @@ pub struct LatticeModel1D<C: CellModel<Cell1D>> {
 
 /// Lattice model methods.
 impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
-    /// Create a fresh grid (vector of C::State cells) with all values=false,
+    /// Create a fresh grid (vector of DualState cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
         cell_model: C,
         n_x: usize,
-        end_values_x: (C::State, C::State),
+        end_values_x: (DualState, DualState),
         growth_model_choice: GrowthModelChoice,
         axis_topology_x: Topology,
         axis_bcs_x: (BoundaryCondition, BoundaryCondition),
@@ -45,7 +47,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
         Self {
             cell_model,
             n_x,
-            lattice: vec![C::State::default(); n_x],
+            lattice: vec![DualState::default(); n_x],
             end_values_x,
             growth_model_choice,
             axis_topology_x,
@@ -56,7 +58,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     }
 
     /// Borrow the lattice.
-    pub fn lattice(&self) -> &Vec<C::State> {
+    pub fn lattice(&self) -> &[DualState] {
         &self.lattice
     }
 
@@ -65,7 +67,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     /// This is the 'deconstructor', used after simulation to take the lattice
     /// (and potentially the model, if that is useful too).
     #[allow(dead_code)]
-    pub fn take(self) -> (C, Vec<C::State>) {
+    pub fn take(self) -> (C, Vec<DualState>) {
         (self.cell_model, self.lattice)
     }
 
@@ -84,9 +86,9 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
 
     /// Seed the simulation with a central patch.
     pub fn create_seeded_lattice(&mut self) {
-        self.lattice = vec![C::State::default(); self.n_cells()];
+        self.lattice = vec![DualState::default(); self.n_cells()];
         let i = self.n_x / 2;
-        self.lattice[i] = C::OCCUPIED;
+        self.lattice[i] = DualState::Occupied;
     }
 
     /// Enforce edge topology specifications.
@@ -113,7 +115,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
 
     /// Evolve the grid by one iteration using serial processing.
     pub fn next_iteration_serial<R: Rng>(&mut self, rng: &mut R) {
-        let mut updated_lattice = vec![C::State::default(); self.n_x];
+        let mut updated_lattice = vec![DualState::default(); self.n_x];
         self.update_portion_of_row(rng, &mut updated_lattice, 0, true, true);
         self.lattice = updated_lattice;
     }
@@ -125,7 +127,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
         // Before passing to next_row() to perform the update,
         // enumerate each row, zip each pair together with one of the RNGs,
         // and then omit the first and last rows.
-        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
+        let mut updated_lattice = vec![DualState::default(); self.lattice.len()];
         let n_chunks = rngs.len();
         // let chunk_length = (self.n_x + n_chunks - 1) / n_chunks;
         // Clippy recommendation:
@@ -167,7 +169,7 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
     pub fn update_portion_of_row<R: Rng>(
         &self,
         rng: &mut R,
-        row: &mut [C::State],
+        row: &mut [DualState],
         lattice_offset: usize,
         skip_left: bool,
         skip_right: bool,
@@ -186,5 +188,63 @@ impl<C: CellModel<Cell1D>> LatticeModel1D<C> {
             let nbrhood = [window[0].into(), window[1].into(), window[2].into()];
             *cell = self.cell_model.update_state(rng, &nbrhood);
         }
+    }
+}
+
+impl<C: CellModel<Cell1D>> DramaticallySimulatable<Cell1D> for LatticeModel1D<C> {
+    /// Compute the mean cell occupancy
+    fn mean(&self) -> f64 {
+        let total: usize = self
+            .lattice()
+            .iter()
+            .map(|s| {
+                let u: usize = (*s).into();
+                u
+            })
+            .sum();
+
+        (total as f64) / (self.n_cells() as f64)
+    }
+    fn iteration(&self) -> usize {
+        self.cell_model.iteration()
+    }
+    fn num_parallel_rngs(&self, parameters: &SimParameters) -> usize {
+        parameters.n_threads
+    }
+    fn lattice(&self) -> &[DualState] {
+        self.lattice()
+    }
+    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
+        // Lattice model and its parameters
+        Ok(Self::new(
+            C::create_from_parameters(parameters)?,
+            parameters.n_x_with_pad(),
+            (DualState::Empty, DualState::Empty),
+            parameters.growth_model_choice,
+            parameters.axis_topology_x,
+            parameters.axis_bcs_x,
+            parameters.axis_bc_values_x,
+            parameters.do_edge_buffering,
+        ))
+    }
+    fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
+        self.create_randomized_lattice(rng);
+    }
+    fn create_seeded_lattice(&mut self) {
+        self.create_seeded_lattice();
+    }
+    fn apply_edge_topology(&mut self) {
+        self.apply_edge_topology();
+    }
+    fn apply_boundary_conditions(&mut self) {
+        self.apply_boundary_conditions();
+    }
+    fn iterate_once_serial<R: Rng>(&mut self, rng: &mut R) {
+        self.cell_model.next_iteration();
+        self.next_iteration_serial(rng);
+    }
+    fn iterate_once_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
+        self.cell_model.next_iteration();
+        self.next_iteration_parallel(rngs);
     }
 }

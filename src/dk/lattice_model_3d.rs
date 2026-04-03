@@ -1,5 +1,9 @@
-use super::{Cell3D, CellModel, CellNbrhood3D, RowIterator3D};
-use crate::sim_parameters::{BoundaryCondition, GrowthModelChoice, Topology};
+use super::CellModel;
+use super::DramaticallySimulatable;
+use super::{Cell3D, CellNbrhood3D, RowIterator3D};
+use crate::sim_parameters::{
+    BoundaryCondition, DualState, GrowthModelChoice, SimParameters, Topology,
+};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -16,10 +20,10 @@ pub struct LatticeModel3D<C: CellModel<Cell3D>> {
     n_x: usize,
     n_y: usize,
     n_z: usize,
-    lattice: Vec<C::State>,
-    end_values_x: (C::State, C::State),
-    end_values_y: (C::State, C::State),
-    end_values_z: (C::State, C::State),
+    lattice: Vec<DualState>,
+    end_values_x: (DualState, DualState),
+    end_values_y: (DualState, DualState),
+    end_values_z: (DualState, DualState),
     // From Parameters
     growth_model_choice: GrowthModelChoice,
     axis_topology_x: Topology,
@@ -36,16 +40,16 @@ pub struct LatticeModel3D<C: CellModel<Cell3D>> {
 
 /// Lattice model methods.
 impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
-    /// Create a fresh grid (vector of C::State cells) with all values=false,
+    /// Create a fresh grid (vector of DualState cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     pub fn new(
         cell_model: C,
         n_x: usize,
         n_y: usize,
         n_z: usize,
-        end_values_x: (C::State, C::State),
-        end_values_y: (C::State, C::State),
-        end_values_z: (C::State, C::State),
+        end_values_x: (DualState, DualState),
+        end_values_y: (DualState, DualState),
+        end_values_z: (DualState, DualState),
         growth_model_choice: GrowthModelChoice,
         axis_topology_x: Topology,
         axis_topology_y: Topology,
@@ -63,7 +67,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
             n_x,
             n_y,
             n_z,
-            lattice: vec![C::State::default(); n_x * n_y * n_z],
+            lattice: vec![DualState::default(); n_x * n_y * n_z],
             end_values_x,
             end_values_y,
             end_values_z,
@@ -82,12 +86,12 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
     }
 
     /// Borrow the lattice.
-    pub fn lattice(&self) -> &Vec<C::State> {
+    pub fn lattice(&self) -> &Vec<DualState> {
         &self.lattice
     }
 
     /// Borrow the lattice mutably.
-    pub fn lattice_mut(&mut self) -> &mut [C::State] {
+    pub fn lattice_mut(&mut self) -> &mut [DualState] {
         &mut self.lattice
     }
 
@@ -96,7 +100,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
     /// This is the 'deconstructor', used after simulation to take the lattice
     /// (and potentially the model, if that is useful too).
     #[allow(dead_code)]
-    pub fn take(self) -> (C, Vec<C::State>) {
+    pub fn take(self) -> (C, Vec<DualState>) {
         (self.cell_model, self.lattice)
     }
 
@@ -111,7 +115,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
     }
 
     /// Get a mutable reference to one of the XY layers of the lattice
-    fn lattice_layer_mut(&mut self, z: usize) -> &mut [C::State] {
+    fn lattice_layer_mut(&mut self, z: usize) -> &mut [DualState] {
         &mut self.lattice[(z * self.n_x * self.n_y)..((z + 1) * self.n_x * self.n_y)]
     }
 
@@ -125,9 +129,9 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
 
     /// Seed the simulation with a central patch.
     pub fn create_seeded_lattice(&mut self) {
-        self.lattice = vec![C::State::default(); self.n_cells()];
+        self.lattice = vec![DualState::default(); self.n_cells()];
         let i = self.i_cell(self.n_x / 2, self.n_y / 2, self.n_z / 2);
-        self.lattice[i] = C::OCCUPIED;
+        self.lattice[i] = DualState::Occupied;
     }
 
     /// Enforce edge topology specifications.
@@ -231,7 +235,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
                     let nbrhood = self.cell_nbrhood(x, y, z);
                     self.cell_model.update_state(&mut rng, &nbrhood)
                 } else {
-                    C::State::default()
+                    DualState::default()
                 }
             })
             .collect();
@@ -276,7 +280,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
             rngs.len() >= self.n_z,
             "Must have at least n_z RNGs supplied to 3D parallel iteration"
         );
-        let mut updated_lattice = vec![C::State::default(); self.lattice.len()];
+        let mut updated_lattice = vec![DualState::default(); self.lattice.len()];
         // Split the lattice into n_z layers each of size n_x*n_y and update
         // these layers in parallel using par_chunks_mut(). Before passing to
         // next_layer() to perform the update, enumerate (to get 'z'), zip each
@@ -303,7 +307,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
     /// Each row is handled with a [RowIterator3D] which efficiently moves along
     /// a row gathering new neighbors into its neighborhood, dropping older ones
     /// out.
-    pub fn update_layer<R: Rng>(&self, rng: &mut R, z: usize, layer: &mut [C::State]) {
+    pub fn update_layer<R: Rng>(&self, rng: &mut R, z: usize, layer: &mut [DualState]) {
         let row_span = self.n_x - 2;
         for (y, row) in layer
             .chunks_exact_mut(self.n_x)
@@ -312,7 +316,7 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
             .take(self.n_y - 2)
         {
             let Some(mut lattice_window) =
-                RowIterator3D::<C>::new(&self.lattice, (1, y, z), self.n_x, self.n_y)
+                RowIterator3D::new(&self.lattice, (1, y, z), self.n_x, self.n_y)
             else {
                 return;
             };
@@ -323,5 +327,73 @@ impl<C: CellModel<Cell3D>> LatticeModel3D<C> {
                 }
             }
         }
+    }
+}
+
+impl<C: CellModel<Cell3D>> DramaticallySimulatable<Cell3D> for LatticeModel3D<C> {
+    /// Compute the mean cell occupancy
+    fn mean(&self) -> f64 {
+        let total: usize = self
+            .lattice()
+            .iter()
+            .map(|s| {
+                let u: usize = (*s).into();
+                u
+            })
+            .sum();
+
+        (total as f64) / (self.n_cells() as f64)
+    }
+    fn iteration(&self) -> usize {
+        self.cell_model.iteration()
+    }
+    fn num_parallel_rngs(&self, parameters: &SimParameters) -> usize {
+        parameters.n_z_with_pad()
+    }
+    fn lattice(&self) -> &[DualState] {
+        self.lattice()
+    }
+    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
+        // Lattice model and its parameters
+        Ok(Self::new(
+            C::create_from_parameters(parameters)?,
+            parameters.n_x_with_pad(),
+            parameters.n_y_with_pad(),
+            parameters.n_z_with_pad(),
+            (DualState::Empty, DualState::Empty),
+            (DualState::Empty, DualState::Empty),
+            (DualState::Empty, DualState::Empty),
+            parameters.growth_model_choice,
+            parameters.axis_topology_x,
+            parameters.axis_topology_y,
+            parameters.axis_topology_z,
+            parameters.axis_bcs_x,
+            parameters.axis_bcs_y,
+            parameters.axis_bcs_z,
+            parameters.axis_bc_values_x,
+            parameters.axis_bc_values_y,
+            parameters.axis_bc_values_z,
+            parameters.do_edge_buffering,
+        ))
+    }
+    fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
+        self.create_randomized_lattice(rng);
+    }
+    fn create_seeded_lattice(&mut self) {
+        self.create_seeded_lattice();
+    }
+    fn apply_edge_topology(&mut self) {
+        self.apply_edge_topology();
+    }
+    fn apply_boundary_conditions(&mut self) {
+        self.apply_boundary_conditions();
+    }
+    fn iterate_once_serial<R: Rng>(&mut self, rng: &mut R) {
+        self.cell_model.next_iteration();
+        self.next_iteration_serial(rng);
+    }
+    fn iterate_once_parallel<R: Rng + Send>(&mut self, rngs: &mut [R]) {
+        self.cell_model.next_iteration();
+        self.next_iteration_parallel(rngs);
     }
 }

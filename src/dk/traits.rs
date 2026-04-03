@@ -1,8 +1,9 @@
 use super::CellNbrhood3D;
 
-use super::LatticeModel1D;
-use super::LatticeModel2D;
-use super::LatticeModel3D;
+use crate::sim_parameters::{
+    DualState, SimParameters,
+};
+
 
 // #![warn(missing_docs)]
 // //!
@@ -49,65 +50,24 @@ impl CellDim for Cell3D {
 ///
 /// This must be [Sync] as the model can be accessed by
 /// different threads at the same time in the parallel working.
-pub trait CellModel<Dim: CellDim>: Sync {
-    /// The value in each cell.
-    ///
-    /// This must be [Send] to support the 'parallel' versions;
-    /// the Cell is passed to a work thread.
-    ///
-    /// This must be [Sync] to support the 'parallel' versions;
-    /// the array of cells is accessed by many threads at once.
-    ///
-    type State: Default + std::fmt::Debug + Copy + Send + Sync + PartialEq + From<bool> + Into<bool>;
-
-    /// The value of State for an empty cell
-    #[allow(dead_code)]
-    const EMPTY: Self::State;
-
-    /// The value of State for an occupied cell
-    const OCCUPIED: Self::State;
-
-    fn from_state_to_usize(state: &Self::State) -> usize {
-        (*state).into() as usize
-    }
-
-    /// Sample Bernoulli distribution to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> Self::State;
-
-    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &Dim::Nbrhood) -> Self::State;
+pub trait CellModel<Dim: CellDim>: Sync + Sized {
+    fn create_from_parameters(_parameters: &SimParameters) -> Result<Self, ()>;
+    fn next_iteration(&mut self);
+    fn iteration(&self) -> usize;
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState;
+    fn update_state<R: Rng>(&self, rng: &mut R, nbrhood: &Dim::Nbrhood) -> DualState;
 }
 
-pub trait DramaticallySimulatable {
+pub trait DramaticallySimulatable<D: CellDim>: Sized {
     fn mean(&self) -> f64;
-}
-
-// pub trait HasLattice: Sync {
-//     fn lattice<T>(&self) -> &Vec<T>;
-// }
-
-impl<C: CellModel<Cell1D>> DramaticallySimulatable for LatticeModel1D<C> {
-    /// Compute the mean cell occupancy
-    fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-        (total as f64) / (self.n_cells() as f64)
-    }
-}
-
-impl<C: CellModel<Cell2D>> DramaticallySimulatable for LatticeModel2D<C> {
-    /// Compute the mean cell occupancy
-    fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-        (total as f64) / (self.n_cells() as f64)
-    }
-}
-
-impl<C: CellModel<Cell3D>> DramaticallySimulatable for LatticeModel3D<C> {
-    /// Compute the mean cell occupancy
-    fn mean(&self) -> f64 {
-        let total: usize = self.lattice().iter().map(C::from_state_to_usize).sum();
-
-        (total as f64) / (self.n_cells() as f64)
-    }
+    fn create_from_parameters(_parameters: &SimParameters) -> Result<Self, ()>;
+    fn num_parallel_rngs(&self, _parameters: &SimParameters) -> usize;
+    fn iteration(&self) -> usize;
+    fn lattice(&self) -> &[DualState];
+    fn create_randomized_lattice<R: Rng>(&mut self, _rng: &mut R) {}
+    fn create_seeded_lattice(&mut self) {}
+    fn apply_edge_topology(&mut self) {}
+    fn apply_boundary_conditions(&mut self) {}
+    fn iterate_once_serial<R: Rng>(&mut self, _rng: &mut R) {}
+    fn iterate_once_parallel<R: Rng + Send>(&mut self, _rng: &mut [R]) {}
 }
