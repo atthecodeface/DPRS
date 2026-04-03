@@ -28,6 +28,28 @@ pub struct LatticeModel2D<C: CellModel<Cell2D>> {
     iteration: usize,
 }
 
+impl<C: CellModel<Cell2D>> std::fmt::Display for LatticeModel2D<C> {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            fmt,
+            "2d Lattice model of {} by {} iteration {}",
+            self.lattice_n_x, self.lattice_n_y, self.iteration
+        )?;
+        for (y, l) in self.lattice.chunks_exact(self.lattice_n_x).enumerate() {
+            let mut s = String::new();
+            for c in l {
+                if (*c).into() {
+                    s.push('*')
+                } else {
+                    s.push('.')
+                }
+            }
+            writeln!(fmt, "{y:3} : {s}")?;
+        }
+        Ok(())
+    }
+}
+
 /// Lattice model methods.
 impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
     /// Compute the cell index of a given (x, y) coordinate.
@@ -87,8 +109,8 @@ impl<C: CellModel<Cell2D>> LatticeModel2D<C> {
 
     /// Check cell index is within lattice bounds; return this test and (x, y).
     fn is_in_bounds(&self, i_cell: usize) -> (bool, usize, usize) {
-        let x = i_cell % self.parameters.n_x;
-        let y = i_cell / self.parameters.n_x;
+        let x = i_cell % self.lattice_n_x;
+        let y = i_cell / self.lattice_n_x;
 
         (self.is_in_bounds_xy(x, y), x, y)
     }
@@ -180,14 +202,13 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
 
     fn mean(&self) -> f64 {
         let total: usize = self
-            .lattice()
+            .lattice
             .iter()
             .map(|s| {
                 let u: usize = (*s).into();
                 u
             })
             .sum();
-
         (total as f64) / (self.n_cells() as f64)
     }
 
@@ -224,8 +245,8 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
         if self.parameters.topology_x.is_periodic() {
             let n_x = self.lattice_n_x;
             for row in self.lattice.chunks_exact_mut(n_x) {
-                row[n_x - 2] = row[0];
-                row[1] = row[n_x - 1];
+                row[0] = row[n_x - 2];
+                row[n_x - 1] = row[1];
             }
         }
 

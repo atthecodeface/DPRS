@@ -47,7 +47,7 @@ impl CellDim for Cell3D {
 ///
 /// This must be [Sync] as the model can be accessed by
 /// different threads at the same time in the parallel working.
-pub trait CellModel<Dim: CellDim>: Sync + Sized {
+pub trait CellModel<Dim: CellDim>: Sync + Sized + std::fmt::Debug {
     /// Create the cell model from the parameters
     fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()>;
 
@@ -63,7 +63,7 @@ pub trait CellModel<Dim: CellDim>: Sync + Sized {
     ) -> DualState;
 }
 
-pub trait DramaticallySimulatable<D: CellDim>: Sized {
+pub trait DramaticallySimulatable<D: CellDim>: std::fmt::Debug + Sized {
     /// Create a fresh grid (vector of DualState cells) with all values=false,
     /// along with birth/survival rules set by the "born" and "survive" vectors.
     fn create_from_parameters(_parameters: &SimParameters) -> Result<Self, ()>;

@@ -125,7 +125,6 @@ impl From<DualState> for bool {
 impl From<DualState> for f64 {
     fn from(state: DualState) -> f64 {
         let b = matches![state, DualState::Occupied];
-
         (b as usize) as f64
     }
 }
