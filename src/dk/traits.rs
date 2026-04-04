@@ -1,3 +1,7 @@
+// #![warn(missing_docs)]
+// //!
+// //!
+
 use super::CellNbrhood3D;
 
 use crate::sim_parameters::{DualState, SimParameters};
@@ -89,8 +93,11 @@ pub trait DramaticallySimulatable<D: CellDim>: std::fmt::Debug + Sized {
 
     /// Calculate the mean occupancy
     ///
-    /// Tdodo - change this to provide the total of the occupancy of the unpadded region
-    fn mean(&self) -> f64;
+    /// TODO - change this to provide the total of the occupancy of the unpadded region
+    fn mean_rho(&self) -> f64;
+
+    /// TODO - restrict to the unpadded region
+    fn statistics(&self) -> (f64, f64, f64);
 
     /// Return the iteration number of the model
     fn iteration(&self) -> usize;

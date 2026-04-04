@@ -1,3 +1,7 @@
+// #![warn(missing_docs)]
+// //!
+// //!
+
 use super::DramaticallySimulatable;
 use super::{Cell2D, CellModel};
 use crate::sim_parameters::{DualState, SimParameters};
@@ -200,7 +204,8 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
         &self.lattice
     }
 
-    fn mean(&self) -> f64 {
+    // TODO: deprecated
+    fn mean_rho(&self) -> f64 {
         let total: usize = self
             .lattice
             .iter()
@@ -210,6 +215,11 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
             })
             .sum();
         (total as f64) / (self.n_cells() as f64)
+    }
+
+    // TODO: implement
+    fn statistics(&self) -> (f64, f64, f64) {
+        (0., 0., 0.,)
     }
 
     fn iteration(&self) -> usize {
