@@ -134,6 +134,7 @@ impl<C: CellModel<Cell1D>> DramaticallySimulatable<Cell1D> for LatticeModel1D<C>
         &self.lattice
     }
 
+    // TODO: deprecated
     fn mean_rho(&self) -> f64 {
         let total: usize = self
             .lattice()
