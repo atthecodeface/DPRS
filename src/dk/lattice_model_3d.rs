@@ -1,3 +1,7 @@
+// #![warn(missing_docs)]
+// //!
+// //!
+
 use super::CellModel;
 use super::DramaticallySimulatable;
 use super::{Cell3D, CellNbrhood3D, RowIterator3D};
@@ -244,7 +248,7 @@ impl<C: CellModel<Cell3D>> DramaticallySimulatable<Cell3D> for LatticeModel3D<C>
         &self.lattice
     }
 
-    fn mean(&self) -> f64 {
+    fn mean_rho(&self) -> f64 {
         let total: usize = self
             .lattice()
             .iter()
@@ -255,6 +259,11 @@ impl<C: CellModel<Cell3D>> DramaticallySimulatable<Cell3D> for LatticeModel3D<C>
             .sum();
 
         (total as f64) / (self.n_cells() as f64)
+    }
+
+    // TODO
+    fn statistics(&self) -> (f64, f64, f64) {
+        (0., 0., 0.)
     }
 
     fn iteration(&self) -> usize {
