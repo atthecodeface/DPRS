@@ -20,11 +20,14 @@ pub struct GrowthModel1D {
 impl CellModel<Cell1D> for GrowthModel1D {
     fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
         // Growth model and its parameters
+        // We're writing it this verbose way to allow for future expansion
         let do_staggered = match parameters.growth_model_choice {
             GrowthModelChoice::SimplifiedDomanyKinzel => false,
             GrowthModelChoice::StaggeredDomanyKinzel => true,
             _ => todo!(),
         };
+        // let do_staggered = matches!(parameters.growth_model_choice,
+        //    GrowthModelChoice::StaggeredDomanyKinzel);
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
@@ -49,8 +52,8 @@ impl CellModel<Cell1D> for GrowthModel1D {
                 let is_even_step = iteration.is_multiple_of(2);
                 let offset = if is_even_step { 1 } else { 0 };
                 let nbrs = &nbrhood[offset..(2 + offset)];
-                let _are_both_nbrs_occupied = nbrs.iter().all(|s| (*s).into());
-                let is_any_nbr_occupied = nbrs.iter().any(|s| (*s).into());
+                let _are_both_nbrs_occupied = nbrs.iter().all(|s| *s);
+                let is_any_nbr_occupied = nbrs.iter().any(|s| *s);
                 // This isn't the actual D-K rule for p_1, p_2
                 // TODO: mod to use uniform r.v. and check against p_1, then p_2
                 is_any_nbr_occupied & rng.random_bool(self.p_1)
@@ -59,7 +62,7 @@ impl CellModel<Cell1D> for GrowthModel1D {
                 // Simplistic Domany-Kinzel rule: this cell will become occupied if:
                 //  (1) a coin toss with probability p says it *may* be occupied
                 //  (2) if one of the 3 neighborhood + here cells were previously occupied
-                let is_any_nbr_occupied = nbrhood.iter().any(|s| (*s).into());
+                let is_any_nbr_occupied = nbrhood.iter().any(|s| *s);
                 is_any_nbr_occupied & rng.random_bool(self.p_1)
             }
         };

@@ -4,7 +4,7 @@
 
 use super::{Cell1D, CellModel, DramaticallySimulatable};
 
-use crate::sim_parameters::{DualState, GrowthModelChoice, SimParameters};
+use crate::sim_parameters::{DualState, GrowthModelChoice, InitialCondition, SimParameters};
 use rand::Rng;
 use rayon::prelude::*;
 
@@ -134,20 +134,6 @@ impl<C: CellModel<Cell1D>> DramaticallySimulatable<Cell1D> for LatticeModel1D<C>
         &self.lattice
     }
 
-    // TODO: deprecated
-    fn mean_rho(&self) -> f64 {
-        let total: usize = self
-            .lattice()
-            .iter()
-            .map(|s| {
-                let occupancy: usize = (*s).into();
-                occupancy
-            })
-            .sum();
-
-        (total as f64) / (self.n_cells() as f64)
-    }
-
     fn statistics(&self) -> (f64, f64, f64) {
         let total: usize = self
             .lattice()
@@ -158,16 +144,19 @@ impl<C: CellModel<Cell1D>> DramaticallySimulatable<Cell1D> for LatticeModel1D<C>
             })
             .sum();
         let mass = total as f64;
-        let moment: usize = (0..self.lattice_n_x)
-            .map(|i| {
-                let x = ((i as i64) - (self.lattice_n_x as i64)/2).abs() as usize;
-                let occupancy: usize = self.lattice[i].into();
-                occupancy * x
-            })
-            .sum();
+        let moment: f64 = match self.parameters.initial_condition {
+            InitialCondition::CentralSeed => (0..self.lattice_n_x)
+                .map(|i| {
+                    let x = ((i as i64) - (self.lattice_n_x as i64) / 2).abs() as usize;
+                    let occupancy: usize = self.lattice[i].into();
+                    (occupancy * x) as f64
+                })
+                .sum::<f64>(),
+            _ => 0.,
+        };
         let mean_rho = mass / (self.n_cells() as f64);
-        let mean_radius = (moment as f64)/(mass as f64);
-        
+        let mean_radius = (moment as f64) / mass;
+
         (mass, mean_rho, mean_radius)
     }
 
