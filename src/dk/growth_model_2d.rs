@@ -50,8 +50,8 @@ impl CellModel<Cell2D> for GrowthModel2D {
                 let offset = if is_even_step { 1 } else { 0 };
                 // TODO: Not mapped to 2d yet
                 let nbrs = &nbrhood[offset..(2 + offset)];
-                let _are_both_nbrs_occupied = nbrs.iter().all(|s| (*s).into());
-                let is_any_nbr_occupied = nbrs.iter().any(|s| (*s).into());
+                let _are_both_nbrs_occupied = nbrs.iter().all(|s| *s);
+                let is_any_nbr_occupied = nbrs.iter().any(|s| *s);
                 // This isn't the actual D-K rule for p_1, p_2
                 // TODO: mod to use uniform r.v. and check against p_1, then p_2
                 is_any_nbr_occupied & rng.random_bool(self.p_1)

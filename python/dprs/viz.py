@@ -213,7 +213,7 @@ class Viz:
             name: str,
             title: str,
             tracking: NDArray,
-            labels: tuple[str, str],
+            labels: Sequence[str],
             index: int,
             exponent: float, 
             scale: float,
@@ -237,7 +237,9 @@ class Viz:
                 t, statistic_fn(t), color="blue", alpha=0.5, 
                 label = rf"{labels[1]}" + rf"$\sim$" 
                         + rf"{labels[2]}" 
-                        + rf"$\quad =$" + rf"${exponent}$",
+                        + rf"$\quad$" 
+                        + rf"{labels[3]}" 
+                        + rf"$={exponent:0.4f}$",
             )
         plt.legend()
         axes = plt.gca()

@@ -6,6 +6,7 @@ from numpy.typing import NDArray
 from dprs import sim
 from dprs.viz import Viz
 from dprs.utils import make_name, make_title, DUAL
+from dprs.sim import GrowthModelChoice
 
 print(f"\n{sim}")
 
@@ -47,25 +48,40 @@ pruned_tracking: Sequence[list]
 t_run_time: float
 (n_lattices, raw_lattices, raw_tracking, t_run_time)= sim.dk(parameters)
 print(f"Total number of lattice time slices = {n_lattices}\n")
+
 pruned_tracking = []
 for data in raw_tracking:
     if len(data)>0:
         pruned_tracking.append(data)
-tracking: NDArray = np.array(pruned_tracking, dtype=np.float64,) 
+tracking_full: NDArray = np.array(pruned_tracking, dtype=np.float64,) 
+skip = (
+    2 if parameters.growth_model_choice==GrowthModelChoice.StaggeredDomanyKinzel 
+    else 1
+)
+tracking = tracking_full[:, ::skip]
+tracking[0] = tracking[0] #/skip
 
 viz = Viz(dpi=250)
 name: str
 δ = 0.1594646
-ρ_mean_ref = 0.563
+scale = 0.752
+# scale = 0.01
 
 name = make_name(parameters, "ρmean", None, )
 print(name)
-viz.plot_ρmean(
+viz.plot_lattice_statistic(
     name,
     make_title(parameters, None),
     tracking,
-    δ, 
-    ρ_mean_ref,
+    labels=(
+        "Order parameter  $\\widebar{\\rho}(t)$", 
+        "$\\widebar{\\rho}(t)$", 
+        "$t^{-\\delta}$",
+        "${\\delta}$",
+    ),
+    index=2,
+    exponent=-δ, 
+    scale=scale,
     fig_size=(6,4,),
     i_offset=1,
     do_ref_curve=True,

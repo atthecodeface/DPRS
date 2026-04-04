@@ -91,12 +91,8 @@ pub trait DramaticallySimulatable<D: CellDim>: std::fmt::Debug + Sized {
     /// which will require an RNG so that the behavior is deterministic
     fn num_parallel_rngs(&self) -> usize;
 
-    /// Calculate the mean occupancy
-    ///
+    /// Lattice occupancy statistics (mean order parameter, cluster radius, etc.)
     /// TODO - change this to provide the total of the occupancy of the unpadded region
-    fn mean_rho(&self) -> f64;
-
-    /// TODO - restrict to the unpadded region
     fn statistics(&self) -> (f64, f64, f64);
 
     /// Return the iteration number of the model

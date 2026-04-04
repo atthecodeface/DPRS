@@ -88,17 +88,26 @@ if n_lattices>=1:
     plt.show()
 
 δ = 0.45051
-ρ_mean_ref = 0.238
+scale = 0.238
+
 name = make_name(parameters, "ρmean", None, )
 print(name)
-viz.plot_ρmean(
+viz.plot_lattice_statistic(
     name,
     make_title(parameters, None),
     tracking,
-    δ, 
-    ρ_mean_ref,
+    labels=(
+        "Order parameter  $\\widebar{\\rho}(t)$", 
+        "$\\widebar{\\rho}(t)$", 
+        "$t^{-\\delta}$",
+        "${\\delta}$",
+    ),
+    index=2,
+    exponent=-δ, 
+    scale=scale,
     fig_size=(6,4,),
     i_offset=1,
+    do_ref_curve=True,
 )
 plt.show()
 
