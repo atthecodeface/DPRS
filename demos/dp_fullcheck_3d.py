@@ -5,6 +5,7 @@ from scipy.stats import linregress
 import matplotlib.pyplot as plt
 from numpy.typing import NDArray
 from dprs import sim
+from dprs.sim import GrowthModelChoice
 from dprs.viz import Viz
 from dprs.utils import make_name, make_title, DUAL
 
@@ -53,11 +54,23 @@ if n_lattices>0:
     ).T
 else:
     lattices = np.zeros((0,))
-pruned_tracking = []
+
+pruned_tracking: list = []
 for data in raw_tracking:
     if len(data)>0:
         pruned_tracking.append(data)
-tracking: NDArray = np.array(pruned_tracking, dtype=np.float64,) 
+skip: int = (
+    2 if parameters.growth_model_choice==GrowthModelChoice.StaggeredDomanyKinzel 
+    else 1
+)
+tracking_array: NDArray = np.array(pruned_tracking, dtype=np.float64,)[:, ::skip]
+tracking = dict(
+    iteration = tracking_array[0],
+    time = tracking_array[0]/skip,
+    mass = tracking_array[1],
+    ρ_mean = tracking_array[2],
+    R_mean = tracking_array[3],
+)
 
 viz = Viz(dpi=250)
 i_slice: int
@@ -96,29 +109,29 @@ if n_lattices>=1:
 δ = 0.7324
 scale = 0.116
 
+
 name = make_name(parameters, "ρmean", None, )
 print(name)
 viz.plot_lattice_statistic(
     name,
     make_title(parameters, None),
     tracking,
+    choices=("time", "ρ_mean"),
     labels=(
         "Order parameter  $\\widebar{\\rho}(t)$", 
         "$\\widebar{\\rho}(t) \\sim t^{-\\delta}$",
         "${\\delta}$",
     ),
-    index=2,
     exponent=-δ, 
     scale=scale,
-    fig_size=(6,4,),
     i_offset=1,
     do_ref_curve=True,
 )
 plt.show()
 
 i_offset: int = parameters.n_iterations//3
-t: NDArray = tracking[0][i_offset:]
-ρ_mean: NDArray = tracking[1][i_offset:]
+t: NDArray = tracking["time"][i_offset:]
+ρ_mean: NDArray = tracking["ρ_mean"][i_offset:]
 (exponent, scale, r_value, p_value, std_err) \
     = linregress(np.log(t), np.log(ρ_mean))
 print(rf"Estimated t-decay exponent:  δ = {exponent:0.3f}")

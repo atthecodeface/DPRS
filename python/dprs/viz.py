@@ -174,9 +174,9 @@ class Viz:
             self,
             name: str,
             title: str,
-            tracking: NDArray,
+            tracking: dict,
+            choices: tuple[str, str],
             labels: Sequence[str],
-            index: int,
             exponent: float, 
             scale: float,
             fig_size: tuple[float,float]=(6,4,),
@@ -188,8 +188,8 @@ class Viz:
         """
         _ = self.create_figure(fig_name=name, fig_size=fig_size,)
         plt.title(title, fontdict={"fontsize": 13}, pad=10,)
-        t: NDArray = tracking[0][i_offset:]
-        statistic: NDArray = tracking[index][i_offset:]
+        t: NDArray = tracking[choices[0]][i_offset:]
+        statistic: NDArray = tracking[choices[1]][i_offset:]
         statistic_fn = lambda t: scale*t**exponent
         plt.plot(
             t, statistic, lw=0.4, color="k",
