@@ -109,7 +109,6 @@ if n_lattices>=1:
 δ = 0.7324
 scale = 0.116
 
-
 name = make_name(parameters, "ρmean", None, )
 print(name)
 viz.plot_lattice_statistic(
