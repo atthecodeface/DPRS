@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 from dprs import sim
 from dprs.sim import GrowthModelChoice
 from dprs.viz import Viz
-from dprs.utils import make_name, make_title, DUAL
+from dprs.utils import make_name, make_title, DUAL, postprocessing
 
 print(f"\n{sim}")
 
@@ -44,33 +44,13 @@ if parameters.sample_period > parameters.n_iterations:
 n_lattices: int
 raw_lattices: list[list[bool]] 
 raw_tracking: Sequence[list]
-pruned_tracking: Sequence[list]
 t_run_time: float
 (n_lattices, raw_lattices, raw_tracking, t_run_time)= sim.dk(parameters)
-lattices: NDArray
-if n_lattices>0:
-    lattices = np.array(raw_lattices, dtype=np.bool,).reshape(
-        n_lattices, parameters.n_z, parameters.n_y, parameters.n_x,
-    ).T
-else:
-    lattices = np.zeros((0,))
 
-pruned_tracking: list = []
-for data in raw_tracking:
-    if len(data)>0:
-        pruned_tracking.append(data)
-skip: int = (
-    2 if parameters.growth_model_choice==GrowthModelChoice.StaggeredDomanyKinzel 
-    else 1
-)
-tracking_array: NDArray = np.array(pruned_tracking, dtype=np.float64,)[:, ::skip]
-tracking = dict(
-    iteration = tracking_array[0],
-    time = tracking_array[0]/skip,
-    mass = tracking_array[1],
-    ρ_mean = tracking_array[2],
-    R_mean = tracking_array[3],
-)
+lattices: NDArray
+tracking_array: NDArray
+(lattices, tracking) \
+    = postprocessing(parameters, n_lattices, raw_lattices, raw_tracking,)
 
 viz = Viz(dpi=250)
 i_slice: int
