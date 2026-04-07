@@ -1,3 +1,7 @@
+// #![warn(missing_docs)]
+// //!
+// //!
+
 pub mod dk;
-pub mod sim_parameters;
-pub use sim_parameters::SimParameters;
+pub mod parameters;
+pub use parameters::SimParameters;

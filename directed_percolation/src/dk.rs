@@ -5,16 +5,13 @@
 mod traits;
 mod types;
 
-mod growth_model_1d;
-mod lattice_model_1d;
-
-mod growth_model_2d;
-mod lattice_model_2d;
-
 mod cell_nbrhood_3d;
+mod growth_model_1d;
+mod growth_model_2d;
 mod growth_model_3d;
+mod lattice_model_1d;
+mod lattice_model_2d;
 mod lattice_model_3d;
-
 mod run;
 mod simulation;
 pub use run::run_nd;
@@ -26,7 +23,7 @@ pub use simulation::simulation_nd;
 
 use crate::{
     dk::types::{LatticeSlices, Tracking},
-    sim_parameters::{Dimension, SimParameters},
+    parameters::{Dimension, SimParameters},
 };
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
 pub use growth_model_1d::GrowthModel1D;
