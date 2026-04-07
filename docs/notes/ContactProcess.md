@@ -16,7 +16,7 @@ Note that a site neighborhood here is strictly limited to the _nearest_ neighbor
  - Choose an initial site occupancy probability $p_{0}$
  - Randomize the occupancy of all lattice sites $\{s_i\} \in  \mathcal{L}$ such that, for each $i$,  $s_i = \mathsf{Bern}(p_0)$
  - Make a list $\mathcal{S}_{\mathsf{lattice}}$ of *all* the lattice sites, not just the occupied ones
- - Randomize the order of this list into: $\mathcal{S}_{\mathsf{randomized}}$
+ - Randomize the order of this list into: $\quad\mathcal{S}_{\mathsf{randomized}}$
  - Set a reporting interval $\Delta{t}_{\mathsf{report}}$
  - Create an empty list $\mathcal{L}_{\mathsf{report}}$ to record the lattice after a sequence of changes over this interval
  - Create an empty list $\mathcal{T}_{\mathsf{report}}$ to record the report times 
@@ -49,7 +49,7 @@ Note that a site neighborhood here is strictly limited to the _nearest_ neighbor
     - Update the report timer: $\quad t_\mathsf{report} \mapsto t_\mathsf{report} + \Delta{t}$
     - Check it's time to report, $t_\mathsf{report} \geq \Delta{}t_\mathsf{report}$; if so:
         - append the updated (or not) lattice $\mathcal{L}$ to the report list: $\mathcal{L}_\mathsf{report} + \mathcal{L}$
-        - append the current time $t$ to the report time list: $\mathcal{T}_{\mathsf{report} + t}$
+        - append the current time $t$ to the report time list: $\mathcal{T}_{\mathsf{report}} + t$
         - reset the report interval timer $t_\mathsf{report} \mapsto 0$
 - Return the report list of lattices $\mathcal{S}_{\mathsf{randomized}}$ 
 - Return the report time list $\mathcal{T}_{\mathsf{report}}$
