@@ -1,6 +1,7 @@
 notebooks/plots/*
 plots/*
 
+Cargo.lock
 /target
 python/dprs/libdprs.dylib.dSYM/
 

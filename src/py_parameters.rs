@@ -27,7 +27,7 @@ macro_rules! py_of_enum {
 
 py_of_enum! {
     /// Lattice growth model type.
-    crate::sim_parameters::GrowthModelChoice,
+    directed_percolation::sim_parameters::GrowthModelChoice,
     GrowthModelChoice,
         (
             #[default]
@@ -41,7 +41,7 @@ py_of_enum! {
 
 py_of_enum! {
     /// Lattice dimension.
-    crate::sim_parameters::Dimension,
+    directed_percolation::sim_parameters::Dimension,
     Dimension,
         (
             #[default]
@@ -53,7 +53,7 @@ py_of_enum! {
 
 py_of_enum! {
     /// Initial lattice condition.
-    crate::sim_parameters::InitialCondition,
+    directed_percolation::sim_parameters::InitialCondition,
     InitialCondition,
         (
             #[default]
@@ -65,7 +65,7 @@ py_of_enum! {
 
 py_of_enum! {
     /// Edge topology.
-    crate::sim_parameters::Topology,
+    directed_percolation::sim_parameters::Topology,
     Topology,
         (
             /// No copying etc is done from one edge to another
@@ -82,7 +82,7 @@ py_of_enum! {
     /// Edge boundary conditions
     ///
     /// This is in essence what is around the outside of the lattice
-    crate::sim_parameters::BoundaryCondition,
+    directed_percolation::sim_parameters::BoundaryCondition,
     BoundaryCondition,
         (
             Unspecified,
@@ -101,7 +101,7 @@ py_of_enum! {
 
 py_of_enum! {
     /// Choice of processing type: will become a Py-passable parameter.
-    crate::sim_parameters::Processing,
+    directed_percolation::sim_parameters::Processing,
     Processing,
         (
             #[default]
@@ -164,5 +164,58 @@ impl std::fmt::Display for PyParameters {
         writeln!(fmt, "Processing:    {:?}", self.processing)?;
         writeln!(fmt, "Num. threads:  {}", self.n_threads)?;
         Ok(())
+    }
+}
+
+use directed_percolation::SimParameters;
+impl PyParameters {
+    /// Copy Python-facing parameters.
+    pub fn fill(&self) -> SimParameters {
+        use directed_percolation::sim_parameters::*;
+        let py_p = self.clone();
+        SimParameters {
+            growth_model_choice: GrowthModelChoice::from(py_p.growth_model_choice),
+            dim: Dimension::from(py_p.dim),
+            n_x: py_p.n_x,
+            n_y: py_p.n_y,
+            n_z: py_p.n_z,
+            p_1: py_p.p_1,
+            p_2: py_p.p_2,
+            n_iterations: py_p.n_iterations,
+            sample_period: py_p.sample_period,
+            initial_condition: InitialCondition::from(py_p.initial_condition),
+            p_initial: py_p.p_initial,
+            random_seed: py_p.random_seed,
+            topology_x: Topology::from(py_p.topology_x),
+            topology_y: Topology::from(py_p.topology_y),
+            topology_z: Topology::from(py_p.topology_z),
+            bcs_x: (
+                BoundaryCondition::from(py_p.bcs_x.0),
+                BoundaryCondition::from(py_p.bcs_x.1),
+            ),
+            bcs_y: (
+                BoundaryCondition::from(py_p.bcs_y.0),
+                BoundaryCondition::from(py_p.bcs_y.1),
+            ),
+            bcs_z: (
+                BoundaryCondition::from(py_p.bcs_z.0),
+                BoundaryCondition::from(py_p.bcs_z.1),
+            ),
+            bc_values_x: (
+                DualState::from(py_p.bc_values_x.0),
+                DualState::from(py_p.bc_values_x.1),
+            ),
+            bc_values_y: (
+                DualState::from(py_p.bc_values_y.0),
+                DualState::from(py_p.bc_values_y.1),
+            ),
+            bc_values_z: (
+                DualState::from(py_p.bc_values_z.0),
+                DualState::from(py_p.bc_values_z.1),
+            ),
+            do_edge_buffering: py_p.do_edge_buffering,
+            processing: Processing::from(py_p.processing),
+            n_threads: py_p.n_threads,
+        }
     }
 }

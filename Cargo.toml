@@ -12,4 +12,7 @@ crate-type = ["cdylib"]
 [dependencies]
 pyo3 = "0.28.2"
 rand = "0.10.0"
-rayon = "1.11.0"
+
+[dependencies.directed_percolation]
+version= "0.1"
+path = "./directed_percolation"

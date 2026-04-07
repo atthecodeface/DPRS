@@ -3,18 +3,15 @@
 // //!
 
 // Imports
-pub mod dk;
 pub mod py_parameters;
-pub mod sim_parameters;
 
 use pyo3::prelude::*;
 #[pymodule]
 mod sim {
-    use crate::dk::sim_dk;
+    use directed_percolation::dk::sim_dk;
     use pyo3::prelude::*;
 
     use crate::py_parameters::PyParameters;
-    use crate::sim_parameters::SimParameters;
 
     #[pymodule_export]
     use crate::py_parameters::BoundaryCondition;
@@ -31,7 +28,7 @@ mod sim {
 
     #[pyfunction]
     fn dk(py_parameters: PyParameters) -> PyResult<(usize, Vec<Vec<bool>>, Vec<Vec<f64>>, f64)> {
-        let sim_parameters = SimParameters::fill(&py_parameters);
+        let sim_parameters = py_parameters.fill();
         let (n_lattices, lattices, tracking, t_run_time) = sim_dk(sim_parameters);
         // Translation layer between DualState and bool lattice cell types.
         let mut bool_lattices: Vec<Vec<bool>> = Vec::new();
