@@ -3,7 +3,6 @@
 // //!
 
 use super::CellNbrhood3D;
-
 use crate::parameters::{DualState, SimParameters};
 
 // #![warn(missing_docs)]

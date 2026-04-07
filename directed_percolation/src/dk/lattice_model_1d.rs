@@ -3,7 +3,6 @@
 // //!
 
 use super::{Cell1D, CellModel, DramaticallySimulatable};
-
 use crate::parameters::{DualState, GrowthModelChoice, InitialCondition, SimParameters};
 use rand::Rng;
 use rayon::prelude::*;

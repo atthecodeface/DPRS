@@ -5,10 +5,6 @@
 use super::{CellDim, DramaticallySimulatable};
 use crate::dk::types::{LatticeHistory, LatticeSlices, Tracking, TrackingHistory};
 use crate::parameters::{InitialCondition, Processing, SimParameters};
-// use lattice_model_1d::LatticeModel1D;
-// use super::growth_model_1d::GrowthModel1D;
-// use crate::dk::lattice_model_1d;
-
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 
