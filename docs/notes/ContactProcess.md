@@ -29,25 +29,27 @@ Note that a site neighborhood here is strictly limited to the _nearest_ neighbor
    - Pick a site at random from the lattice, labeling its position as $i$ and its occupancy as $s_i$
    - Find its neighborhood and label the sites $j \in \langle i \rangle$ with occupancy $s_j$
    - Count the number of occupied sites in the neighborhood: $\text{ } n_i = \sum_{j\in \langle i \rangle} s_j$
-   - Compute the _propagation_ rate: $\text{ } w_i[0 \mapsto 1, n_i] = \lambda n_i/2 d$
+   - Note the _propagation_ rate: $\text{ } w_i[0 \mapsto 1, n_i] = \lambda n_i/2 d$
    - Note the _annihilation_ rate: $\text{ } w_i[1 \mapsto 0, n_i] =1$
-   - Compute the _propagation probability_: $\text{ } p_\mathsf{p} = \dfrac{w_i[0 \mapsto 1, n_i]}{1+\lambda} = \dfrac{\lambda n_i}{2d(1+\lambda)}$
-   - Compute the _annihilation probability_: $\text{ } p_\mathsf{a} = \dfrac{w_i[1 \mapsto 0, n_i]}{1+\lambda} = \dfrac{1}{(1+\lambda)}$
-    - Compute the time interval: $\text{ } \Delta{t} = \dfrac{1}{(1+\lambda)N}$
-    - Update the timer: $\text{ } t \mapsto t + \Delta{t}$
-        - note: the timer is incremented even if nothing happens
    - Check $s_i$
-     - for an empty site $s_i\text{==}0$:
-        -  compute a Bernoulli sample $b_\mathsf{p} = \mathsf{Bern}(p_\mathsf{p})$
-        - if $b_\mathsf{p}\text{==}\mathsf{true}$:
-           - designate the site as now occupied $s_i \mapsto 1$
-           - modify (in-place) the current lattice accordingly $\mathcal{L} \rightarrow \mathcal{L}(t)$
      - for an occupied site $s_i\text{==}1$:
+         - compute the _annihilation probability_: $\text{ } p_\mathsf{a} = \dfrac{w_i[1 \mapsto 0, n_i]}{1+\lambda} = \dfrac{1}{(1+\lambda)}$
         - compute a Bernoulli sample $b_\mathsf{a} = \mathsf{Bern}(p_\mathsf{a})$
         - if $b_\mathsf{a}\text{==}\mathsf{true}$:
            - designate the site as now empty $s_i \mapsto 0$
            - modify (in-place) the current lattice accordingly $\mathcal{L} \rightarrow \mathcal{L}(t)$
-    - Update the report timer: $\text{ } t_\mathsf{report} \mapsto t_\mathsf{report} + \Delta{t}$
+     - for an empty site $s_i\text{==}0$ with _some_ occupied neighbors $n_i \neq 0$:
+         - compute the _propagation probability_: $\text{ } p_\mathsf{p} = \dfrac{w_i[0 \mapsto 1, n_i]}{1+\lambda} = \dfrac{\lambda n_i}{2d(1+\lambda)}$
+         -  compute a Bernoulli sample $b_\mathsf{p} = \mathsf{Bern}(p_\mathsf{p})$
+         - if $b_\mathsf{p}\text{==}\mathsf{true}$:
+            - designate the site as now occupied $s_i \mapsto 1$
+            - modify (in-place) the current lattice accordingly $\mathcal{L} \rightarrow \mathcal{L}(t)$
+     - for an empty site $s_i\text{==}0$ with _no_ occupied neighbors  $n_i = 0$:
+         - do nothing
+   - Compute the time interval: $\text{ } \Delta{t} = \dfrac{1}{(1+\lambda)N}$
+   - Update the timer: $\text{ } t \mapsto t + \Delta{t}$
+        - note: the timer is incremented even if nothing happens
+   - Update the report timer: $\text{ } t_\mathsf{report} \mapsto t_\mathsf{report} + \Delta{t}$
     - Check it's time to report, $t_\mathsf{report} \geq \Delta{}t_\mathsf{report}$; if so:
         - append the updated (or not) lattice $\mathcal{L}$ to the report list: $\rightarrow \mathcal{L}_\mathsf{report} + \mathcal{L}$
         - append the current time $t$ to the report time list: $\rightarrow \mathcal{T}_{\mathsf{report}} + t$
