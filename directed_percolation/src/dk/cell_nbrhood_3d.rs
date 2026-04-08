@@ -51,19 +51,19 @@ impl CellNbrhood3D {
     ) {
         assert!(X_OFS < 3, "The Nbrhood3D has dimensions of 3 by 3 by 3");
         let lattice_window = &lattice_window[X_OFS..];
-        let mut layer_ne = 0;
+        let mut layer_not_empty = 0;
         for (z, layer_z) in lattice_window.chunks(n_x * n_y).take(3).enumerate() {
             if layer_z[0].into() {
-                layer_ne |= 1 << (3 * z);
+                layer_not_empty |= 1 << (3 * z);
             }
             if layer_z[n_x].into() {
-                layer_ne |= 1 << (3 * z + 1);
+                layer_not_empty |= 1 << (3 * z + 1);
             }
             if layer_z[n_x * 2].into() {
-                layer_ne |= 1 << (3 * z + 2);
+                layer_not_empty |= 1 << (3 * z + 2);
             }
         }
-        self.cells_not_empty |= layer_ne << (X_OFS * 9);
+        self.cells_not_empty |= layer_not_empty << (X_OFS * 9);
     }
 
     /// Shift the current neighborhood down by one 'X', and load the X=2 offset

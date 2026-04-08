@@ -48,6 +48,8 @@ pub enum DkError {
     ThreadBuildError(#[from] rayon::ThreadPoolBuildError),
     #[error("Failed to create the lattice model")]
     FailedToCreateModel,
+    #[error("Lattice history slicing error: {0}")]
+    LatticeHistoryError(String),
 }
 
 pub fn sim_dk<R: Rng + SeedableRng + Send>(

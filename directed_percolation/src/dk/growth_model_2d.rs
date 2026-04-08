@@ -46,7 +46,9 @@ impl CellModel<Cell2D> for GrowthModel2D {
         let do_survive = match self.do_staggered {
             true => {
                 let is_even_step = iteration.is_multiple_of(2);
-                // bitmask is x-major, so the bit order is (x+1,y+1),(x+1,y),(x+1,y-1), (x,y+1),(x,y),(x,y-1), (x-1,y+1),(x-1,y),(x-1,y-1)
+                // bitmask is x-major, so the bit order is (x+1,y+1),(x+1,y),(x+1,y-1), 
+                //                                         (x,y+1),(x,y),(x,y-1), 
+                //                                         (x-1,y+1),(x-1,y),(x-1,y-1)
                 //
                 // For even we want (x-1,y+1), (x,y+1), (x-1,y), (x,y) - i.e. 0b_000_110_110
                 //
@@ -73,11 +75,11 @@ impl CellModel<Cell2D> for GrowthModel2D {
                 // Apparently grid anisotropy can be removed by suppressing diagonal
                 // neighbor consideration 50% of the time
                 // => use simple coin toss for each diagonal nbr to exclude each 50% of the time
-                let mut ignore_nbors: u16 = rng.random();
-                ignore_nbors = ignore_nbors & 0b_101_010_101;
+                let mut ignore_nbrs: u16 = rng.random();
+                ignore_nbrs = ignore_nbrs & 0b_101_010_101;
                 let is_here_occupied = (nbrhood.bitmask() & 0b_000_010_000) != 0;
                 let n_occupied_nbrs =
-                    (nbrhood.bitmask() & !ignore_nbors & !0b_000_010_000).count_zeros();
+                    (nbrhood.bitmask() & !ignore_nbrs & !0b_000_010_000).count_zeros();
                 let are_several_nbrs_occupied = n_occupied_nbrs >= 1;
 
                 if are_several_nbrs_occupied || is_here_occupied {

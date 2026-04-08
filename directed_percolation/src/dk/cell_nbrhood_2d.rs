@@ -45,17 +45,17 @@ impl CellNbrhood2D {
     ) {
         debug_assert!(X_OFS < 3, "The Nbrhood2D has dimensions of 3 by 3");
         let lattice_window = &lattice_window[X_OFS..];
-        let mut column_ne = 0;
+        let mut column_not_empty = 0;
         if lattice_window[0].into() {
-            column_ne |= 1;
+            column_not_empty |= 1;
         }
         if lattice_window[n_x].into() {
-            column_ne |= 2;
+            column_not_empty |= 2;
         }
         if lattice_window[n_x * 2].into() {
-            column_ne |= 4;
+            column_not_empty |= 4;
         }
-        self.cells_not_empty |= column_ne << (X_OFS * 3);
+        self.cells_not_empty |= column_not_empty << (X_OFS * 3);
     }
 
     /// Shift the current neighborhood down by one 'X', and load the X=2 offset
