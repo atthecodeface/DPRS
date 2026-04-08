@@ -21,59 +21,6 @@ pub struct CellNbrhood2D {
     cells_not_empty: u16,
 }
 
-#[test]
-fn row_iter_2d() {
-    let lattice_u8: &[u8] = &[
-        //
-        0, 0, 0, 0, 0, //
-        1, 0, 0, 0, 0, //
-        1, 1, 0, 0, 0, //
-        1, 1, 1, 0, 0, //
-           //
-    ];
-    let lattice: Vec<_> = lattice_u8.iter().map(|x| ((*x) != 0).into()).collect();
-    let mut iter = RowIterator2D::new(&lattice, (1, 1), 5).unwrap();
-    let mut nbrhoods = vec![];
-    loop {
-        nbrhoods.push(iter.nbrhood().bitmask());
-        if !iter.next() {
-            break;
-        }
-    }
-    assert_eq!(&nbrhoods, &[0b_000_100_110, 0b_000_000_100, 0b_000_000_000]);
-
-    let mut iter = RowIterator2D::new(&lattice, (1, 2), 5).unwrap();
-    let mut nbrhoods = vec![];
-    loop {
-        nbrhoods.push(iter.nbrhood().bitmask());
-        if !iter.next() {
-            break;
-        }
-    }
-    assert_eq!(&nbrhoods, &[0b_100_110_111, 0b_000_100_110, 0b_000_000_100]);
-}
-
-#[test]
-fn cell_nbrhood() {
-    let lattice_u8: &[u8] = &[
-        //
-        0, 0, 0, 0, 0, //
-        1, 0, 0, 0, 0, //
-        1, 1, 0, 0, 0, //
-        1, 1, 1, 0, 0, //
-           //
-    ];
-    let lattice: Vec<_> = lattice_u8.iter().map(|x| (*x) != 0).collect();
-    for (x, y, nbrhood) in [
-        (1, 1, 0b_000_100_110),
-        (2, 1, 0b_000_000_100),
-        (3, 1, 0b_000_000_000),
-        (1, 2, 0b_100_110_111),
-        (2, 2, 0b_000_100_110),
-    ] {
-        assert_eq!(CellNbrhood2D::new(&lattice, (x, y), 5).bitmask(), nbrhood);
-    }
-}
 impl CellNbrhood2D {
     /// Create a new neighborhood centred on an xyz in the given lattice,
     /// with the specified n_x and n_y (the lattice must be Z-major, X-minor)
@@ -208,5 +155,59 @@ impl<'a> RowIterator2D<'a> {
     /// Borrow the neighborhood, so it may be iterated over or indexed into
     pub fn nbrhood(&self) -> &CellNbrhood2D {
         &self.nbrhood
+    }
+}
+
+#[test]
+fn row_iter_2d() {
+    let lattice_u8: &[u8] = &[
+        //
+        0, 0, 0, 0, 0, //
+        1, 0, 0, 0, 0, //
+        1, 1, 0, 0, 0, //
+        1, 1, 1, 0, 0, //
+           //
+    ];
+    let lattice: Vec<_> = lattice_u8.iter().map(|x| ((*x) != 0).into()).collect();
+    let mut iter = RowIterator2D::new(&lattice, (1, 1), 5).unwrap();
+    let mut nbrhoods = vec![];
+    loop {
+        nbrhoods.push(iter.nbrhood().bitmask());
+        if !iter.next() {
+            break;
+        }
+    }
+    assert_eq!(&nbrhoods, &[0b_000_100_110, 0b_000_000_100, 0b_000_000_000]);
+
+    let mut iter = RowIterator2D::new(&lattice, (1, 2), 5).unwrap();
+    let mut nbrhoods = vec![];
+    loop {
+        nbrhoods.push(iter.nbrhood().bitmask());
+        if !iter.next() {
+            break;
+        }
+    }
+    assert_eq!(&nbrhoods, &[0b_100_110_111, 0b_000_100_110, 0b_000_000_100]);
+}
+
+#[test]
+fn cell_nbrhood() {
+    let lattice_u8: &[u8] = &[
+        //
+        0, 0, 0, 0, 0, //
+        1, 0, 0, 0, 0, //
+        1, 1, 0, 0, 0, //
+        1, 1, 1, 0, 0, //
+           //
+    ];
+    let lattice: Vec<_> = lattice_u8.iter().map(|x| (*x) != 0).collect();
+    for (x, y, nbrhood) in [
+        (1, 1, 0b_000_100_110),
+        (2, 1, 0b_000_000_100),
+        (3, 1, 0b_000_000_000),
+        (1, 2, 0b_100_110_111),
+        (2, 2, 0b_000_100_110),
+    ] {
+        assert_eq!(CellNbrhood2D::new(&lattice, (x, y), 5).bitmask(), nbrhood);
     }
 }
