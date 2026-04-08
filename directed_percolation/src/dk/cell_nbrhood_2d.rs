@@ -22,6 +22,21 @@ pub struct CellNbrhood2D {
 }
 
 impl CellNbrhood2D {
+    pub const X_MINUS_ONE_BITS: u16 = 0b_000_000_111;
+    pub const X_PLUS_ONE_BITS: u16 = 0b_111_000_000;
+    pub const X_BITS: u16 = 0b_000_111_000;
+
+    pub const Y_MINUS_ONE_BITS: u16 = 0b_001_001_001;
+    pub const Y_BITS: u16 = 0b_010_010_010;
+    pub const Y_PLUS_ONE_BITS: u16 = 0b_100_100_100;
+
+    pub const CENTER_BIT: u16 = 0b_000_010_000;
+    pub const DIAGONAL_BITS: u16 = 0b_101_000_101;
+    pub const MIDDLE_EDGE_BITS: u16 = 0b_010_101_010;
+
+    pub const XY_MINUS_CORNER_BITS: u16 = 0b_000_011_011;
+    pub const XY_PLUS_CORNER_BITS: u16 = 0b_110_11_110;
+
     /// Create a new neighborhood centred on an xyz in the given lattice,
     /// with the specified n_x and n_y (the lattice must be Z-major, X-minor)
     pub fn new<I: Copy + Into<bool>>(lattice: &[I], xy: (usize, usize), n_x: usize) -> Self {
