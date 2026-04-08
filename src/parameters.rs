@@ -189,6 +189,11 @@ impl PyParameters {
             py_p.p_initial >= 0. && py_p.p_initial <= 1.,
             "Probability p_initial must be [0,1]"
         );
+        assert!(py_p.n_iterations > 0, "Number of iterations must be >0");
+        assert!(
+            py_p.sample_period <= py_p.n_iterations,
+            "Sample period must be <= number of iterations"
+        );
         // Copied from simulation.rs
         // Keep both because another wrapper might forget to trap here
         assert!(py_p.random_seed > 0, "Random number seed must be >0");

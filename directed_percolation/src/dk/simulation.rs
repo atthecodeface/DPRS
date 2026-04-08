@@ -2,7 +2,7 @@ use rand::{Rng, SeedableRng};
 
 use super::{CellDim, DramaticallySimulatable};
 use crate::dk::{LatticeHistory, LatticeSlices, Tracking, TrackingHistory};
-use crate::parameters::{InitialCondition, Processing, SimParameters};
+use crate::{InitialCondition, Processing, SimParameters};
 
 /// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
 ///
@@ -13,7 +13,6 @@ pub fn simulation_nd<R: Rng + SeedableRng + Send, D: CellDim, LM: DramaticallySi
     parameters: &SimParameters,
 ) -> Result<(usize, LatticeSlices, Tracking), ()> {
     let mut lm = LM::create_from_parameters(&parameters)?;
-
     let mut rng = R::seed_from_u64(parameters.random_seed as u64);
     match parameters.initial_condition {
         InitialCondition::Randomized => {
