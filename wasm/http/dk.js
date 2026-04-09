@@ -31,18 +31,33 @@ class Main {
     params_1d.dims.n_y = 1;
     params_1d.dims.n_z = 1;
 
+    const params_2d = new simulation.SimParameters();
+    params_2d.probabilities.p_initial = 0.7;
+    params_2d.probabilities.p_1 = 0.344555;
+    params_2d.probabilities.p_2 = 0.344555;
+
+    params_2d.params.n_iterations = 600;
+    params_2d.params.sample_period = 1;
+    params_2d.params.random_seed = 3;
+
+    params_2d.dims.n_x = 100;
+    params_2d.dims.n_y = 100;
+    params_2d.dims.n_z = 1;
+
     this.simulation_controls_1d = new simulation_controls.SimulationControls(
       "1d_sc_",
       "1d_sim_controls",
       1,
     );
+    this.simulation_controls_1d.populate_values(params_1d);
+
     this.simulation_controls_2d = new simulation_controls.SimulationControls(
       "2d_sc_",
       "2d_sim_controls",
       2,
     );
+    this.simulation_controls_2d.populate_values(params_2d);
 
-    this.simulation_controls_1d.populate_values(params_1d);
     this.run_simulation();
   }
 

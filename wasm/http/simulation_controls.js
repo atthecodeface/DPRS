@@ -50,6 +50,8 @@ export class SimulationControls {
     this.populate_value("sample_period", parameters.params.sample_period);
     this.populate_value("random_seed", parameters.params.random_seed);
     this.populate_value("n_x", parameters.dims.n_x);
+    this.populate_value("n_y", parameters.dims.n_y);
+    this.populate_value("n_z", parameters.dims.n_z);
     document.getElementById("initial_center").checked =
       parameters.params.initial_center;
   }
@@ -67,8 +69,9 @@ export class SimulationControls {
       parameters.params.simulation_kind = SimulationKind.StaggeredDomanyKinzel;
     }
 
-    parameters.params.initial_center =
-      document.getElementById("initial_center").checked;
+    parameters.params.initial_center = document.getElementById(
+      this.ele_id + "initial_center",
+    ).checked;
     parameters.probabilities.p_initial = this.get_float("p_initial", 0, 1);
     parameters.probabilities.p_1 = this.get_float("p_1", 0, 1);
     parameters.probabilities.p_2 = this.get_float("p_2", 0, 1);
@@ -76,8 +79,7 @@ export class SimulationControls {
     parameters.params.sample_period = this.get_int("sample_period", 1, 100000);
     parameters.params.random_seed = this.get_int("random_seed", 1, 100000);
     parameters.dims.n_x = this.get_int("n_x", 10, 10000);
-    console.log(parameters);
-    console.log(parameters.probabilities.p_2);
+
     return parameters;
   }
 
@@ -161,7 +163,9 @@ export class SimulationControls {
         random_seed: "1",
       })) {
         const td = tr.add_ele("td");
-        td.add_ele("label").add_tags({ for: name }).set_content(name);
+        td.add_ele("label")
+          .add_tags({ for: this.ele_id + name })
+          .set_content(name);
         td.add_ele("input").add_tags({
           id: this.ele_id + name,
           className: "sim_controls " + name,
@@ -170,6 +174,16 @@ export class SimulationControls {
           value: value,
         });
       }
+      const td = tr.add_ele("td");
+
+      td.add_ele("input").add_tags({
+        id: this.ele_id + "initial_center",
+        type: "checkbox",
+        name: this.ele + "initial_center",
+      });
+      td.add_ele("label")
+        .add_tags({ for: this.ele_id + "initial_center" })
+        .set_content("Seed central (else random)");
     }
     {
       const tr = this.sim_table
@@ -211,16 +225,5 @@ export class SimulationControls {
         window.main.run_simulation(dims);
       };
     }
-    /*
-
-                            <input
-                                id="initial_center"
-                                type="checkbox"
-                                name="initial_center"
-                            />
-                            <label for="initial_center"
-                                >Seed central (else random)</label
-                            >
-    */
   }
 }
