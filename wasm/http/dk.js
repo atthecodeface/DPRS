@@ -1,5 +1,5 @@
 import init, { SimulationKind } from "../pkg/dprs_wasm.js";
-import { Log } from "./log.js";
+import * as log from "./log.js";
 import * as html from "./html.js";
 import * as utils from "./utils.js";
 import * as storage from "./storage.js";
@@ -10,10 +10,14 @@ import { tabbed_configure } from "./tabbed.js";
 
 class Main {
   constructor(params) {
+    this.log = new log.Logger(window.log, "dk_main");
+    this.log.push_reason("init");
+    this.log.info("Starting dk");
+
     this.storage = new storage.DBStorage("Storage", this.db_init.bind(this));
 
-    this.simulation = new simulation.Sim();
-    this.visualize = new visualize.Visualize(this.simulation);
+    this.simulation = new simulation.Sim(window.log);
+    this.visualize = new visualize.Visualize(window.log, this.simulation);
 
     const params_1d = new simulation.SimParameters();
     // For staggered p_c = 0.705485152
@@ -58,12 +62,28 @@ class Main {
     );
     this.simulation_controls_2d.populate_values(params_2d);
 
+    this.log.info("HTML built, running initial simulation");
+
     this.run_simulation();
+
+    this.log.info("Initialization complete");
+    this.log.pop_reason();
   }
 
   run_simulation(dims) {
-    this.simulation.run(this.simulation_controls_1d.simulation_parameters());
+    this.log.push_reason("sim");
+    this.log.info("Starting");
+
+    var sim_parameters = this.simulation_controls_1d.simulation_parameters();
+    if (dims > 1) {
+      sim_parameters = this.simulation_controls_2d.simulation_parameters();
+    }
+    this.simulation.run(sim_parameters);
+    this.log.info(
+      `Simulation complete with ${this.simulation.n_results()} results`,
+    );
     this.redraw();
+    this.log.pop_reason();
   }
 
   redraw() {
@@ -89,7 +109,7 @@ class Main {
 window.main = null;
 function complete_init() {
   const location_url = new URL(location);
-  window.log = new Log(document.getElementById("Log"));
+  window.log = new log.Log("Log");
   window.main = new Main(location_url.searchParams);
 }
 

@@ -7,7 +7,7 @@ import init, {
   Simulation,
   SimulationKind,
 } from "../pkg/dprs_wasm.js";
-import { Log } from "./log.js";
+import * as log from "./log.js";
 
 export class SimParameters {
   constructor() {
@@ -31,14 +31,18 @@ export class SimParameters {
     this.dims.n_x = 400;
   }
 }
+
 export class Sim {
-  constructor() {
+  constructor(logger) {
+    this.log = new log.Logger(logger, "sim");
     this.parameters = new Parameters();
     this.params = this.parameters.params;
     this.simulation = new Simulation(this.parameters);
   }
 
   run(sim_parameters) {
+    this.log.push_reason("run");
+
     this.parameters.probabilities = sim_parameters.probabilities;
     this.parameters.dims = sim_parameters.dims;
     this.parameters.topo_bc_x = sim_parameters.topo[0];
@@ -47,8 +51,29 @@ export class Sim {
     this.parameters.params = sim_parameters.params;
     this.params = sim_parameters.params;
 
+    this.log.info(
+      `Probabilities p_initial:${this.parameters.probabilities.p_initial} ` +
+        `p_1: ${this.parameters.probabilities.p_1} ` +
+        `p_2: ${this.parameters.probabilities.p_2} `,
+    );
+    this.log.info(
+      `Dims n_x:${this.parameters.dims.n_x} ` +
+        `n_y:${this.parameters.dims.n_y} ` +
+        `n_z:${this.parameters.dims.n_z}`,
+    );
+    this.log.info(
+      `Params n_iterations:${this.parameters.params.n_iterations} ` +
+        `sample_period:${this.parameters.params.sample_period} ` +
+        `random_seed:${this.parameters.params.random_seed} ` +
+        `initial_center:${this.parameters.params.initial_center} ` +
+        `simulation_kind:${this.parameters.params.simulation_kind}`,
+    );
+
     this.simulation = new Simulation(this.parameters);
     this.simulation.simulate();
+
+    this.log.info("Completed simulation");
+    this.log.pop_reason();
   }
   n_results() {
     return this.params.n_iterations / this.params.sample_period;

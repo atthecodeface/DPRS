@@ -52,7 +52,7 @@ export class SimulationControls {
     this.populate_value("n_x", parameters.dims.n_x);
     this.populate_value("n_y", parameters.dims.n_y);
     this.populate_value("n_z", parameters.dims.n_z);
-    document.getElementById("initial_center").checked =
+    document.getElementById(this.ele_id + "initial_center").checked =
       parameters.params.initial_center;
   }
 
