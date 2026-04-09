@@ -1,3 +1,4 @@
+use crate::dk::TrackingHistory;
 pub use crate::{
     BoundaryCondition, Dimension, DualState, InitialCondition, Processing, SimParameters, Topology,
 };
@@ -77,37 +78,85 @@ fn test_1d_run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[test]
-fn test_1d_run_random() -> Result<(), Box<dyn std::error::Error>> {
-    let n_x = 100_000;
+fn run_1d_parameters(seed: usize, n_iterations: usize) -> SimParameters {
     let mut parameters = SimParameters::default();
-    parameters.n_x = n_x;
+    parameters.n_x = 10_000;
     parameters.dim = Dimension::D1;
     parameters.initial_condition = InitialCondition::Randomized;
-    parameters.random_seed = 0x1298;
-    parameters.p_initial = 0.5;
+    parameters.random_seed = seed;
     parameters.processing = Processing::Parallel;
     parameters.n_threads = 10;
     parameters.topology_x = Topology::Periodic;
     parameters.bcs_x = (BoundaryCondition::Floating, BoundaryCondition::Floating);
-    parameters.n_iterations = 100_000;
-    parameters.sample_period = parameters.n_iterations;
+    parameters.n_iterations = n_iterations;
+    parameters.sample_period = n_iterations;
     parameters.do_edge_buffering = true;
+    parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
+
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.5; // staggered: prob if one nbr activated; simple used if activated
+    parameters.p_2 = 0.5; // staggered: prob if both nbrs activated; simple used if not activated and nbrs are occupied
+
+    parameters
+}
+
+fn check_1d_tracking_density(tracking: &TrackingHistory, min: f32, max: f32) {
+    assert!(
+        tracking.last().unwrap().mean_rho >= min,
+        "Density should be more than {min} {}",
+        tracking.last().unwrap().mean_rho
+    );
+    assert!(
+        tracking.last().unwrap().mean_rho <= max,
+        "Density should be less than {max} {}",
+        tracking.last().unwrap().mean_rho
+    );
+}
+
+#[test]
+fn test_1d_run_random_staggered_critical() -> Result<(), Box<dyn std::error::Error>> {
+    let mut parameters = run_1d_parameters(0x1226, 100_000);
+    parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
+    parameters.initial_condition = InitialCondition::Randomized;
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.705485152; // critical value
+    parameters.p_2 = 0.705485152; // critical value
     let (_time, history_len, lattices, tracking) =
         run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
     assert_eq!(history_len, 2);
 
-    /*
-    assert!(
-        tracking[1][0] >= 0.4,
-        "Density should be about 1/2 {}",
-        tracking[1][0]
-    );
-    assert!(
-        tracking[1][0] <= 0.6,
-        "Density should be about 1/2 {}",
-        tracking[1][0]
-    );
-    */
+    check_1d_tracking_density(&tracking, 0.08, 0.15);
+    Ok(())
+}
+
+#[test]
+fn test_1d_run_random_staggered_supercritical() -> Result<(), Box<dyn std::error::Error>> {
+    let mut parameters = run_1d_parameters(0x239, 100_000);
+    parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
+    parameters.initial_condition = InitialCondition::Randomized;
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.710; // supercritical vlaue
+    parameters.p_2 = 0.710; // supercritical value
+    let (_time, history_len, lattices, tracking) =
+        run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
+    assert_eq!(history_len, 2);
+
+    check_1d_tracking_density(&tracking, 0.3, 0.8);
+    Ok(())
+}
+
+#[test]
+fn test_1d_run_random_staggered_subcritical() -> Result<(), Box<dyn std::error::Error>> {
+    let mut parameters = run_1d_parameters(0x9539, 100_000);
+    parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
+    parameters.initial_condition = InitialCondition::Randomized;
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.70; // subcritical vlaue
+    parameters.p_2 = 0.70; // subcritical value
+    let (_time, history_len, lattices, tracking) =
+        run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
+    assert_eq!(history_len, 2);
+
+    check_1d_tracking_density(&tracking, 0.0, 0.01);
     Ok(())
 }

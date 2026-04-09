@@ -23,6 +23,13 @@ pub struct TrackingHistory {
     pub tracking: Vec<Statistics>,
 }
 
+impl std::ops::Deref for TrackingHistory {
+    type Target = [Statistics];
+    fn deref(&self) -> &Self::Target {
+        &self.tracking
+    }
+}
+
 impl TrackingHistory {
     pub fn update<D: CellDim, T: DramaticallySimulatable<D>>(
         &mut self,
