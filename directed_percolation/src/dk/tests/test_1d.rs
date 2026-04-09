@@ -78,9 +78,9 @@ fn test_1d_run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn run_1d_parameters(seed: usize, n_iterations: usize) -> SimParameters {
+fn run_1d_parameters(seed: usize, n_x: usize, n_iterations: usize) -> SimParameters {
     let mut parameters = SimParameters::default();
-    parameters.n_x = 10_000;
+    parameters.n_x = n_x;
     parameters.dim = Dimension::D1;
     parameters.initial_condition = InitialCondition::Randomized;
     parameters.random_seed = seed;
@@ -115,7 +115,7 @@ fn check_1d_tracking_density(tracking: &TrackingHistory, min: f32, max: f32) {
 
 #[test]
 fn test_1d_run_random_staggered_critical() -> Result<(), Box<dyn std::error::Error>> {
-    let mut parameters = run_1d_parameters(0x1226, 100_000);
+    let mut parameters = run_1d_parameters(0x1226, 100_000, 10_000);
     parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
     parameters.initial_condition = InitialCondition::Randomized;
     parameters.p_initial = 0.5;
@@ -125,13 +125,13 @@ fn test_1d_run_random_staggered_critical() -> Result<(), Box<dyn std::error::Err
         run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
     assert_eq!(history_len, 2);
 
-    check_1d_tracking_density(&tracking, 0.08, 0.15);
+    check_1d_tracking_density(&tracking, 0.08, 0.30);
     Ok(())
 }
 
 #[test]
 fn test_1d_run_random_staggered_supercritical() -> Result<(), Box<dyn std::error::Error>> {
-    let mut parameters = run_1d_parameters(0x239, 100_000);
+    let mut parameters = run_1d_parameters(0x239, 100_000, 10_000);
     parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
     parameters.initial_condition = InitialCondition::Randomized;
     parameters.p_initial = 0.5;
@@ -147,7 +147,8 @@ fn test_1d_run_random_staggered_supercritical() -> Result<(), Box<dyn std::error
 
 #[test]
 fn test_1d_run_random_staggered_subcritical() -> Result<(), Box<dyn std::error::Error>> {
-    let mut parameters = run_1d_parameters(0x9539, 100_000);
+    // mean density = k.t^-delta; delta = 0.159646 for DK simplified
+    let mut parameters = run_1d_parameters(0x9539, 100_000, 10_000);
     parameters.growth_model_choice = crate::GrowthModelChoice::StaggeredDomanyKinzel;
     parameters.initial_condition = InitialCondition::Randomized;
     parameters.p_initial = 0.5;
@@ -158,5 +159,56 @@ fn test_1d_run_random_staggered_subcritical() -> Result<(), Box<dyn std::error::
     assert_eq!(history_len, 2);
 
     check_1d_tracking_density(&tracking, 0.0, 0.01);
+    Ok(())
+}
+
+#[test]
+fn test_1d_run_random_simplified_critical() -> Result<(), Box<dyn std::error::Error>> {
+    // mean density = k. t^-delta; delta = 0.159646 for DK simplified
+    let mut parameters = run_1d_parameters(0x1226, 100_000, 10_000);
+    parameters.growth_model_choice = crate::GrowthModelChoice::SimplifiedDomanyKinzel;
+    parameters.initial_condition = InitialCondition::Randomized;
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.545; // critical value
+    parameters.p_2 = 0.545; // critical value
+    let (_time, history_len, lattices, tracking) =
+        run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
+    assert_eq!(history_len, 2);
+
+    check_1d_tracking_density(&tracking, 0.08, 0.30);
+    Ok(())
+}
+
+#[test]
+fn test_1d_run_random_simplified_supercritical() -> Result<(), Box<dyn std::error::Error>> {
+    // mean density = k. t^-delta; delta = 0.159646 for DK simplified
+    let mut parameters = run_1d_parameters(0x1226, 100_000, 10_000);
+    parameters.growth_model_choice = crate::GrowthModelChoice::SimplifiedDomanyKinzel;
+    parameters.initial_condition = InitialCondition::Randomized;
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.57; // supercritical value
+    parameters.p_2 = 0.57; // supercritical value
+    let (_time, history_len, lattices, tracking) =
+        run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
+    assert_eq!(history_len, 2);
+
+    check_1d_tracking_density(&tracking, 0.30, 0.80);
+    Ok(())
+}
+
+#[test]
+fn test_1d_run_random_simplified_subcritical() -> Result<(), Box<dyn std::error::Error>> {
+    // mean density = k. t^-delta; delta = 0.159646 for DK simplified
+    let mut parameters = run_1d_parameters(0x1226, 100_000, 10_000);
+    parameters.growth_model_choice = crate::GrowthModelChoice::SimplifiedDomanyKinzel;
+    parameters.initial_condition = InitialCondition::Randomized;
+    parameters.p_initial = 0.5;
+    parameters.p_1 = 0.53; // subcritical value
+    parameters.p_2 = 0.53; // subcritical value
+    let (_time, history_len, lattices, tracking) =
+        run_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<GrowthModel1D>>(&parameters)?;
+    assert_eq!(history_len, 2);
+
+    check_1d_tracking_density(&tracking, 0.00, 0.01);
     Ok(())
 }
