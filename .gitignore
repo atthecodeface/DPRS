@@ -1,3 +1,7 @@
+wasm/*
+site/wasm/*
+docs/wasm/*
+
 notebooks/plots/*
 plots/*
 
