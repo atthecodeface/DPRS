@@ -61,7 +61,7 @@ impl CellModel<Cell2D> for GrowthModel2D {
                 if n_occupied_nbrs > 0 {
                     let are_several_nbrs_occupied = n_occupied_nbrs >= 2;
                     let uniform_variate: f64 = rng.random();
-                    (uniform_variate < self.p_1)
+                    (!are_several_nbrs_occupied & (uniform_variate < self.p_1))
                         | (are_several_nbrs_occupied & (uniform_variate < self.p_2))
                 } else {
                     false
