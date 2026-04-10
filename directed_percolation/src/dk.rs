@@ -31,7 +31,8 @@ pub use cell_nbrhood_2d::{CellNbrhood2D, RowIterator2D};
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
 pub use growth_model_1d::DKSimplified1D;
 pub use growth_model_1d::DKStaggered1D;
-pub use growth_model_2d::GrowthModel2D;
+pub use growth_model_2d::DKSimplified2D;
+pub use growth_model_2d::DKStaggered2D;
 pub use growth_model_3d::GrowthModel3D;
 
 pub use lattice_model_1d::LatticeModel1D;
@@ -71,7 +72,15 @@ pub fn sim_dk<R: Rng + SeedableRng + Send>(
             }
             _ => todo!(),
         },
-        Dimension::D2 => run_nd::<R, Cell2D, LatticeModel2D<GrowthModel2D>>(&sim_parameters)?,
+        Dimension::D2 => match &sim_parameters.growth_model_choice {
+            GrowthModelChoice::SimplifiedDomanyKinzel => {
+                run_nd::<R, Cell2D, LatticeModel2D<DKSimplified2D>>(&sim_parameters)?
+            }
+            GrowthModelChoice::StaggeredDomanyKinzel => {
+                run_nd::<R, Cell2D, LatticeModel2D<DKStaggered2D>>(&sim_parameters)?
+            }
+            _ => todo!(),
+        },
         Dimension::D3 => run_nd::<R, Cell3D, LatticeModel3D<GrowthModel3D>>(&sim_parameters)?,
     };
     println!(
