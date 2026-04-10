@@ -12,38 +12,41 @@
                 <li><a href="#tab-help">Help</a></li>
                 <li><a href="#tab-1D">1D simulations</a></li>
                 <li><a href="#tab-2D">2D simulations</a></li>
+                <li><a href="#tab-saved">Saved simulations</a></li>
+                <li><a href="#tab-log">Log</a></li>
             </ul>
         </div>
 
-        <div id="tab-help"></div>
-        <div id="tab-1D">
-            <h1>Directed Percolation (1D) example</h1>
-            Enter the data for the simulation
-            <div id="1d_sim_controls"></div>
-            <table>
-                <tr>
-                    <td>
-                        <table>
-                            <tr>
-                                <td>
-                                    <input
-                                        id="initial_center"
-                                        type="checkbox"
-                                        name="initial_center"
-                                    />
-                                    <label for="initial_center"
-                                        >Seed central (else random)</label
-                                    >
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div id="tab-2D">
-            <h1>Directed Percolation (2D) example</h1>
-            <div id="2d_sim_controls"></div>
+        <div id="upper">
+            <div id="tab-help">
+                <h2>Directed Percolation demonstration</h2>
+                This is a demonstration of the directed percolation library,
+                built in Rust, using a 'WASM' wrapper and so running in a
+                browser
+                <p></p>
+                This utilizes the 'directed_percolation' Rust crate, which is
+                also used by the Python wrapper and the python notebooks;
+                however, 'WASM' provides only a single thread, and so the
+                simulations that are performed in the browser are all single
+                threaded, and much lower performance than native simulations -
+                so the scale of simulations within the browser is somewhat
+                limited.
+            </div>
+            <div id="tab-1D">
+                <h2>Directed Percolation (1D) example</h2>
+                <div id="1d_sim_controls"></div>
+            </div>
+            <div id="tab-2D">
+                <h2>Directed Percolation (2D) example</h2>
+                <div id="2d_sim_controls"></div>
+            </div>
+            <div id="tab-saved">
+                <h2>Saved simulations</h2>
+                <div id="SavedSimulations"></div>
+            </div>
+            <div id="tab-log">
+                <div id="Log"></div>
+            </div>
         </div>
         <hr />
         <div id="VisualizationControls">
@@ -66,6 +69,5 @@
             </table>
         </div>
         <div id="Visualize"></div>
-        <div id="Log"></div>
     </body>
 </html>

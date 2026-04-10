@@ -27,17 +27,16 @@ help:
 .PHONY: dprs.zip
 dprs.zip:
 	zip dprs.zip favicon.ico
+	zip dprs.zip http/favicon.ico
 	zip dprs.zip http/dk.js
 	zip dprs.zip http/html.js
-	zip dprs.zip http/index.css
-	zip dprs.zip http/index.html
 	zip dprs.zip http/log.js
-	zip dprs.zip http/simulation_controls.js
-	zip dprs.zip http/simulation.js
-	zip dprs.zip http/storage.js
-	zip dprs.zip http/tabbed.js
 	zip dprs.zip http/utils.js
+	zip dprs.zip http/storage.js
 	zip dprs.zip http/visualize.js
+	zip dprs.zip http/simulation.js
+
+	zip dprs.zip http/index.html
 
 	zip dprs.zip pkg/package.json
 	zip dprs.zip pkg/dprs_wasm.d.ts
