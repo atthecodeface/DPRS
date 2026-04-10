@@ -174,7 +174,7 @@ impl<C: CellModel<Cell1D>> DramaticallySimulatable<Cell1D> for LatticeModel1D<C>
     /// from a de-facto Bernoulli distribution.
     fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
         self.lattice = (0..self.n_cells())
-            .map(|_| self.cell_model.randomize_state(rng))
+            .map(|_| self.cell_model.randomize_state(rng, self.parameters.p_initial))
             .collect();
     }
 

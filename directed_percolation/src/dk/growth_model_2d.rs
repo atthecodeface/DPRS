@@ -9,8 +9,6 @@ pub struct DKSimplified2D {
     /// if *any* of its neighbors (including itself) is active
     p_1: f64,
     p_2: f64,
-    /// The initial probability that a cell is activated, for random initial conditions
-    p_initial: f64,
 }
 
 // Implement CellModel2D trait for DKSimplified2D.
@@ -19,13 +17,12 @@ impl CellModel<Cell2D> for DKSimplified2D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            p_initial: parameters.p_initial,
         })
     }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64) -> DualState {
+        rng.random_bool(p).into()
     }
 
     fn update_state<R: Rng>(
@@ -99,8 +96,6 @@ pub struct DKStaggered2D {
     /// if *any* of its neighbors (including itself) is active
     p_1: f64,
     p_2: f64,
-    /// The initial probability that a cell is activated, for random initial conditions
-    p_initial: f64,
 }
 
 // Implement CellModel2D trait for DKStaggered2D.
@@ -109,13 +104,12 @@ impl CellModel<Cell2D> for DKStaggered2D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            p_initial: parameters.p_initial,
         })
     }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64) -> DualState {
+        rng.random_bool(p).into()
     }
 
     fn update_state<R: Rng>(

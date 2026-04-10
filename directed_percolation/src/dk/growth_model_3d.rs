@@ -10,8 +10,6 @@ pub struct GrowthModel3D {
     /// Unused probability
     #[allow(dead_code)]
     p_2: f64,
-    /// The initial probability that a cell is activated, for random initial conditions
-    p_initial: f64,
     /// Asserted if 'staggered' simulation is required
     do_staggered: bool,
 }
@@ -28,14 +26,13 @@ impl CellModel<Cell3D> for GrowthModel3D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            p_initial: parameters.p_initial,
             do_staggered,
         })
     }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64) -> DualState {
+        rng.random_bool(p).into()
     }
 
     fn update_state<R: Rng>(

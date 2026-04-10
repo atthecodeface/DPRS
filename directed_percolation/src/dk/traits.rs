@@ -47,7 +47,7 @@ pub trait CellModel<Dim: CellDim>: Sync + Sized + std::fmt::Debug {
     fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()>;
 
     /// Randomize the state of the cell, usually using p_initial from the original parameters
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState;
+    fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64,) -> DualState;
 
     /// Update the state of a cell given the iteration, current Rng state, and neighborhood
     fn update_state<R: Rng>(

@@ -240,7 +240,7 @@ impl<C: CellModel<Cell2D>> DramaticallySimulatable<Cell2D> for LatticeModel2D<C>
     /// from a de-facto Bernoulli distribution.
     fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
         self.lattice = (0..self.n_cells())
-            .map(|_| self.cell_model.randomize_state(rng))
+            .map(|_| self.cell_model.randomize_state(rng, self.parameters.p_initial))
             .collect();
     }
 

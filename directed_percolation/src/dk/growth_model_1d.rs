@@ -10,8 +10,6 @@ pub struct DKSimplified1D {
     /// p_2 relates more to multiple (or non-centrally) occupied cells
     p_1: f64,
     p_2: f64,
-    /// The initial probability that a cell is activated, for random initial conditions
-    p_initial: f64,
 }
 
 // Implement CellModel1D trait for DKSimplified1D.
@@ -21,13 +19,12 @@ impl CellModel<Cell1D> for DKSimplified1D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            p_initial: parameters.p_initial,
         })
     }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64) -> DualState {
+        rng.random_bool(p).into()
     }
 
     fn update_state<R: Rng>(
@@ -60,8 +57,6 @@ pub struct DKStaggered1D {
     /// p_2 relates more to multiple (or non-centrally) occupied cells
     p_1: f64,
     p_2: f64,
-    /// The initial probability that a cell is activated, for random initial conditions
-    p_initial: f64,
 }
 
 // Implement CellModel1D trait for DKStaggered1D.
@@ -71,13 +66,12 @@ impl CellModel<Cell1D> for DKStaggered1D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            p_initial: parameters.p_initial,
         })
     }
 
     /// Sample Bernoulli distribution with probability p to randomize cell state.
-    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn randomize_state<R: Rng>(&self, rng: &mut R, p: f64) -> DualState {
+        rng.random_bool(p).into()
     }
 
     fn update_state<R: Rng>(

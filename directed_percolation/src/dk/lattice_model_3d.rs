@@ -308,7 +308,7 @@ impl<C: CellModel<Cell3D>> DramaticallySimulatable<Cell3D> for LatticeModel3D<C>
 
     fn create_randomized_lattice<R: Rng>(&mut self, rng: &mut R) {
         self.lattice = (0..self.n_cells())
-            .map(|_| self.cell_model.randomize_state(rng))
+            .map(|_| self.cell_model.randomize_state(rng, self.parameters.p_initial))
             .collect();
     }
 
