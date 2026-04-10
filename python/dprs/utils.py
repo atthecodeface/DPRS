@@ -99,7 +99,8 @@ def postprocessing(parameters, n_raw_lattices, raw_lattices, raw_tracking,):
     for data in raw_tracking:
         if len(data)>0:
             pruned_tracking.append(data)
-    tracking_array: NDArray = np.array(pruned_tracking, dtype=np.float64,)[:, ::skip]
+    pruned_tracking_array = np.array(pruned_tracking, dtype=np.float64).T
+    tracking_array: NDArray = pruned_tracking_array[:, ::skip]
     tracking = dict(
         iteration = tracking_array[0],
         time = tracking_array[0]/skip,

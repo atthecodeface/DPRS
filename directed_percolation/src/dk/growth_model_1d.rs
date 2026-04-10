@@ -98,3 +98,60 @@ impl CellModel<Cell1D> for GrowthModel1D {
         do_survive.into()
     }
 }
+
+#[derive(Clone, Copy, Debug)]
+pub struct GrowthModelDKStaggered1D {
+    /// The two Domany-Kinzel growth rule probabilities:
+    /// p_1 relates more to a single (or centrally) occupied cell
+    /// p_2 relates more to multiple (or non-centrally) occupied cells
+    p_1: f64,
+    p_2: f64,
+    /// The initial probability that a cell is activated, for random initial conditions
+    p_initial: f64,
+    /// Dummy: no longer used
+    do_staggered: bool,
+}
+
+// Implement CellModel1D trait for GrowthModelDKStaggered1D.
+impl CellModel<Cell1D> for GrowthModelDKStaggered1D {
+    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
+        // Growth model and its parameters
+        Ok(Self {
+            p_1: parameters.p_1,
+            p_2: parameters.p_2,
+            p_initial: parameters.p_initial,
+            do_staggered: true,
+        })
+    }
+
+    /// Sample Bernoulli distribution with probability p to randomize cell state.
+    fn randomize_state<R: Rng>(&self, rng: &mut R) -> DualState {
+        rng.random_bool(self.p_initial).into()
+    }
+
+    fn update_state<R: Rng>(
+        &self,
+        iteration: usize,
+        rng: &mut R,
+        nbrhood: &[bool; 3],
+    ) -> DualState {
+        let do_survive = {
+            // This method avoids the RNG sampling if not needed.
+            // It's about 30% faster.
+            let is_even_step = iteration.is_multiple_of(2);
+            let (is_either_nbr_occupied, are_both_nbrs_occupied): (bool, bool) = match is_even_step
+            {
+                true => (nbrhood[1] | nbrhood[2], nbrhood[1] & nbrhood[2]),
+                false => (nbrhood[0] | nbrhood[1], nbrhood[0] & nbrhood[1]),
+            };
+            if is_either_nbr_occupied {
+                let uniform_variate: f64 = rng.random();
+                (uniform_variate < self.p_1)
+                    | (are_both_nbrs_occupied & (uniform_variate < self.p_2))
+            } else {
+                false
+            }
+        };
+        do_survive.into()
+    }
+}

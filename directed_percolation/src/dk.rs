@@ -39,7 +39,9 @@ pub use lattice_model_3d::LatticeModel3D;
 pub use traits::{Cell1D, Cell2D, Cell3D, CellDim, CellModel, DramaticallySimulatable};
 
 /// Entry point to this module.
-use crate::{Dimension, SimParameters};
+use crate::{
+    Dimension, GrowthModelChoice, SimParameters, dk::growth_model_1d::GrowthModelDKStaggered1D,
+};
 
 #[derive(Debug, Default, Error)]
 pub enum DkError {
@@ -61,7 +63,15 @@ pub fn sim_dk<R: Rng + SeedableRng + Send>(
     println!("{sim_parameters}");
     println!();
     let (t_run_time, n_lattices, lattice_slices, tracking) = match &sim_parameters.dim {
-        Dimension::D1 => run_nd::<R, Cell1D, LatticeModel1D<GrowthModel1D>>(&sim_parameters)?,
+        Dimension::D1 => match &sim_parameters.growth_model_choice {
+            GrowthModelChoice::SimplifiedDomanyKinzel => {
+                run_nd::<R, Cell1D, LatticeModel1D<GrowthModel1D>>(&sim_parameters)?
+            }
+            GrowthModelChoice::StaggeredDomanyKinzel => {
+                run_nd::<R, Cell1D, LatticeModel1D<GrowthModel1D>>(&sim_parameters)?
+            }
+            _ => todo!(),
+        },
         Dimension::D2 => run_nd::<R, Cell2D, LatticeModel2D<GrowthModel2D>>(&sim_parameters)?,
         Dimension::D3 => run_nd::<R, Cell3D, LatticeModel3D<GrowthModel3D>>(&sim_parameters)?,
     };
