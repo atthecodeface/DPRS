@@ -33,7 +33,7 @@ pub use growth_model_1d::DKSimplified1D;
 pub use growth_model_1d::DKStaggered1D;
 pub use growth_model_2d::DKSimplified2D;
 pub use growth_model_2d::DKStaggered2D;
-pub use growth_model_3d::GrowthModel3D;
+pub use growth_model_3d::DKSimplified3D;
 
 pub use lattice_model_1d::LatticeModel1D;
 pub use lattice_model_2d::LatticeModel2D;
@@ -81,7 +81,12 @@ pub fn sim_dk<R: Rng + SeedableRng + Send>(
             }
             _ => todo!(),
         },
-        Dimension::D3 => run_nd::<R, Cell3D, LatticeModel3D<GrowthModel3D>>(&sim_parameters)?,
+        Dimension::D3 => match &sim_parameters.growth_model_choice {
+            GrowthModelChoice::SimplifiedDomanyKinzel => {
+                run_nd::<R, Cell3D, LatticeModel3D<DKSimplified3D>>(&sim_parameters)?
+            }
+            _ => todo!(),
+        },
     };
     println!(
         "Simulation run time ({}): {:4.3}s",
