@@ -29,7 +29,8 @@ pub use types::{LatticeHistory, LatticeSlices};
 
 pub use cell_nbrhood_2d::{CellNbrhood2D, RowIterator2D};
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
-pub use growth_model_1d::GrowthModel1D;
+pub use growth_model_1d::DKSimplified1D;
+pub use growth_model_1d::DKStaggered1D;
 pub use growth_model_2d::GrowthModel2D;
 pub use growth_model_3d::GrowthModel3D;
 
@@ -39,9 +40,7 @@ pub use lattice_model_3d::LatticeModel3D;
 pub use traits::{Cell1D, Cell2D, Cell3D, CellDim, CellModel, DramaticallySimulatable};
 
 /// Entry point to this module.
-use crate::{
-    Dimension, GrowthModelChoice, SimParameters, dk::growth_model_1d::GrowthModelDKStaggered1D,
-};
+use crate::{Dimension, GrowthModelChoice, SimParameters};
 
 #[derive(Debug, Default, Error)]
 pub enum DkError {
@@ -65,10 +64,10 @@ pub fn sim_dk<R: Rng + SeedableRng + Send>(
     let (t_run_time, n_lattices, lattice_slices, tracking) = match &sim_parameters.dim {
         Dimension::D1 => match &sim_parameters.growth_model_choice {
             GrowthModelChoice::SimplifiedDomanyKinzel => {
-                run_nd::<R, Cell1D, LatticeModel1D<GrowthModel1D>>(&sim_parameters)?
+                run_nd::<R, Cell1D, LatticeModel1D<DKSimplified1D>>(&sim_parameters)?
             }
             GrowthModelChoice::StaggeredDomanyKinzel => {
-                run_nd::<R, Cell1D, LatticeModel1D<GrowthModel1D>>(&sim_parameters)?
+                run_nd::<R, Cell1D, LatticeModel1D<DKStaggered1D>>(&sim_parameters)?
             }
             _ => todo!(),
         },
