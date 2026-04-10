@@ -2,6 +2,32 @@ import init, { SimulationKind, Parameters } from "../pkg/dprs_wasm.js";
 import * as html from "./html.js";
 import * as simulation from "./simulation.js";
 
+export function gbl_get_float(id, min, max) {
+  const e = document.getElementById(id);
+  if (!e) {
+    return 0;
+  }
+  var p = Number.parseFloat(e.value);
+  if (!(p >= min && p <= max)) {
+    p = (min + max) / 2;
+  }
+  e.value = p.toString();
+  return p;
+}
+
+export function gbl_get_int(id, min, max) {
+  const e = document.getElementById(id);
+  if (!e) {
+    return min;
+  }
+  var p = Number.parseInt(e.value);
+  if (!(p >= min && p <= max)) {
+    p = min;
+  }
+  e.value = p.toString();
+  return p;
+}
+
 export class SimulationControls {
   constructor(ele_id, div_id, dims) {
     this.parameters = new Parameters();
@@ -9,6 +35,7 @@ export class SimulationControls {
     this.dims = dims;
     this.build_html(div_id);
   }
+
   get_float(id, min, max) {
     const e = document.getElementById(this.ele_id + id);
     if (!e) {
@@ -147,7 +174,9 @@ export class SimulationControls {
         .add_tags({ id: ele_id + "probability" });
       for (const thing of ["p_1", "p_2", "p_initial"]) {
         const td = tr.add_ele("td");
-        td.add_ele("label").add_tags({ for: thing }).set_content(thing + ": ");
+        td.add_ele("label")
+          .add_tags({ for: thing })
+          .set_content(thing + ": ");
         td.add_ele("input").add_tags({
           id: this.ele_id + thing,
           className: "probability",
