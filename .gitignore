@@ -2,6 +2,8 @@
 # docs/wasm/*
 wasm/target/
 wasm/dprs.zip
+python/target/
+directed_percolation/target/
 
 notebooks/plots/*
 plots/*

@@ -16,4 +16,4 @@ thiserror = "2.0.18"
 
 [dependencies.directed_percolation]
 version = "0.1"
-path = "./directed_percolation"
+path = "../directed_percolation"
