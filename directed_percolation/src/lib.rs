@@ -11,7 +11,7 @@ mod traits;
 mod types;
 
 pub use dk::{Cell1D, Cell2D, Cell3D, CellModel};
-pub use enums::DpError;
+pub use enums::SimError;
 pub use simulation::simulation_nd;
 pub use tracking::{Statistics, TrackingHistory};
 pub use traits::{CellSpace, EvolvableLatticeDualState};

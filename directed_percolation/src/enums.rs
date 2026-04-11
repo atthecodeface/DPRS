@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Default, Error)]
-pub enum DpError {
+pub enum SimError {
     #[default]
     #[error("Unknown error in simulation")]
     UnknownError,

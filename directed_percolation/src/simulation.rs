@@ -1,8 +1,8 @@
 use rand::{Rng, SeedableRng};
 
 use crate::{CellSpace, EvolvableLatticeDualState};
-use crate::{DpError, LatticeHistory, LatticeSlices, TrackingHistory};
 use crate::{InitialCondition, Processing, SimParameters};
+use crate::{LatticeHistory, LatticeSlices, SimError, TrackingHistory};
 
 /// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
 ///
@@ -15,9 +15,9 @@ pub fn simulation_nd<
     LM: EvolvableLatticeDualState<CS>,
 >(
     parameters: &SimParameters,
-) -> Result<(usize, LatticeSlices, TrackingHistory), DpError> {
+) -> Result<(usize, LatticeSlices, TrackingHistory), SimError> {
     let mut lm =
-        LM::create_from_parameters(&parameters).map_err(|_| DpError::FailedToCreateModel)?;
+        LM::create_from_parameters(&parameters).map_err(|_| SimError::FailedToCreateModel)?;
     let mut rng = R::seed_from_u64(parameters.random_seed as u64);
     match parameters.initial_condition {
         InitialCondition::Randomized => {
