@@ -3,7 +3,7 @@
 // //!
 
 pub mod enums;
-pub mod parameters;
+pub mod pyparameters;
 
 use pyo3::prelude::*;
 
@@ -12,7 +12,7 @@ mod sim {
 
     use pyo3::prelude::*;
 
-    use crate::parameters::PyParameters;
+    use crate::pyparameters::PyParameters;
 
     #[pymodule_export]
     use crate::enums::BoundaryCondition;
