@@ -1,0 +1,32 @@
+use directed_percolation::SimParameters;
+
+use wasm_bindgen::prelude::wasm_bindgen;
+
+#[wasm_bindgen]
+#[derive(Default, Clone, Copy)]
+pub struct Probabilities {
+    pub p_initial: f64,
+    pub p_1: f64,
+    pub p_2: f64,
+}
+
+impl From<&SimParameters> for Probabilities {
+    fn from(p: &SimParameters) -> Probabilities {
+        let mut s = Probabilities::default();
+        s.p_initial = p.p_initial;
+        s.p_1 = p.p_1;
+        s.p_2 = p.p_2;
+        s
+    }
+}
+impl From<&Probabilities> for SimParameters {
+    fn from(p: &Probabilities) -> SimParameters {
+        let mut s = SimParameters::default();
+        s.p_initial = p.p_initial;
+        s.p_1 = p.p_1;
+        s.p_2 = p.p_2;
+        s
+    }
+}
+
+make_default_constructor! {Probabilities}
