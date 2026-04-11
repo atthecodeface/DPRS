@@ -12,20 +12,21 @@ pub struct Probabilities {
 
 impl From<&SimParameters> for Probabilities {
     fn from(p: &SimParameters) -> Probabilities {
-        let mut s = Probabilities::default();
-        s.p_initial = p.p_initial;
-        s.p_1 = p.p_1;
-        s.p_2 = p.p_2;
-        s
+        Probabilities {
+            p_initial: p.p_initial,
+            p_1: p.p_1,
+            p_2: p.p_2,
+        }
     }
 }
 impl From<&Probabilities> for SimParameters {
     fn from(p: &Probabilities) -> SimParameters {
-        let mut s = SimParameters::default();
-        s.p_initial = p.p_initial;
-        s.p_1 = p.p_1;
-        s.p_2 = p.p_2;
-        s
+        SimParameters {
+            p_initial: p.p_initial,
+            p_1: p.p_1,
+            p_2: p.p_2,
+            ..Default::default()
+        }
     }
 }
 

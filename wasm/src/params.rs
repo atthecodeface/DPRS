@@ -21,24 +21,27 @@ pub struct Params {
 
 impl From<&SimParameters> for Params {
     fn from(p: &SimParameters) -> Params {
-        let mut s = Params::default();
-        s.n_iterations = p.n_iterations;
-        s.sample_period = p.sample_period;
-        s.random_seed = p.random_seed;
-        s.initial_center = matches![
-            p.initial_condition,
-            directed_percolation::InitialCondition::CentralSeed
-        ];
-        s
+        Params {
+            n_iterations: p.n_iterations,
+            sample_period: p.sample_period,
+            random_seed: p.random_seed,
+            initial_center: matches![
+                p.initial_condition,
+                directed_percolation::InitialCondition::CentralSeed
+            ],
+            ..Default::default()
+        }
     }
 }
 
 impl From<&Params> for SimParameters {
     fn from(p: &Params) -> SimParameters {
-        let mut s = SimParameters::default();
-        s.n_iterations = p.n_iterations;
-        s.sample_period = p.sample_period;
-        s.random_seed = p.random_seed;
+        let mut s = SimParameters {
+            n_iterations: p.n_iterations,
+            sample_period: p.sample_period,
+            random_seed: p.random_seed,
+            ..Default::default()
+        };
         if p.initial_center {
             s.initial_condition = directed_percolation::InitialCondition::CentralSeed;
         } else {

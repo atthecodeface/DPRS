@@ -79,8 +79,7 @@ impl Simulation {
                     return Err(format!(
                         "Unable to perform {dims}D simulation with {:?} simulation kind at present",
                         kind,
-                    ))
-                    .into();
+                    ));
                 }
             }
         }

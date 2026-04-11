@@ -11,20 +11,21 @@ pub struct Dims {
 
 impl From<&SimParameters> for Dims {
     fn from(p: &SimParameters) -> Dims {
-        let mut s = Dims::default();
-        s.n_x = p.n_x;
-        s.n_y = p.n_y;
-        s.n_z = p.n_z;
-        s
+        Dims {
+            n_x: p.n_x,
+            n_y: p.n_y,
+            n_z: p.n_z,
+        }
     }
 }
 impl From<&Dims> for SimParameters {
     fn from(p: &Dims) -> SimParameters {
-        let mut s = SimParameters::default();
-        s.n_x = p.n_x;
-        s.n_y = p.n_y;
-        s.n_z = p.n_z;
-        s
+        SimParameters {
+            n_x: p.n_x,
+            n_y: p.n_y,
+            n_z: p.n_z,
+            ..Default::default()
+        }
     }
 }
 
