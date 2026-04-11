@@ -29,10 +29,8 @@ pub use types::{LatticeHistory, LatticeSlices};
 
 pub use cell_nbrhood_2d::{CellNbrhood2D, RowIterator2D};
 pub use cell_nbrhood_3d::{CellNbrhood3D, RowIterator3D};
-pub use growth_model_1d::DKSimplified1D;
-pub use growth_model_1d::DKStaggered1D;
-pub use growth_model_2d::DKSimplified2D;
-pub use growth_model_2d::DKStaggered2D;
+pub use growth_model_1d::{DKSimplified1D, DKStaggered1D};
+pub use growth_model_2d::{DKSimplified2D, DKStaggered2D};
 pub use growth_model_3d::DKSimplified3D;
 
 pub use lattice_model_1d::LatticeModel1D;

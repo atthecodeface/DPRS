@@ -5,22 +5,14 @@ pub use crate::{
 use super::{Cell2D, CellModel, CellNbrhood2D, LatticeModel2D};
 use super::{run_nd, simulation_nd};
 
-use rand::RngExt;
 use rand::rngs::ChaCha8Rng;
 
 #[derive(Clone, Copy, Debug)]
-struct MoveDownRightModel2D {
-    pub p_initial: f64,
-}
+struct MoveDownRightModel2D {}
 
 impl CellModel<Cell2D> for MoveDownRightModel2D {
-    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
-        Ok(Self {
-            p_initial: parameters.p_initial,
-        })
-    }
-    fn randomize_state<R: rand::Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn create_from_parameters(_parameters: &SimParameters) -> Result<Self, ()> {
+        Ok(Self {})
     }
     fn update_state<R: rand::Rng>(
         &self,
