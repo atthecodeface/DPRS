@@ -49,14 +49,15 @@ macro_rules! getter_setter {
 }
 
 mod dims;
+mod parameters;
 mod params;
 mod probabilities;
+mod simulation;
 mod topo_bc;
 
 pub use dims::Dims;
+pub use parameters::Parameters;
 pub use params::{Params, SimulationKind};
 pub use probabilities::Probabilities;
+pub use simulation::Simulation;
 pub use topo_bc::TopoBc;
-
-mod wasm_export;
-pub use wasm_export::Parameters;
