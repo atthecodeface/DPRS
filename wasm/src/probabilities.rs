@@ -29,4 +29,4 @@ impl From<&Probabilities> for SimParameters {
     }
 }
 
-make_default_constructor! {Probabilities}
+crate::make_default_constructor! {Probabilities}

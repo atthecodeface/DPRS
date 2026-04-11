@@ -15,6 +15,8 @@ use directed_percolation::dk::CellModel;
 
 use rand::rngs::ChaCha8Rng;
 
+use crate::{Dims, Params, Probabilities, SimulationKind, TopoBc};
+
 /// A 1D model simulation
 fn sim_1d<Model: CellModel<Cell1D>>(
     parameters: &SimParameters,
@@ -27,75 +29,6 @@ fn sim_2d<Model: CellModel<Cell2D>>(
     parameters: &SimParameters,
 ) -> Result<(usize, Vec<Vec<DualState>>, TrackingHistory), DkError> {
     simulation_nd::<ChaCha8Rng, Cell2D, LatticeModel2D<Model>>(parameters)
-}
-
-use crate::{Params, SimulationKind};
-
-#[wasm_bindgen]
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Dims {
-    pub n_x: usize,
-    pub n_y: usize,
-    pub n_z: usize,
-}
-
-impl From<&SimParameters> for Dims {
-    fn from(p: &SimParameters) -> Dims {
-        let mut s = Dims::default();
-        s.n_x = p.n_x;
-        s.n_y = p.n_y;
-        s.n_z = p.n_z;
-        s
-    }
-}
-impl From<&Dims> for SimParameters {
-    fn from(p: &Dims) -> SimParameters {
-        let mut s = SimParameters::default();
-        s.n_x = p.n_x;
-        s.n_y = p.n_y;
-        s.n_z = p.n_z;
-        s
-    }
-}
-
-#[wasm_bindgen]
-#[derive(Default, Clone, Copy)]
-pub struct Probabilities {
-    pub p_initial: f64,
-    pub p_1: f64,
-    pub p_2: f64,
-}
-
-impl From<&SimParameters> for Probabilities {
-    fn from(p: &SimParameters) -> Probabilities {
-        let mut s = Probabilities::default();
-        s.p_initial = p.p_initial;
-        s.p_1 = p.p_1;
-        s.p_2 = p.p_2;
-        s
-    }
-}
-impl From<&Probabilities> for SimParameters {
-    fn from(p: &Probabilities) -> SimParameters {
-        let mut s = SimParameters::default();
-        s.p_initial = p.p_initial;
-        s.p_1 = p.p_1;
-        s.p_2 = p.p_2;
-        s
-    }
-}
-
-make_default_constructor! {Probabilities}
-make_default_constructor! {Dims}
-make_default_constructor! {TopoBc}
-
-#[wasm_bindgen]
-#[derive(Default, Clone, Copy)]
-pub struct TopoBc {
-    pub periodic: bool,
-    pub fix_min: bool,
-    pub fix_max: bool,
-    pub fix_value: bool,
 }
 
 #[wasm_bindgen]

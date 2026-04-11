@@ -14,6 +14,7 @@ macro_rules! console_log {
 }
 
 /// Make a default constructor for a Wasm type given that supports 'Default'
+#[macro_export]
 macro_rules! make_default_constructor {
     {$t: ident  } => {
         #[wasm_bindgen]
@@ -47,8 +48,15 @@ macro_rules! getter_setter {
     }
 }
 
+mod dims;
 mod params;
+mod probabilities;
+mod topo_bc;
+
+pub use dims::Dims;
 pub use params::{Params, SimulationKind};
+pub use probabilities::Probabilities;
+pub use topo_bc::TopoBc;
 
 mod wasm_export;
 pub use wasm_export::Parameters;

@@ -1,8 +1,5 @@
 use directed_percolation::SimParameters;
-
 use wasm_bindgen::prelude::wasm_bindgen;
-
-
 
 #[wasm_bindgen]
 #[derive(Debug, Default, Clone, Copy)]
@@ -51,4 +48,4 @@ impl From<&Params> for SimParameters {
     }
 }
 
-make_default_constructor! {Params}
+crate::make_default_constructor! {Params}
