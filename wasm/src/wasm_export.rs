@@ -130,17 +130,6 @@ impl From<&Probabilities> for SimParameters {
     }
 }
 
-macro_rules! make_default_constructor {
-{$t: ident  } => {
-#[wasm_bindgen]
-impl $t {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-}}
-
 make_default_constructor! {Probabilities}
 make_default_constructor! {Dims}
 make_default_constructor! {TopoBc}
@@ -159,28 +148,9 @@ pub struct TopoBc {
 #[derive(Default, Clone)]
 pub struct Parameters(SimParameters);
 
-macro_rules! getter_setter {
-{$(#[$outer:meta])* $t: ident, $get_fn:ident, $set_fn:ident,
-    ( $( $(#[$inner:ident $($args:tt)*])* $others:ident ),* $(,)? ) } => {
-
-#[wasm_bindgen] impl Parameters {
-    #[wasm_bindgen(setter)]
-    pub fn $set_fn(&mut self, value: &$t) {
-        let p : SimParameters = value.into();
-        $( self.0.$others = p.$others; )*
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn $get_fn(&self) -> $t {
-        (&self.0).into()
-    }
-}
-    }
-}
-
-getter_setter! {Dims, dims, set_dims, (n_x, n_y, n_z)}
-getter_setter! {Probabilities, probabilities, set_probabilities, (p_initial, p_1, p_2)}
-getter_setter! {Params, params, set_params, (n_iterations, sample_period, random_seed, initial_condition)}
+crate::getter_setter! {Parameters, Dims, dims, set_dims, (n_x, n_y, n_z)}
+crate::getter_setter! {Parameters, Probabilities, probabilities, set_probabilities, (p_initial, p_1, p_2)}
+crate::getter_setter! {Parameters, Params, params, set_params, (n_iterations, sample_period, random_seed, initial_condition)}
 
 #[wasm_bindgen]
 pub struct Simulation {
