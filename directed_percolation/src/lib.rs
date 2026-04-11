@@ -12,11 +12,11 @@ mod traits;
 mod types;
 
 #[derive(Debug, Default, Error)]
-pub enum DkError {
+pub enum DpError {
     #[default]
-    #[error("unknown error in DK simulation")]
+    #[error("Unknown error in simulation")]
     UnknownError,
-    #[error("error building rayon threads")]
+    #[error("Error building rayon threads")]
     ThreadBuildError(#[from] rayon::ThreadPoolBuildError),
     #[error("Failed to create the lattice model")]
     FailedToCreateModel,
