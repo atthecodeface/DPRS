@@ -3,14 +3,14 @@ use std::time::Instant;
 
 use crate::SimParameters;
 use crate::{CellSpace, EvolvableLatticeDualState, simulation_nd};
-use crate::{DpError, LatticeSlices, TrackingHistory};
+use crate::{LatticeSlices, SimError, TrackingHistory};
 
 /// Run a simulation and record how long the computation takes.
 ///
 /// Returns the duration, number of lattices recorded, the lattices, and the tracking
 pub fn run_nd<R: Rng + SeedableRng + Send, CS: CellSpace, LM: EvolvableLatticeDualState<CS>>(
     parameters: &SimParameters,
-) -> Result<(f64, usize, LatticeSlices, TrackingHistory), DpError> {
+) -> Result<(f64, usize, LatticeSlices, TrackingHistory), SimError> {
     // Set up thread pool of size set by user
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(parameters.n_threads)
