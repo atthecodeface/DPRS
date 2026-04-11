@@ -50,5 +50,5 @@ dprs.zip:
 
 transfer:
 	@echo "Copying http/ and pkg/ to ../docs/live-demo"
-	cp -R http ../docs/live-demo
-	cp -R pkg ../docs/live-demo
+	cp -R http ../documentation/docs/live-demo
+	cp -R pkg ../documentation/docs/live-demo
