@@ -5,22 +5,14 @@ pub use crate::{
 use super::{Cell3D, CellModel, CellNbrhood3D, LatticeModel3D};
 use super::{run_nd, simulation_nd};
 
-use rand::RngExt;
 use rand::rngs::ChaCha8Rng;
 
 #[derive(Clone, Copy, Debug)]
-struct MoveDownRightModel3D {
-    pub p_initial: f64,
-}
+struct MoveDownRightModel3D {}
 
 impl CellModel<Cell3D> for MoveDownRightModel3D {
-    fn create_from_parameters(parameters: &SimParameters) -> Result<Self, ()> {
-        Ok(Self {
-            p_initial: parameters.p_initial,
-        })
-    }
-    fn randomize_state<R: rand::Rng>(&self, rng: &mut R) -> DualState {
-        rng.random_bool(self.p_initial).into()
+    fn create_from_parameters(_parameters: &SimParameters) -> Result<Self, ()> {
+        Ok(Self {})
     }
     fn update_state<R: rand::Rng>(
         &self,

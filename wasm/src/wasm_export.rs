@@ -1,9 +1,33 @@
 use directed_percolation::SimParameters;
-use directed_percolation::dk::{Cell1D, GrowthModel1D, LatticeModel1D};
-use directed_percolation::dk::{Cell2D, GrowthModel2D, LatticeModel2D};
+use directed_percolation::dk::simulation_nd;
+use directed_percolation::dk::{Cell1D, LatticeModel1D};
+use directed_percolation::dk::{Cell2D, LatticeModel2D};
+use directed_percolation::dk::{DKSimplified1D, DKSimplified2D};
+use directed_percolation::dk::{DKStaggered1D, DKStaggered2D};
 use directed_percolation::{BoundaryCondition, Topology};
 
 use wasm_bindgen::prelude::wasm_bindgen;
+
+use directed_percolation::DualState;
+use directed_percolation::dk::CellModel;
+use directed_percolation::dk::DkError;
+use directed_percolation::dk::TrackingHistory;
+
+use rand::rngs::ChaCha8Rng;
+
+/// A 1D model simulation
+fn sim_1d<Model: CellModel<Cell1D>>(
+    parameters: &SimParameters,
+) -> Result<(usize, Vec<Vec<DualState>>, TrackingHistory), DkError> {
+    simulation_nd::<ChaCha8Rng, Cell1D, LatticeModel1D<Model>>(parameters)
+}
+
+/// A 2D model simulation
+fn sim_2d<Model: CellModel<Cell2D>>(
+    parameters: &SimParameters,
+) -> Result<(usize, Vec<Vec<DualState>>, TrackingHistory), DkError> {
+    simulation_nd::<ChaCha8Rng, Cell2D, LatticeModel2D<Model>>(parameters)
+}
 
 #[wasm_bindgen]
 #[derive(Default, Clone, Copy)]
@@ -209,30 +233,39 @@ impl Simulation {
         self.parameters.clone()
     }
 
-    pub fn simulate(&mut self) {
-        use rand::rngs::ChaCha8Rng;
-
+    pub fn simulate(&mut self) -> Result<(), String> {
         self.parameters.0.do_edge_buffering = true;
         self.parameters.0.n_threads = 1;
         self.parameters.0.processing = directed_percolation::Processing::Serial;
 
+        // No doubt there is a better way of doing this
+        let dims = { if self.parameters.0.n_y < 2 { 1 } else { 2 } };
+
         let simulation_results = {
-            if self.parameters.0.n_y < 2 {
-                directed_percolation::dk::simulation_nd::<
-                    ChaCha8Rng,
-                    Cell1D,
-                    LatticeModel1D<GrowthModel1D>,
-                >(&self.parameters.0)
-                .unwrap()
-            } else {
-                directed_percolation::dk::simulation_nd::<
-                    ChaCha8Rng,
-                    Cell2D,
-                    LatticeModel2D<GrowthModel2D>,
-                >(&self.parameters.0)
-                .unwrap()
+            match (dims, self.parameters.0.growth_model_choice) {
+                (1, directed_percolation::GrowthModelChoice::SimplifiedDomanyKinzel) => {
+                    sim_1d::<DKSimplified1D>(&self.parameters.0)
+                }
+                (1, directed_percolation::GrowthModelChoice::StaggeredDomanyKinzel) => {
+                    sim_1d::<DKStaggered1D>(&self.parameters.0)
+                }
+                (2, directed_percolation::GrowthModelChoice::SimplifiedDomanyKinzel) => {
+                    sim_2d::<DKSimplified2D>(&self.parameters.0)
+                }
+                (2, directed_percolation::GrowthModelChoice::StaggeredDomanyKinzel) => {
+                    sim_2d::<DKStaggered2D>(&self.parameters.0)
+                }
+                _ => {
+                    return Err(format!(
+                        "Unable to perform {dims}D simulation with {:?} growth model at present",
+                        self.parameters.0.growth_model_choice,
+                    ))
+                    .into();
+                }
             }
-        };
+        }
+        .map_err(|e| format!("{e:?}"))?;
+
         self.results = simulation_results
             .1
             .iter()
@@ -243,6 +276,7 @@ impl Simulation {
                     .collect()
             })
             .collect();
+        Ok(())
     }
 
     pub fn result(&self, index: usize) -> Option<Vec<u8>> {

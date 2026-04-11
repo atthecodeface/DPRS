@@ -46,6 +46,8 @@ mod sim {
             .map(|statistic| {
                 vec![
                     statistic.iteration as f64,
+                    // TODO
+                    // statistic.time as f64,
                     statistic.mass as f64,
                     statistic.mean_rho as f64,
                     statistic.mean_radius as f64,
