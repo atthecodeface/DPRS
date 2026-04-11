@@ -4,6 +4,12 @@
 
 use pyo3::FromPyObject;
 
+use crate::enums::{
+    BoundaryCondition, Dimension, DprsError, GrowthModelChoice, InitialCondition, Processing,
+    Topology,
+};
+use directed_percolation::SimParameters;
+
 /// Model parameter bundle derived from Python Parameters class instance.
 #[derive(FromPyObject, Debug, Clone, Default)]
 pub struct PyParameters {
@@ -61,9 +67,6 @@ impl std::fmt::Display for PyParameters {
     }
 }
 
-use directed_percolation::SimParameters;
-
-use crate::enums::{BoundaryCondition, Dimension, DprsError, GrowthModelChoice, InitialCondition, Processing, Topology};
 impl PyParameters {
     /// Copy Python-facing parameters.
 
