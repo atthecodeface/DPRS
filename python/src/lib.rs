@@ -2,6 +2,7 @@
 // //!
 // //!
 
+pub mod enums;
 pub mod parameters;
 
 use pyo3::prelude::*;
@@ -14,17 +15,17 @@ mod sim {
     use crate::parameters::PyParameters;
 
     #[pymodule_export]
-    use crate::parameters::BoundaryCondition;
+    use crate::enums::BoundaryCondition;
     #[pymodule_export]
-    use crate::parameters::Dimension;
+    use crate::enums::Dimension;
     #[pymodule_export]
-    use crate::parameters::GrowthModelChoice;
+    use crate::enums::GrowthModelChoice;
     #[pymodule_export]
-    use crate::parameters::InitialCondition;
+    use crate::enums::InitialCondition;
     #[pymodule_export]
-    use crate::parameters::Processing;
+    use crate::enums::Processing;
     #[pymodule_export]
-    use crate::parameters::Topology;
+    use crate::enums::Topology;
 
     use rand::rngs::StdRng;
 
