@@ -1,7 +1,7 @@
 use crate::TrackingHistory;
 pub use crate::{BoundaryCondition, DualState, InitialCondition, Parameters, Processing, Topology};
 
-use super::{Cell1D, CellModel, Lattice1D, ModelSimplifiedDK1D, ModelStaggeredDK1D};
+use super::{Cell1D, CellModel, Lattice1D, ModelDKSimplified1D, ModelStaggeredDK1D};
 
 use super::{run_nd, simulation_nd};
 
@@ -155,7 +155,7 @@ fn test_1d_run_random_simplified_critical() -> Result<(), Box<dyn std::error::Er
     parameters.p_1 = 0.545; // critical value
     parameters.p_2 = 0.545; // critical value
     let (_time, history_len, _lattices, tracking) =
-        run_nd::<ChaCha8Rng, Cell1D, Lattice1D<ModelSimplifiedDK1D>>(&parameters)?;
+        run_nd::<ChaCha8Rng, Cell1D, Lattice1D<ModelDKSimplified1D>>(&parameters)?;
     assert_eq!(history_len, 2);
 
     check_1d_tracking_density(&tracking, 0.08, 0.30);
@@ -171,7 +171,7 @@ fn test_1d_run_random_simplified_supercritical() -> Result<(), Box<dyn std::erro
     parameters.p_1 = 0.57; // supercritical value
     parameters.p_2 = 0.57; // supercritical value
     let (_time, history_len, _lattices, tracking) =
-        run_nd::<ChaCha8Rng, Cell1D, Lattice1D<ModelSimplifiedDK1D>>(&parameters)?;
+        run_nd::<ChaCha8Rng, Cell1D, Lattice1D<ModelDKSimplified1D>>(&parameters)?;
     assert_eq!(history_len, 2);
 
     check_1d_tracking_density(&tracking, 0.30, 0.80);
@@ -187,7 +187,7 @@ fn test_1d_run_random_simplified_subcritical() -> Result<(), Box<dyn std::error:
     parameters.p_1 = 0.53; // subcritical value
     parameters.p_2 = 0.53; // subcritical value
     let (_time, history_len, _lattices, tracking) =
-        run_nd::<ChaCha8Rng, Cell1D, Lattice1D<ModelSimplifiedDK1D>>(&parameters)?;
+        run_nd::<ChaCha8Rng, Cell1D, Lattice1D<ModelDKSimplified1D>>(&parameters)?;
     assert_eq!(history_len, 2);
 
     check_1d_tracking_density(&tracking, 0.00, 0.01);

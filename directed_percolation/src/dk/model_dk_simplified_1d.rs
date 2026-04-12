@@ -2,9 +2,9 @@ use crate::{Cell1D, CellModel};
 use crate::{DualState, Parameters};
 use rand::{Rng, RngExt};
 
-/// ModelSimplifiedDK1D implements the CellModel1D trait, plus these.
+/// ModelDKSimplified1D implements the CellModel1D trait, plus these.
 #[derive(Clone, Copy, Debug)]
-pub struct ModelSimplifiedDK1D {
+pub struct ModelDKSimplified1D {
     /// The two Domany-Kinzel growth rule probabilities:
     /// p_1 relates more to a single (or centrally) occupied cell
     /// p_2 relates more to multiple (or non-centrally) occupied cells
@@ -12,8 +12,8 @@ pub struct ModelSimplifiedDK1D {
     p_2: f64,
 }
 
-// Implement CellModel1D trait for ModelSimplifiedDK1D.
-impl CellModel<Cell1D> for ModelSimplifiedDK1D {
+// Implement CellModel1D trait for ModelDKSimplified1D.
+impl CellModel<Cell1D> for ModelDKSimplified1D {
     fn create_from_parameters(parameters: &Parameters) -> Result<Self, ()> {
         // Growth model probabilities
         Ok(Self {

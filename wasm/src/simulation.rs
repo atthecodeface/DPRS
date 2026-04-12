@@ -1,6 +1,6 @@
 use directed_percolation::dk::{Cell1D, Lattice1D};
 use directed_percolation::dk::{Cell2D, Lattice2D};
-use directed_percolation::dk::{ModelSimplifiedDK1D, ModelSimplifiedDK2D};
+use directed_percolation::dk::{ModelDKSimplified1D, ModelDKSimplified2D};
 use directed_percolation::dk::{ModelStaggeredDK1D, ModelStaggeredDK2D};
 use directed_percolation::simulation_nd;
 
@@ -63,13 +63,13 @@ impl Simulation {
         let simulation_results = {
             match (dims, kind) {
                 (1, SimulationKind::SimplifiedDomanyKinzel) => {
-                    sim_1d::<ModelSimplifiedDK1D>(self.parameters.sim_parameters())
+                    sim_1d::<ModelDKSimplified1D>(self.parameters.sim_parameters())
                 }
                 (1, SimulationKind::StaggeredDomanyKinzel) => {
                     sim_1d::<ModelStaggeredDK1D>(self.parameters.sim_parameters())
                 }
                 (2, SimulationKind::SimplifiedDomanyKinzel) => {
-                    sim_2d::<ModelSimplifiedDK2D>(self.parameters.sim_parameters())
+                    sim_2d::<ModelDKSimplified2D>(self.parameters.sim_parameters())
                 }
                 (2, SimulationKind::StaggeredDomanyKinzel) => {
                     sim_2d::<ModelStaggeredDK2D>(self.parameters.sim_parameters())
