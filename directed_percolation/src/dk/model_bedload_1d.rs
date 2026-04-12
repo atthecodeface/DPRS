@@ -11,10 +11,10 @@ use rand::{Rng, RngExt};
 ///   1) collective entrainment rate = + a_ce ρ
 ///   2) collective detrainment rate = - b_cd ρ^2
 ///   3) detrainment rate = - a_d ρ
-///   4) entrainment = + c_e
+///   4) entrainment rate = + c_e
 /// such that the total rate δρ/δt ~ (a_ce-a_d) ρ - b_cd ρ^2  + c_e + diffusion + noise
 /// where +c_e is not a standard DP term but rather an "external conjugate field" term.
-/// 
+///
 /// ModelBedload1D implements the CellModel1D trait, plus these.
 #[derive(Clone, Copy, Debug)]
 pub struct ModelBedload1D {
