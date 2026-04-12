@@ -107,7 +107,7 @@ class Tab {
 /**
  * A class that handles a set of Tabs, only one of which should be selected, and that will become 'unhidden' while the others are 'hidden'
  */
-class Tabs {
+export class Tabs {
   /**
    * The set of Tab that this controls
    */
@@ -116,7 +116,7 @@ class Tabs {
   /**
    * The callback invoked when a tab is selected
    */
-  callback: any;
+  callback: (id: string) => void;
 
   /**
    * The currently selected tab number
@@ -130,7 +130,7 @@ class Tabs {
    * turn has 'li' for each tab, with each 'li' having an 'a' with an 'href'
    * identifying the tab it is associated with.
    */
-  constructor(container_select: string, callback: any) {
+  constructor(container_select: string, callback: (id: string) => void) {
     this.tabs = [];
     this.callback = callback;
 
@@ -212,10 +212,4 @@ class Tabs {
     this.callback(this.tabs[this.selected_tab_number]!.id());
     return this.selected_tab_number;
   }
-}
-
-export function tabbed_configure(container_id: string, callback: any): Tabs {
-  const tabs = new Tabs(container_id, callback);
-  (document as any).tabs = tabs;
-  return tabs;
 }

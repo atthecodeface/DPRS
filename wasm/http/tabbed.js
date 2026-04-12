@@ -72,7 +72,7 @@ class Tab {
 /**
  * A class that handles a set of Tabs, only one of which should be selected, and that will become 'unhidden' while the others are 'hidden'
  */
-class Tabs {
+export class Tabs {
     /**
      * Create a new set of tabs whose tab list can be selected with 'container_select'
      *
@@ -154,10 +154,5 @@ class Tabs {
         this.callback(this.tabs[this.selected_tab_number].id());
         return this.selected_tab_number;
     }
-}
-export function tabbed_configure(container_id, callback) {
-    const tabs = new Tabs(container_id, callback);
-    document.tabs = tabs;
-    return tabs;
 }
 //# sourceMappingURL=tabbed.js.map

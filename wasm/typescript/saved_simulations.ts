@@ -144,7 +144,7 @@ export class SavedSimulations {
   /**
    * Save a simulation described by a 'Json' string to a file and repopulate the HTML
    */
-  save(sim: string, filename: string): void {
+  save(sim: string, filename?: string): void {
     if (!filename) {
       const date = new Date();
       const year = date.getFullYear();

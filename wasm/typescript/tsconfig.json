@@ -54,5 +54,6 @@
     "simulation_controls.ts",
     "saved_simulations.ts",
     "visualize.ts",
+    "dk.ts",
   ],
 }
