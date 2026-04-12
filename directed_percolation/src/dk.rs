@@ -4,6 +4,7 @@
 mod traits;
 pub use traits::{Cell1D, Cell2D, Cell3D, CellModel};
 
+mod dk_bedload_1d;
 mod dk_simplified_1d;
 mod dk_simplified_2d;
 mod dk_simplified_3d;
@@ -18,6 +19,7 @@ mod nbrhood_3d;
 #[cfg(test)]
 mod tests;
 
+pub use dk_bedload_1d::DKBedload1D;
 pub use dk_simplified_1d::DKSimplified1D;
 pub use dk_simplified_2d::DKSimplified2D;
 pub use dk_simplified_3d::DKSimplified3D;
