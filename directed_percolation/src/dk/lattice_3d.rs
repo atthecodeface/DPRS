@@ -1,8 +1,8 @@
 use rand::{Rng, RngExt};
 use rayon::prelude::*;
 
-use super::{CellNbrhood3D, RowIterator3D};
-use crate::{Cell3D, CellModel, EvolvableLatticeDualState, Statistics};
+use super::CellNbrhood3D;
+use crate::{Cell3D, CellModel, EvolvableLatticeDualState, RowIterator3D, Statistics};
 use crate::{DualState, InitialCondition, Parameters};
 
 /// Model lattice in 3d.

@@ -18,6 +18,8 @@ mod lattice_3d;
 mod nbrhood_2d;
 mod nbrhood_3d;
 
+mod rowiterator_3d;
+
 #[cfg(test)]
 mod tests;
 
@@ -31,8 +33,10 @@ pub use dk_staggered_1d::DKStaggered1D;
 pub use dk_staggered_2d::DKStaggered2D;
 
 pub use nbrhood_2d::{CellNbrhood2D, RowIterator2D};
-pub use nbrhood_3d::{CellNbrhood3D, RowIterator3D};
+pub use nbrhood_3d::CellNbrhood3D;
 
 pub use lattice_1d::LatticeModel1D;
 pub use lattice_2d::LatticeModel2D;
 pub use lattice_3d::LatticeModel3D;
+
+pub use rowiterator_3d::RowIterator3D;

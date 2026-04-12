@@ -10,7 +10,7 @@ mod tracking;
 mod traits;
 mod types;
 
-pub use dk::{Cell1D, Cell2D, Cell3D, CellModel};
+pub use dk::{Cell1D, Cell2D, Cell3D, CellModel, CellNbrhood3D, RowIterator3D};
 pub use enums::SimError;
 pub use simulation::simulation_nd;
 pub use tracking::{Statistics, TrackingHistory};
