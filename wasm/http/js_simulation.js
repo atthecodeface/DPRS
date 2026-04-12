@@ -58,4 +58,3 @@ export class JsSimulation {
         return false;
     }
 }
-//# sourceMappingURL=js_simulation.js.map

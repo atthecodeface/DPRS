@@ -155,4 +155,3 @@ export class Tabs {
         return this.selected_tab_number;
     }
 }
-//# sourceMappingURL=tabbed.js.map

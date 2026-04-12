@@ -99,13 +99,6 @@ export class HtmlElement {
     return this;
   }
 
-  add_tags_old(tag_values: any) {
-    for (const [tag, value] of Object.entries(tag_values)) {
-      this.ele.setAttribute(tag, value as string);
-    }
-    return this;
-  }
-
   add_input_button(
     value: string,
     callback: () => void,

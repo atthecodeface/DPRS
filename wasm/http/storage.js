@@ -189,4 +189,3 @@ export class LocalStorage {
         return this.directory;
     }
 }
-//# sourceMappingURL=storage.js.map

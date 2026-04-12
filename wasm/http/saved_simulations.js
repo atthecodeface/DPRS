@@ -119,4 +119,3 @@ export class SavedSimulations {
         return parameters;
     }
 }
-//# sourceMappingURL=saved_simulations.js.map

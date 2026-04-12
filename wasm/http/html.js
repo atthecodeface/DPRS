@@ -89,12 +89,6 @@ export class HtmlElement {
         }
         return this;
     }
-    add_tags_old(tag_values) {
-        for (const [tag, value] of Object.entries(tag_values)) {
-            this.ele.setAttribute(tag, value);
-        }
-        return this;
-    }
     add_input_button(value, callback, id, classes) {
         const input = document.createElement("input");
         input.setAttribute("type", "button");
@@ -231,4 +225,3 @@ function if_ele_id(ele_id, v, f) {
         f(e, v);
     }
 }
-//# sourceMappingURL=html.js.map

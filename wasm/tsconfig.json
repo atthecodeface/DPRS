@@ -1,8 +1,8 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // "rootDir": "./src",
-    "outDir": "./js",
+    "rootDir": "./typescript/",
+    "outDir": "./http",
 
     // No idea what this is but it breaks stuff
     // "module": "commonjs",
@@ -11,16 +11,16 @@
     "target": "ES2015",
 
     // Presumably libraries that we target
-    "lib": ["DOM", "ES2017", "DOM.Iterable", "ScriptHost"],
+    // "lib": ["DOM", "ES2017", "DOM.Iterable", "ScriptHost"],
 
     // Whether to generate sourceMap?
-    "sourceMap": true,
+    "sourceMap": false,
 
     // Whether to generate ts declaration files?
-    "declaration": true,
+    "declaration": false,
 
     // Whether to generate ts declaration map files?
-    "declarationMap": true,
+    "declarationMap": false,
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -45,15 +45,15 @@
     "skipLibCheck": true,
   },
   "files": [
-    "html.ts",
-    "log.ts",
-    "tabbed.ts",
-    "storage.ts",
-    "js_parameters.ts",
-    "js_simulation.ts",
-    "simulation_controls.ts",
-    "saved_simulations.ts",
-    "visualize.ts",
-    "dk.ts",
+    "typescript/html.ts",
+    "typescript/log.ts",
+    "typescript/tabbed.ts",
+    "typescript/storage.ts",
+    "typescript/js_parameters.ts",
+    "typescript/js_simulation.ts",
+    "typescript/simulation_controls.ts",
+    "typescript/saved_simulations.ts",
+    "typescript/visualize.ts",
+    "typescript/dk.ts",
   ],
 }

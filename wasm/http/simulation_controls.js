@@ -93,10 +93,10 @@ export class SimulationControls {
         }
         {
             const tr = param_table.add_ele("tr", ele_id + "sim_controls");
-            for (const [name, value] of Object.entries({
-                n_iterations: "1000",
-                sample_period: "20",
-            })) {
+            for (const [name, value] of [
+                ["n_iterations", "1000"],
+                ["sample_period", "20"],
+            ]) {
                 const td = tr.add_ele("td");
                 td.add_label(name).set_content(name + ":");
                 td.add_input_text(name, value, this.ele_id + name, "sim_controls " + name);
@@ -104,9 +104,7 @@ export class SimulationControls {
         }
         {
             const tr = seed_table.add_ele("tr", ele_id + "seed_controls");
-            for (const [name, value] of Object.entries({
-                random_seed: "1",
-            })) {
+            for (const [name, value] of [["random_seed", "1"]]) {
                 const td = tr.add_ele("td");
                 td.add_label(name).set_content(name + ":");
                 td.add_input_text(name, value, this.ele_id + name, "sim_controls " + name);
@@ -141,4 +139,3 @@ export class SimulationControls {
         }
     }
 }
-//# sourceMappingURL=simulation_controls.js.map

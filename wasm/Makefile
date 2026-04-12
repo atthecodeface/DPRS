@@ -9,6 +9,9 @@ WASM_PACK = WASM_PACK_WASM_OPT=true wasm-pack build --release --target web
 all:
 	${WASM_PACK}
 
+js:
+	npx tsc -b
+
 start_http:
 	python3 -m http.server 3003
 
