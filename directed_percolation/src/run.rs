@@ -9,7 +9,7 @@ use crate::{LatticeSlices, SimError, TrackingHistory};
 ///
 /// Returns the duration, number of lattices recorded, the lattices, and the tracking
 pub fn run_nd<R: Rng + SeedableRng + Send, CS: CellSpace, LM: EvolvableLatticeDualState<CS>>(
-    parameters: &SimParameters,
+    parameters: &Parameters,
 ) -> Result<(f64, usize, LatticeSlices, TrackingHistory), SimError> {
     // Set up thread pool of size set by user
     let pool = rayon::ThreadPoolBuilder::new()

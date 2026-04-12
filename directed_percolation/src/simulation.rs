@@ -1,7 +1,7 @@
 use rand::{Rng, SeedableRng};
 
 use crate::{CellSpace, EvolvableLatticeDualState};
-use crate::{InitialCondition, Processing, SimParameters};
+use crate::{InitialCondition, Processing, Parameters};
 use crate::{LatticeHistory, LatticeSlices, SimError, TrackingHistory};
 
 /// Simulate simplified Domany-Kinzel model for n_iterations, either serially or in parallel.
@@ -14,7 +14,7 @@ pub fn simulation_nd<
     CS: CellSpace,
     LM: EvolvableLatticeDualState<CS>,
 >(
-    parameters: &SimParameters,
+    parameters: &Parameters,
 ) -> Result<(usize, LatticeSlices, TrackingHistory), SimError> {
     let mut lm =
         LM::create_from_parameters(&parameters).map_err(|_| SimError::FailedToCreateModel)?;
