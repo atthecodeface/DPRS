@@ -12,7 +12,7 @@ export class SavedSimulations {
     const div = document.getElementById(div_id);
     this.div = null;
     if (div) {
-      this.div = new html.Element(div);
+      this.div = new html.HtmlElement(div);
     }
 
     this.log.push_reason("init");
@@ -55,24 +55,28 @@ export class SavedSimulations {
       const desc = this.descriptions[f];
       const tr = this.table.add_ele("tr");
       const td_delete = tr.add_ele("td");
-      const delete_sim = td_delete.add_ele("input").add_tags({
-        id: "delete_simulation_" + f,
-        className: "delete_simulation",
-        type: "button",
-        value: "🗑",
-      });
+      const delete_sim = td_delete.add_ele("input").add_tags(
+        new Map([
+          ["id", "delete_simulation_" + f],
+          ["className", "delete_simulation"],
+          ["type", "button"],
+          ["value", "D"], // "🗑"],
+        ]),
+      );
       delete_sim.ele.onclick = () => {
         this.delete_file(f);
       };
       tr.add_ele("th").set_content(f);
       tr.add_ele("td").set_content(desc);
       const td_load = tr.add_ele("td");
-      const load_sim = td_load.add_ele("input").add_tags({
-        id: "load_simulation_" + f,
-        className: "load_simulation",
-        type: "button",
-        value: "Load",
-      });
+      const load_sim = td_load.add_ele("input").add_tags(
+        new Map([
+          ["id", "load_simulation_" + f],
+          ["className", "load_simulation"],
+          ["type", "button"],
+          ["value", "Load"],
+        ]),
+      );
       load_sim.ele.onclick = () => {
         this.parent.load_simulation(f);
       };

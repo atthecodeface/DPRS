@@ -4,7 +4,7 @@
     // File Layout
     // "rootDir": "./src",
     "outDir": "./js",
-    "module": "commonjs",
+    // "module": "commonjs",
 
     "lib": ["DOM", "ES2017", "DOM.Iterable", "ScriptHost"],
     "sourceMap": true,

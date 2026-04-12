@@ -128,7 +128,7 @@ export class SimulationControls {
     if (!div) {
       return;
     }
-    this.div = new html.Element(div);
+    this.div = new html.HtmlElement(div);
     this.table = this.div.add_ele("table");
     this.dims_table = this.table.add_ele("tr").add_ele("td").add_ele("table");
     this.probs_table = this.table.add_ele("tr").add_ele("td").add_ele("table");
@@ -143,10 +143,10 @@ export class SimulationControls {
     {
       const tr = this.dims_table
         .add_ele("tr")
-        .add_tags({ id: ele_id + "dims" });
+        .add_tags_old({ id: ele_id + "dims" });
       const td = tr.add_ele("td");
-      td.add_ele("label").add_tags({ for: "n_x" }).set_content("n_x: ");
-      td.add_ele("input").add_tags({
+      td.add_ele("label").add_tags_old({ for: "n_x" }).set_content("n_x: ");
+      td.add_ele("input").add_tags_old({
         id: this.ele_id + "n_x",
         className: "dimensions",
         type: "text",
@@ -156,8 +156,8 @@ export class SimulationControls {
       });
       if (dims >= 2) {
         const td = tr.add_ele("td");
-        td.add_ele("label").add_tags({ for: "n_y" }).set_content("n_y: ");
-        td.add_ele("input").add_tags({
+        td.add_ele("label").add_tags_old({ for: "n_y" }).set_content("n_y: ");
+        td.add_ele("input").add_tags_old({
           id: this.ele_id + "n_y",
           className: "dimensions",
           type: "text",
@@ -168,8 +168,8 @@ export class SimulationControls {
       }
       if (dims >= 3) {
         const td = tr.add_ele("td");
-        td.add_ele("label").add_tags({ for: "n_z" }).set_content("n_z: ");
-        td.add_ele("input").add_tags({
+        td.add_ele("label").add_tags_old({ for: "n_z" }).set_content("n_z: ");
+        td.add_ele("input").add_tags_old({
           id: this.ele_id + "n_z",
           className: "dimensions",
           type: "text",
@@ -182,13 +182,13 @@ export class SimulationControls {
     {
       const tr = this.probs_table
         .add_ele("tr")
-        .add_tags({ id: ele_id + "probability" });
+        .add_tags_old({ id: ele_id + "probability" });
       for (const thing of ["p_1", "p_2", "p_initial"]) {
         const td = tr.add_ele("td");
         td.add_ele("label")
-          .add_tags({ for: thing })
+          .add_tags_old({ for: thing })
           .set_content(thing + ": ");
-        td.add_ele("input").add_tags({
+        td.add_ele("input").add_tags_old({
           id: this.ele_id + thing,
           className: "probability",
           type: "text",
@@ -201,16 +201,16 @@ export class SimulationControls {
     {
       const tr = this.param_table
         .add_ele("tr")
-        .add_tags({ id: ele_id + "sim_controls" });
+        .add_tags_old({ id: ele_id + "sim_controls" });
       for (const [name, value] of Object.entries({
         n_iterations: "1000",
         sample_period: "20",
       })) {
         const td = tr.add_ele("td");
         td.add_ele("label")
-          .add_tags({ for: this.ele_id + name })
+          .add_tags_old({ for: this.ele_id + name })
           .set_content(name + ": ");
-        td.add_ele("input").add_tags({
+        td.add_ele("input").add_tags_old({
           id: this.ele_id + name,
           className: "sim_controls " + name,
           type: "text",
@@ -223,15 +223,15 @@ export class SimulationControls {
     {
       const tr = this.seed_table
         .add_ele("tr")
-        .add_tags({ id: ele_id + "seed_controls" });
+        .add_tags_old({ id: ele_id + "seed_controls" });
       for (const [name, value] of Object.entries({
         random_seed: "1",
       })) {
         const td = tr.add_ele("td");
         td.add_ele("label")
-          .add_tags({ for: this.ele_id + name })
+          .add_tags_old({ for: this.ele_id + name })
           .set_content(name + ": ");
-        td.add_ele("input").add_tags({
+        td.add_ele("input").add_tags_old({
           id: this.ele_id + name,
           className: "sim_controls " + name,
           type: "text",
@@ -242,26 +242,26 @@ export class SimulationControls {
       }
 
       const td = tr.add_ele("td");
-      td.add_ele("input").add_tags({
+      td.add_ele("input").add_tags_old({
         id: this.ele_id + "initial_center",
         type: "checkbox",
         name: this.ele + "initial_center",
       });
       td.add_ele("label")
-        .add_tags({ for: this.ele_id + "initial_center" })
+        .add_tags_old({ for: this.ele_id + "initial_center" })
         .set_content("Central cell (or: randomized)");
     }
     {
       const tr = this.sim_table
         .add_ele("tr")
-        .add_tags({ id: ele_id + "sim_kind" });
+        .add_tags_old({ id: ele_id + "sim_kind" });
       var first = true;
       for (const [name, value] of Object.entries({
         staggered_dk: "Staggered DK",
         simple_dk: "Simple DK",
       })) {
         const td = tr.add_ele("td");
-        td.add_ele("input").add_tags({
+        td.add_ele("input").add_tags_old({
           id: ele_id + "sk_" + name,
           className: "sim_kind " + name,
           type: "radio",
@@ -273,16 +273,16 @@ export class SimulationControls {
         });
         first = false;
         td.add_ele("label")
-          .add_tags({ for: ele_id + "sk_" + name })
+          .add_tags_old({ for: ele_id + "sk_" + name })
           .set_content(value);
       }
     }
     {
       const tr = this.control_table
         .add_ele("tr")
-        .add_tags({ id: ele_id + "controls" });
+        .add_tags_old({ id: ele_id + "controls" });
       const td_run = tr.add_ele("td");
-      const run_sim = td_run.add_ele("input").add_tags({
+      const run_sim = td_run.add_ele("input").add_tags_old({
         id: ele_id + "run_simulation",
         className: "controls run_simulation",
         type: "button",
@@ -294,7 +294,7 @@ export class SimulationControls {
       };
 
       const td_save = tr.add_ele("td");
-      const save_sim = td_save.add_ele("input").add_tags({
+      const save_sim = td_save.add_ele("input").add_tags_old({
         id: ele_id + "save_simulation",
         className: "controls save_simulation",
         type: "button",

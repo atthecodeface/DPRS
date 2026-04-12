@@ -104,19 +104,40 @@ class Tab {
   }
 }
 
+/**
+ * A class that handles a set of Tabs, only one of which should be selected, and that will become 'unhidden' while the others are 'hidden'
+ */
 class Tabs {
+  /**
+   * The set of Tab that this controls
+   */
   tabs: Array<Tab>;
+
+  /**
+   * The callback invoked when a tab is selected
+   */
   callback: any;
+
+  /**
+   * The currently selected tab number
+   */
   selected_tab_number: number | undefined;
 
-  constructor(container_id: string, callback: any) {
+  /**
+   * Create a new set of tabs whose tab list can be selected with 'container_select'
+   *
+   * This tab list must be an element that contains a 'ul' element, which in
+   * turn has 'li' for each tab, with each 'li' having an 'a' with an 'href'
+   * identifying the tab it is associated with.
+   */
+  constructor(container_select: string, callback: any) {
     this.tabs = [];
     this.callback = callback;
 
     var errored: string | undefined = undefined;
-    const tab_list = document.querySelector(container_id);
+    const tab_list = document.querySelector(container_select);
     if (tab_list === null) {
-      errored = `tab list ${container_id} could not be found`;
+      errored = `tab list ${container_select} could not be found`;
     }
 
     var ul: any = undefined;
@@ -150,7 +171,13 @@ class Tabs {
     this.post_init();
   }
 
-  /// After the contents are initialized, actually make the document changes happen
+  /**
+   * After the contents are initialized, actually make the document changes happen
+   *
+   * This tab list must be an element that contains a 'ul' element, which in
+   * turn has 'li' for each tab, with each 'li' having an 'a' with an 'href'
+   * identifying the tab it is associated with.
+   */
   post_init() {
     const me = this;
     window.addEventListener("hashchange", () => {

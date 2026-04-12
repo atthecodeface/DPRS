@@ -37,6 +37,12 @@ class HtmlElement {
     });
     return this;
   }
+  add_tags_old(tag_values: any) {
+    for (const [tag, value] of Object.entries(tag_values)) {
+      this.ele.setAttribute(tag, value as string);
+    }
+    return this;
+  }
 
   set_content(content: any) {
     //console.log(this.ele);

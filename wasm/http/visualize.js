@@ -35,7 +35,7 @@ export class Visualize {
       `Created canvas size ${this.width} x ${this.height} with stagger ${stagger} and scale ${x_scale}x${y_scale}`,
     );
 
-    const div_html = new html.Element(div);
+    const div_html = new html.HtmlElement(div);
     div_html.clear();
     this.canvas = div_html.add_ele("canvas", "visualize");
     this.canvas.ele.width = this.width;

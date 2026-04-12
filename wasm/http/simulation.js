@@ -19,7 +19,7 @@ export class Sim {
   }
 
   // sim_parameters is a JsParameters
-  run(sim_parameters:JsParameters) {
+  run(sim_parameters) {
     this.log.push_reason("run");
 
     this.parameters = sim_parameters.as_parameters();
