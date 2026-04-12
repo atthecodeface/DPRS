@@ -6,18 +6,6 @@ import * as log from "./log.js";
  */
 export class JsSimulation {
     /**
-     * Underlying WASM simulation
-     */
-    simulation;
-    /**
-     * Logger to report progress to (as a source of 'sim')
-     */
-    log;
-    /**
-     * JsParameters that this corresponds to
-     */
-    parameters;
-    /**
      * Construct a new JsSimulation with a default set of parameters
      */
     constructor(logger) {

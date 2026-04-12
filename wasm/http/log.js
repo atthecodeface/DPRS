@@ -1,8 +1,5 @@
 import * as html from "./html.js";
 export class Logger {
-    log;
-    src;
-    reason_stack;
     constructor(log, src) {
         this.log = log;
         this.src = src;
@@ -53,10 +50,6 @@ export class Logger {
     }
 }
 class LogEntry {
-    severity;
-    src;
-    reason;
-    error;
     constructor(severity, src, reason, error) {
         this.severity = severity;
         this.src = src;
@@ -65,8 +58,6 @@ class LogEntry {
     }
 }
 export class Log {
-    log;
-    div;
     constructor(div_id) {
         this.log = [];
         const div = document.getElementById(div_id);

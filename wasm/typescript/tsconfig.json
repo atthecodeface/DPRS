@@ -1,14 +1,25 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
     // "rootDir": "./src",
     "outDir": "./js",
+
+    // No idea what this is but it breaks stuff
     // "module": "commonjs",
 
+    // Need at least 2015 for set iteration; does not seem onerous
+    "target": "ES2015",
+
+    // Presumably libraries that we target
     "lib": ["DOM", "ES2017", "DOM.Iterable", "ScriptHost"],
+
+    // Whether to generate sourceMap?
     "sourceMap": true,
+
+    // Whether to generate ts declaration files?
     "declaration": true,
+
+    // Whether to generate ts declaration map files?
     "declarationMap": true,
 
     // Stricter Typechecking Options
@@ -26,6 +37,7 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
+
     // "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
@@ -39,5 +51,6 @@
     "storage.ts",
     "js_parameters.ts",
     "js_simulation.ts",
+    "saved_simulations.ts",
   ],
 }

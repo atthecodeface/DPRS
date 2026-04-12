@@ -3,12 +3,14 @@
  */
 import { Parameters, TopoBc, SimulationKind, } from "../pkg/dprs_wasm.js";
 class Probabilities {
-    /**
-     * This contains JsParameters
-     */
-    p_initial = 0.5;
-    p_1 = 0.705485152;
-    p_2 = 0.705485152;
+    constructor() {
+        /**
+         * This contains JsParameters
+         */
+        this.p_initial = 0.5;
+        this.p_1 = 0.705485152;
+        this.p_2 = 0.705485152;
+    }
     set_parameters(parameters) {
         parameters.probabilities.p_initial = this.p_initial;
         parameters.probabilities.p_1 = this.p_1;
@@ -30,11 +32,13 @@ class Probabilities {
     }
 }
 class Params {
-    n_iterations = 600;
-    sample_period = 1;
-    random_seed = 1;
-    initial_center = true;
-    simulation_kind = "staggered_dk";
+    constructor() {
+        this.n_iterations = 600;
+        this.sample_period = 1;
+        this.random_seed = 1;
+        this.initial_center = true;
+        this.simulation_kind = "staggered_dk";
+    }
     set_parameters(parameters) {
         parameters.params.n_iterations = this.n_iterations;
         parameters.params.sample_period = this.sample_period;
@@ -76,10 +80,12 @@ class Params {
     }
 }
 class Topo {
-    periodic = true;
-    fix_min = false;
-    fix_max = false;
-    fix_value = false;
+    constructor() {
+        this.periodic = true;
+        this.fix_min = false;
+        this.fix_max = false;
+        this.fix_value = false;
+    }
     topo_bc() {
         const topo = new TopoBc();
         topo.periodic = this.periodic;
@@ -108,9 +114,11 @@ class Topo {
     }
 }
 class Dims {
-    n_x = 400;
-    n_y = 0;
-    n_z = 0;
+    constructor() {
+        this.n_x = 400;
+        this.n_y = 0;
+        this.n_z = 0;
+    }
     set_parameters(parameters) {
         parameters.dims.n_x = this.n_x;
         parameters.dims.n_y = this.n_y;
@@ -135,14 +143,6 @@ class Dims {
  * This contains JsParameters
  */
 export class JsParameters {
-    /**
-     * This contains JsParameters
-     */
-    parameters;
-    probabilities;
-    params;
-    topo;
-    dims;
     constructor() {
         this.parameters = new Parameters();
         this.probabilities = new Probabilities();

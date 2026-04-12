@@ -33,7 +33,7 @@ export class Directory {
   /**
    * Split the filename into a root and suffix
    */
-  static split_filename(filename: string) {
+  static split_filename(filename: string): null | [string, string] {
     const suffix = filename.split(".").pop();
     if (suffix) {
       const root = filename.slice(0, -suffix.length - 1);
@@ -57,7 +57,7 @@ export class Directory {
    * @param suffix The suffix (type) of the file
    * @return True if the file 'root.suffix' is in the directory
    */
-  contains_file(root: string, suffix: string) {
+  contains_file(root: string, suffix: string): boolean {
     if (!this.files.has(suffix)) {
       return false;
     }
@@ -99,10 +99,10 @@ export class Directory {
    * @param suffix The suffix (type) of the file
    * @returns Set Iterator of all the root names of the files with the given suffix in the Directory
    */
-  files_of_type(suffix: string) {
+  files_of_type(suffix: string): null | SetIterator<string> {
     const file_set = this.files.get(suffix);
     if (!file_set) {
-      return [];
+      return null;
     }
     return file_set.keys();
   }
@@ -168,7 +168,7 @@ export class LocalStorage {
    * This does not check to see if it is in the directory - it goes straight to the storage
    *
    */
-  load_file(root: string, suffix: string) {
+  load_file(root: string, suffix: string): any {
     let f = this.prefix + root + "." + suffix;
     return this.storage.getItem(f);
   }
@@ -206,7 +206,7 @@ export class LocalStorage {
   request_load_file(
     filename: string,
     suffix: string,
-    user_callback: (data: any) => null,
+    user_callback: (data: any) => void,
   ) {
     const data = this.load_file(filename, suffix);
     user_callback(data);
@@ -222,7 +222,7 @@ export class LocalStorage {
     filename: string,
     suffix: string,
     data: any,
-    user_callback: (success: boolean) => null,
+    user_callback: (success: boolean) => void,
   ) {
     this.save_file(filename, suffix, data);
     user_callback(true);

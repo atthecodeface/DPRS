@@ -3,30 +3,6 @@
  */
 class Tab {
     /**
-     *  The parent that this Tab belongs to
-     */
-    tabs;
-    /**
-     *  The 'li' HTML element (which contains at least one 'a' element) for this tab
-     *
-     *  The 'className' attribute of this element will be "" if the tab is not selected, and "active" if it is selected
-     */
-    li;
-    /**
-     * The name of the 'div' that this tab corresponds to
-     *
-     * The div is hidden if this tab is not selected
-     */
-    div_id;
-    /**
-     * The actual 'div' element that this corresponds to
-     */
-    div;
-    /**
-     * The tab number, unique for each Tab in the parent
-     */
-    num;
-    /**
      * Create a new Tab given its parent, 'li' element and tab number
      *
      * The 'li' has at least one 'a' element in it
@@ -97,18 +73,6 @@ class Tab {
  * A class that handles a set of Tabs, only one of which should be selected, and that will become 'unhidden' while the others are 'hidden'
  */
 class Tabs {
-    /**
-     * The set of Tab that this controls
-     */
-    tabs;
-    /**
-     * The callback invoked when a tab is selected
-     */
-    callback;
-    /**
-     * The currently selected tab number
-     */
-    selected_tab_number;
     /**
      * Create a new set of tabs whose tab list can be selected with 'container_select'
      *
@@ -192,6 +156,8 @@ class Tabs {
     }
 }
 export function tabbed_configure(container_id, callback) {
-    document.tabs = new Tabs(container_id, callback);
+    const tabs = new Tabs(container_id, callback);
+    document.tabs = tabs;
+    return tabs;
 }
 //# sourceMappingURL=tabbed.js.map

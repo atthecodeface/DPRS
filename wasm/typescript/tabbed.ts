@@ -189,7 +189,7 @@ class Tabs {
   }
 
   /// Invoked when an <a href='#...'> link is selected
-  hash_change(hash_name: string) {
+  hash_change(hash_name: string): number | undefined {
     for (const t of this.tabs) {
       if (t.has_hash(hash_name)) {
         return this.select_tab(t.num);
@@ -198,7 +198,7 @@ class Tabs {
     return undefined;
   }
 
-  select_tab(tab_number: number) {
+  select_tab(tab_number: number): number | undefined {
     if (tab_number >= this.tabs.length) {
       tab_number = 0;
     }
@@ -214,6 +214,8 @@ class Tabs {
   }
 }
 
-export function tabbed_configure(container_id: string, callback: any) {
-  (document as any).tabs = new Tabs(container_id, callback);
+export function tabbed_configure(container_id: string, callback: any): Tabs {
+  const tabs = new Tabs(container_id, callback);
+  (document as any).tabs = tabs;
+  return tabs;
 }

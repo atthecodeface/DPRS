@@ -31,17 +31,38 @@ class HtmlElement {
     return new HtmlElement(ele);
   }
 
-  add_tags(tag_values: Map<string, string>) {
-    tag_values.forEach((value, tag) => {
+  add_tags(tag_values: Array<[string, string]>) {
+    for (const [tag, value] of tag_values) {
       this.ele.setAttribute(tag, value);
-    });
+    }
     return this;
   }
+
   add_tags_old(tag_values: any) {
     for (const [tag, value] of Object.entries(tag_values)) {
       this.ele.setAttribute(tag, value as string);
     }
     return this;
+  }
+
+  add_input_button(
+    value: string,
+    callback: () => void,
+    id?: string,
+    classes?: string,
+  ) {
+    const input = document.createElement("input");
+    input.setAttribute("type", "button");
+    input.setAttribute("value", value);
+    input.onclick = callback;
+    if (id) {
+      input.id = id;
+    }
+    if (classes) {
+      input.className = classes;
+    }
+    this.ele.appendChild(input);
+    return new HtmlElement(input);
   }
 
   set_content(content: any) {

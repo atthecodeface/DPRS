@@ -24,9 +24,9 @@ class HtmlElement {
         return new HtmlElement(ele);
     }
     add_tags(tag_values) {
-        tag_values.forEach((value, tag) => {
+        for (const [tag, value] of tag_values) {
             this.ele.setAttribute(tag, value);
-        });
+        }
         return this;
     }
     add_tags_old(tag_values) {
@@ -34,6 +34,20 @@ class HtmlElement {
             this.ele.setAttribute(tag, value);
         }
         return this;
+    }
+    add_input_button(value, callback, id, classes) {
+        const input = document.createElement("input");
+        input.setAttribute("type", "button");
+        input.setAttribute("value", value);
+        input.onclick = callback;
+        if (id) {
+            input.id = id;
+        }
+        if (classes) {
+            input.className = classes;
+        }
+        this.ele.appendChild(input);
+        return new HtmlElement(input);
     }
     set_content(content) {
         //console.log(this.ele);

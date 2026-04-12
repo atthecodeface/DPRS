@@ -17,11 +17,6 @@
  */
 export class Directory {
     /**
-     * The directory contents; a map from suffixes to a set of files that are in
-     * the directory with that suffix
-     */
-    files;
-    /**
      * Create a new Directory with no contents
      */
     constructor() {
@@ -95,7 +90,7 @@ export class Directory {
     files_of_type(suffix) {
         const file_set = this.files.get(suffix);
         if (!file_set) {
-            return [];
+            return null;
         }
         return file_set.keys();
     }
@@ -105,21 +100,6 @@ export class Directory {
  *
  */
 export class LocalStorage {
-    /**
-     * The storage this is associated with
-     *
-     */
-    storage;
-    /**
-     * The prefix (such as a fake directory name 'my_app_subset/' for all the files to be stored
-     *
-     */
-    prefix;
-    /**
-     * The prefix (such as a fake directory name 'my_app_subset/' for all the files to be stored
-     *
-     */
-    directory;
     /**
      * Construct a new LocalStorage for a given prefix, and retrieve the directory contents
      *
