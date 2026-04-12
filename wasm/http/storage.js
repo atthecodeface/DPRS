@@ -1,9 +1,5 @@
 /**
- * A directory of files, that is stored sepearately in some medium
- *
- * @param input Description of parameter.
- * @return Description of return value.
- * @throws Exception Description of exception.
+ * This contains Directory, LocalStorage
  */
 /* History
  *
