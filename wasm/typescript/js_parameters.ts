@@ -50,6 +50,9 @@ class Params {
     if (this.simulation_kind == "staggered_dk") {
       simulation_kind = "staggered_dk";
     }
+    if (this.simulation_kind == "bedload") {
+      simulation_kind = "bedload";
+    }
     return simulation_kind;
   }
 

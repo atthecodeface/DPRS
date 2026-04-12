@@ -51,8 +51,10 @@ export class SimulationControls {
     );
     if (this.parameters.params.simulation_kind == "simple_dk") {
       html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-    } else {
+    } else if (this.parameters.params.simulation_kind == "staggered_dk") {
       html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
+    } else if (this.parameters.params.simulation_kind == "bedload") {
+      html.set_input_checked(this.ele_id + "sk_bedload", true);
     }
   }
 
@@ -174,6 +176,7 @@ export class SimulationControls {
       for (const [name, value] of [
         ["staggered_dk", "Staggered DK"],
         ["simple_dk", "Simple DK"],
+        ["bedload", "Bedload"],
       ]) {
         const td = tr.add_ele("td");
         td.add_input_radio(

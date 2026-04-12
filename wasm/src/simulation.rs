@@ -1,3 +1,4 @@
+use directed_percolation::dk::ModelBedload1D;
 use directed_percolation::dk::{Cell1D, Lattice1D};
 use directed_percolation::dk::{Cell2D, Lattice2D};
 use directed_percolation::dk::{ModelDKSimplified1D, ModelDKSimplified2D};
@@ -68,6 +69,7 @@ impl Simulation {
                 (1, "staggered_dk") => {
                     sim_1d::<ModelStaggeredDK1D>(self.parameters.sim_parameters())
                 }
+                (1, "bedload") => sim_1d::<ModelBedload1D>(self.parameters.sim_parameters()),
                 (2, "simplified_dk") => {
                     sim_2d::<ModelDKSimplified2D>(self.parameters.sim_parameters())
                 }
