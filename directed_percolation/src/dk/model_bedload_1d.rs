@@ -18,9 +18,9 @@ use rand::{Rng, RngExt};
 /// where +c_e is not a standard DP term but rather an "external conjugate field" term.
 ///
 /// We further deduce the following probabilities for an equivalent micro-scale model:
-///   1+3) collective entrainment - detrainment = p_1
-///   2) collective detrainment = p_2
-///   4) entrainment rate = p_3
+///   1+3) collective entrainment - detrainment = p_1 (needs 1 occupied)
+///   2) collective detrainment = p_2 (needs 2 occupied)
+///   4) entrainment rate = p_3 (needs 0 occupied)
 ///
 /// So far we have assumed a frame of reference moving with the mean speed of grains downstream.
 /// We need to specify this mean speed.
@@ -54,8 +54,8 @@ impl CellModel<Cell1D> for ModelBedload1D {
     ) -> DualState {
         let is_upstream_occupied = nbrhood[0];
         let is_occupied = nbrhood[1];
-        let do_survive = (is_occupied & rng.random_bool(self.p_1))
-            | (is_upstream_occupied & rng.random_bool(self.p_2));
+        let do_survive = ((is_occupied | is_upstream_occupied) & rng.random_bool(self.p_1))
+            | ((is_occupied & is_upstream_occupied) & rng.random_bool(self.p_2));
         do_survive.into()
     }
 }
