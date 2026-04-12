@@ -15,6 +15,7 @@ pub struct ModelStaggeredDK2D {
 // Implement CellModel2D trait for ModelStaggeredDK2D.
 impl CellModel<Cell2D> for ModelStaggeredDK2D {
     fn create_from_parameters(parameters: &Parameters) -> Result<Self, ()> {
+        // Growth model probabilities
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,

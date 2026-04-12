@@ -15,7 +15,7 @@ pub struct ModelSimplifiedDK1D {
 // Implement CellModel1D trait for ModelSimplifiedDK1D.
 impl CellModel<Cell1D> for ModelSimplifiedDK1D {
     fn create_from_parameters(parameters: &Parameters) -> Result<Self, ()> {
-        // Growth model and its parameters
+        // Growth model probabilities
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
