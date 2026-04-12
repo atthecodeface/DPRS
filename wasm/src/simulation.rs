@@ -1,4 +1,3 @@
-use directed_percolation::SimParameters;
 use directed_percolation::dk::{Cell1D, LatticeModel1D};
 use directed_percolation::dk::{Cell2D, LatticeModel2D};
 use directed_percolation::dk::{DKSimplified1D, DKSimplified2D};

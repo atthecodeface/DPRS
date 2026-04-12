@@ -10,7 +10,9 @@ mod tracking;
 mod traits;
 mod types;
 
-pub use dk::{Cell1D, Cell2D, Cell3D, CellModel};
+pub use dk::{
+    Cell1D, Cell2D, Cell3D, CellModel, CellNbrhood2D, CellNbrhood3D, RowIterator2D, RowIterator3D,
+};
 pub use enums::SimError;
 pub use simulation::simulation_nd;
 pub use tracking::{Statistics, TrackingHistory};
@@ -20,4 +22,4 @@ pub use types::{LatticeHistory, LatticeSlices};
 pub mod dk;
 mod parameters;
 pub use enums::{BoundaryCondition, DualState, InitialCondition, Processing, Topology};
-pub use parameters::SimParameters;
+pub use parameters::Parameters;
