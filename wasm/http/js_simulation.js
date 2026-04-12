@@ -1,4 +1,4 @@
-import { Simulation, SimulationKind } from "../pkg/dprs_wasm.js";
+import { Simulation } from "../pkg/dprs_wasm.js";
 import { JsParameters } from "./js_parameters.js";
 import * as log from "./log.js";
 /**
@@ -51,8 +51,7 @@ export class JsSimulation {
      * Return true if the results are staggered
      */
     results_are_staggered() {
-        if (this.parameters.wasm_simulation_kind() ==
-            SimulationKind.StaggeredDomanyKinzel) {
+        if (this.parameters.wasm_simulation_kind() == "staggered_dk") {
             return this.parameters.params.sample_period == 1;
         }
         return false;

@@ -1,4 +1,3 @@
-import init, { SimulationKind, Parameters } from "../pkg/dprs_wasm.js";
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 

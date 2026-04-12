@@ -46,9 +46,9 @@ class Params {
         parameters.initial_condition = this.initial_center;
     }
     wasm_simulation_kind() {
-        var simulation_kind = DprsWasm.SimulationKind.SimplifiedDomanyKinzel;
+        var simulation_kind = "simplified_dk";
         if (this.simulation_kind == "staggered_dk") {
-            simulation_kind = DprsWasm.SimulationKind.StaggeredDomanyKinzel;
+            simulation_kind = "staggered_dk";
         }
         return simulation_kind;
     }

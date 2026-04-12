@@ -1,4 +1,4 @@
-import init, { SimulationKind } from "../pkg/dprs_wasm.js";
+import init from "../pkg/dprs_wasm.js";
 import { Log, Logger } from "./log.js";
 import * as html from "./html.js";
 import { LocalStorage } from "./storage.js";

@@ -13,15 +13,6 @@ use directed_percolation::dk::CellModel;
 
 use rand::rngs::ChaCha8Rng;
 
-#[wasm_bindgen]
-#[derive(Debug, Default, Clone, Copy)]
-pub enum SimulationKind {
-    #[default]
-    SimplifiedDomanyKinzel,
-    StaggeredDomanyKinzel,
-    Bedload,
-}
-
 use crate::Parameters;
 
 /// A 1D model simulation
@@ -65,22 +56,22 @@ impl Simulation {
         self.parameters.clone()
     }
 
-    pub fn simulate(&mut self, kind: SimulationKind) -> Result<(), String> {
+    pub fn simulate(&mut self, kind: &str) -> Result<(), String> {
         // No doubt there is a better way of doing this
         let dims = self.parameters.sim_dimension();
 
         let simulation_results = {
             match (dims, kind) {
-                (1, SimulationKind::SimplifiedDomanyKinzel) => {
+                (1, "simplified_dk") => {
                     sim_1d::<ModelDKSimplified1D>(self.parameters.sim_parameters())
                 }
-                (1, SimulationKind::StaggeredDomanyKinzel) => {
+                (1, "staggered_dk") => {
                     sim_1d::<ModelStaggeredDK1D>(self.parameters.sim_parameters())
                 }
-                (2, SimulationKind::SimplifiedDomanyKinzel) => {
+                (2, "simplified_dk") => {
                     sim_2d::<ModelDKSimplified2D>(self.parameters.sim_parameters())
                 }
-                (2, SimulationKind::StaggeredDomanyKinzel) => {
+                (2, "staggered_dk") => {
                     sim_2d::<ModelStaggeredDK2D>(self.parameters.sim_parameters())
                 }
                 _ => {
