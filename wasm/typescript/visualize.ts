@@ -89,7 +89,7 @@ export class Visualize {
     );
 
     this.div.clear();
-    const canvas = this.div.add_ele("canvas", "visualize");
+    const canvas = this.div.add_ele("canvas", "", "visualize");
     const canvas_ele = canvas.ele as HTMLCanvasElement;
     canvas_ele.width = this.width;
     canvas_ele.height = this.height;
