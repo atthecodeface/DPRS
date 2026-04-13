@@ -179,7 +179,7 @@ class Viz:
         plt.grid(ls=":")
         # plt.close()
 
-    def plot_lattice_statistic(
+    def lattice_statistic(
             self,
             name: str,
             title: str,
