@@ -190,10 +190,10 @@ impl<GM: GrowthModel<Cell1D>> EvolvableLatticeDualState<Cell1D> for Lattice1D<GM
         self.lattice[i] = DualState::Occupied;
     }
 
-    /// Seed the simulation by occupying the edge-central (x=0) cell at t=0.
+    /// Seed the simulation by occupying the edge-central (x=1) cell at t=0.
     fn create_edge_cell_seeded_lattice(&mut self) {
         self.lattice = vec![DualState::default(); self.n_cells()];
-        let i = 0;
+        let i = 1;
         self.lattice[i] = DualState::Occupied;
     }
 

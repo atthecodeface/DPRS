@@ -25,7 +25,7 @@ pub trait EvolvableLatticeDualState<CS: CellSpace>: std::fmt::Debug + Sized {
     /// Seed the simulation by occupying the central cell at t=0.
     fn create_central_cell_seeded_lattice(&mut self);
 
-    /// Seed the simulation by occupying the edge-central (x=0) cell at t=0.
+    /// Seed the simulation by occupying the edge-central (x=1) cell at t=0.
     fn create_edge_cell_seeded_lattice(&mut self);
 
     /// Borrow the current lattice
