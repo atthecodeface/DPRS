@@ -3,7 +3,7 @@ use crate::{Cell2D, GrowthModel};
 use crate::{DualState, Parameters};
 use rand::{Rng, RngExt};
 
-/// ModelDKSimplified2D implements the CellModel2D trait, plus these.
+/// ModelDKSimplified2D implements the GrowthModel<Cell2D> trait, plus these.
 #[derive(Clone, Copy, Debug)]
 pub struct ModelDKSimplified2D {
     /// The probability used in the model, where a cell is activated with this probability
@@ -12,7 +12,7 @@ pub struct ModelDKSimplified2D {
     p_2: f64,
 }
 
-// Implement CellModel2D trait for ModelDKSimplified2D.
+// Implement GrowthModel<Cell2D> trait for ModelDKSimplified2D.
 impl GrowthModel<Cell2D> for ModelDKSimplified2D {
     fn create_from_parameters(parameters: &Parameters) -> Result<Self, ()> {
         // Growth model probabilities
