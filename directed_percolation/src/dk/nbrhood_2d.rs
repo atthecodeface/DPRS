@@ -29,28 +29,28 @@ pub struct CellNbrhood2D {
 
 impl CellNbrhood2D {
     /// Bitmask for the three neighbors that have have a 'dx' of -1 relative to the center coordinate
-    pub const BITMASK_EDGE_X_MINUS: u16 = 0b_000_000_111;
+    pub const BITMASK_EDGE_XMINUS: u16 = 0b_000_000_111;
 
-    /// Complement of BITMASK_EDGE_X_MINUS
-    pub const BITMASK_NOT_EDGE_X_MINUS: u16 = 0b_111_111_000;
+    /// Complement of BITMASK_EDGE_XMINUS
+    pub const BITMASK_NOT_EDGE_XMINUS: u16 = 0b_111_111_000;
 
     /// Bitmask for the two neighbors that have have a 'dx' of -1 diagonally relative to the center coordinate
-    pub const BITMASK_EDGE_X_MINUS_CORNERS: u16 = 0b_000_000_101;
+    pub const BITMASK_EDGE_XMINUS_CORNERS: u16 = 0b_000_000_101;
 
     /// Bitmask for the three neighbors that have have the same X coordinate as the center
     pub const BITMASK_MIDDLE_X: u16 = 0b_000_111_000;
 
     /// Bitmask for the three neighbors that have have a 'dx' of +1 relative to the center coordinate
-    pub const BITMASK_EDGE_X_PLUS: u16 = 0b_111_000_000;
+    pub const BITMASK_EDGE_XPLUS: u16 = 0b_111_000_000;
 
     /// Bitmask for the three neighbors that have have a 'dy' of -1 relative to the center coordinate
-    pub const BITMASK_EDGE_Y_MINUS: u16 = 0b_001_001_001;
+    pub const BITMASK_EDGE_YMINUS: u16 = 0b_001_001_001;
 
     /// Bitmask for the three neighbors that have have the same Y coordinate as the center
     pub const BITMASK_MIDDLE_Y: u16 = 0b_010_010_010;
 
     /// Bitmask for the three neighbors that have have a 'dy' of +1 relative to the center coordinate
-    pub const BITMASK_EDGE_Y_PLUS: u16 = 0b_100_100_100;
+    pub const BITMASK_EDGE_YPLUS: u16 = 0b_100_100_100;
 
     /// Bitmask for the center cell
     pub const BITMASK_CENTER: u16 = 0b_000_010_000;
@@ -173,18 +173,17 @@ fn cell_nbrhood() {
         );
         assert_eq!(
             l_nbrhood.is_occupied(0, 2),
-            (nbrhood & CellNbrhood2D::BITMASK_EDGE_X_MINUS & CellNbrhood2D::BITMASK_EDGE_Y_PLUS)
-                != 0,
+            (nbrhood & CellNbrhood2D::BITMASK_EDGE_XMINUS & CellNbrhood2D::BITMASK_EDGE_YPLUS) != 0,
             "The is_occupied method should match (x-1, y+1) bit being set"
         );
         assert_eq!(
             l_nbrhood.is_occupied(2, 1),
-            (nbrhood & CellNbrhood2D::BITMASK_EDGE_X_PLUS & CellNbrhood2D::BITMASK_MIDDLE_Y) != 0,
+            (nbrhood & CellNbrhood2D::BITMASK_EDGE_XPLUS & CellNbrhood2D::BITMASK_MIDDLE_Y) != 0,
             "The is_occupied method should match (x+1, y) bit being set"
         );
         assert_eq!(
             l_nbrhood.is_occupied(1, 0),
-            (nbrhood & CellNbrhood2D::BITMASK_MIDDLE_X & CellNbrhood2D::BITMASK_EDGE_Y_MINUS) != 0,
+            (nbrhood & CellNbrhood2D::BITMASK_MIDDLE_X & CellNbrhood2D::BITMASK_EDGE_YMINUS) != 0,
             "The is_occupied method should match (x, y-1) bit being set"
         );
     }

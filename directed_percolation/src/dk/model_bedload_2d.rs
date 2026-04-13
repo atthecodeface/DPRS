@@ -33,10 +33,10 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
         let is_here_occupied = (nbrhood.bitmask() & CellNbrhood2D::BITMASK_CENTER) != 0;
 
         // TODO: model not yet finalized; this is a decent first attempt
-        let mut ignore_nbrs: u16 = CellNbrhood2D::BITMASK_NOT_EDGE_X_MINUS;
-        ignore_nbrs |= CellNbrhood2D::BITMASK_EDGE_X_MINUS & rng.random::<u16>();
+        let mut ignore_nbrs: u16 = CellNbrhood2D::BITMASK_NOT_EDGE_XMINUS;
+        ignore_nbrs |= CellNbrhood2D::BITMASK_EDGE_XMINUS & rng.random::<u16>();
         // Trial deweighting of diagonal neighbors
-        ignore_nbrs |= CellNbrhood2D::BITMASK_EDGE_X_MINUS_CORNERS & rng.random::<u16>();
+        ignore_nbrs |= CellNbrhood2D::BITMASK_EDGE_XMINUS_CORNERS & rng.random::<u16>();
         let interesting_upstream_nbrs = nbrhood.bitmask() & !ignore_nbrs;
         let n_occupied_upstream_nbrs = interesting_upstream_nbrs.count_ones();
         let are_some_upstream_nbrs_occupied = n_occupied_upstream_nbrs >= 1;
@@ -44,7 +44,8 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
             (is_here_occupied | are_some_upstream_nbrs_occupied) & rng.random_bool(self.p_1);
         let not_do_collective_detrainment =
             (is_here_occupied & are_some_upstream_nbrs_occupied) & rng.random_bool(self.p_2);
-        let do_survive = do_keep_moving_or_do_collective_entrainment | not_do_collective_detrainment;
+        let do_survive =
+            do_keep_moving_or_do_collective_entrainment | not_do_collective_detrainment;
         do_survive.into()
     }
 }
