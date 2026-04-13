@@ -56,12 +56,12 @@ impl GrowthModel<Cell2D> for ModelDKSimplified2D {
             // Count the interesting (nonignored) neighbors
             let n_occupied_nbrs = interesting_nbrs.count_ones();
 
-            let are_several_nbrs_occupied = n_occupied_nbrs >= 1;
+            let are_some_nbrs_occupied = n_occupied_nbrs >= 1;
 
-            if are_several_nbrs_occupied || is_here_occupied {
+            if are_some_nbrs_occupied || is_here_occupied {
                 let uniform_variate: f64 = rng.random();
                 (is_here_occupied && (uniform_variate < self.p_1))
-                    || (are_several_nbrs_occupied && (uniform_variate < self.p_2))
+                    || (are_some_nbrs_occupied && (uniform_variate < self.p_2))
             } else {
                 false
             }

@@ -53,9 +53,9 @@ impl GrowthModel<Cell1D> for ModelBedload1D {
         nbrhood: &[bool; 3],
     ) -> DualState {
         let is_upstream_occupied = nbrhood[0];
-        let is_occupied = nbrhood[1];
-        let do_survive = ((is_occupied | is_upstream_occupied) & rng.random_bool(self.p_1))
-            | ((is_occupied & is_upstream_occupied) & rng.random_bool(self.p_2));
+        let is_here_occupied = nbrhood[1];
+        let do_survive = ((is_here_occupied | is_upstream_occupied) & rng.random_bool(self.p_1))
+            | ((is_here_occupied & is_upstream_occupied) & rng.random_bool(self.p_2));
         do_survive.into()
     }
 }
