@@ -69,8 +69,8 @@ export function get_input_radio_checked(parent_id: string): null | string {
 }
 
 export class HtmlElement {
-  ele: Element;
-  constructor(ele: Element) {
+  ele: HTMLElement;
+  constructor(ele: HTMLElement) {
     this.ele = ele;
   }
 
@@ -229,6 +229,21 @@ export class HtmlElement {
       this.ele.appendChild(content.ele);
     } else {
       this.ele.insertAdjacentText("afterbegin", content);
+    }
+  }
+
+  set_style(style: string, value?: string) {
+    /* This is not supported by FireFox
+    if (value) {
+      this.ele.attributeStyleMap.set(style, value);
+    } else {
+      this.ele.attributeStyleMap.delete(style);
+    }
+    */
+    if (value) {
+      this.ele.style = `${style}: ${value};`;
+    } else {
+      this.ele.style = "";
     }
   }
 }

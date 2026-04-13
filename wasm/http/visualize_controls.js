@@ -23,7 +23,8 @@ export class VisualizeControls {
                 this.parent.redraw();
             }, "zoom");
             td_zoom.add_label("zoom").set_content("Zoom");
-            const td_slice = tr.add_ele("td");
+            const td_slice = tr.add_ele("td", "slice_input");
+            this.td_slice = td_slice;
             td_slice.add_input_range("slice", "1.0", "1.0", "10", () => {
                 this.parent.redraw();
             }, "slice");
@@ -31,6 +32,12 @@ export class VisualizeControls {
         }
     }
     populate_values(simulation) {
+        if (simulation.dim < 2) {
+            this.td_slice.set_style("display", "none");
+        }
+        else {
+            this.td_slice.set_style("display");
+        }
         html.set_input_range("slice", 0, simulation.n_results() - 1);
         this.visualize.scale = html.get_input_float("zoom", 1, 10);
         this.visualize.slice = html.get_input_int("slice", 0, simulation.n_results() - 1);

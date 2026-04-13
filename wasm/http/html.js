@@ -197,6 +197,21 @@ export class HtmlElement {
             this.ele.insertAdjacentText("afterbegin", content);
         }
     }
+    set_style(style, value) {
+        /* This is not supported by FireFox
+        if (value) {
+          this.ele.attributeStyleMap.set(style, value);
+        } else {
+          this.ele.attributeStyleMap.delete(style);
+        }
+        */
+        if (value) {
+            this.ele.style = `${style}: ${value};`;
+        }
+        else {
+            this.ele.style = "";
+        }
+    }
 }
 class Table {
     constructor(classes) {
