@@ -36,6 +36,8 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
         // TODO: figure out *upstream* neighbors, and how to use them
         let mut ignore_nbrs: u16 = CellNbrhood2D::BITMASK_NOT_EDGE_X_MINUS;
         ignore_nbrs |= CellNbrhood2D::BITMASK_EDGE_X_MINUS & rng.random::<u16>();
+        // Trial deweighting of diagonal neighbors
+        ignore_nbrs |= CellNbrhood2D::BITMASK_EDGE_X_MINUS_CORNERS & rng.random::<u16>();
         let interesting_upstream_nbrs = nbrhood.bitmask() & !ignore_nbrs;
         let n_occupied_upstream_nbrs = interesting_upstream_nbrs.count_ones();
         let are_some_upstream_nbrs_occupied = n_occupied_upstream_nbrs >= 1;

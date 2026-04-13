@@ -34,6 +34,9 @@ impl CellNbrhood2D {
     /// Complement of BITMASK_EDGE_X_MINUS
     pub const BITMASK_NOT_EDGE_X_MINUS: u16 = 0b_111_111_000;
 
+    /// Bitmask for the two neighbors that have have a 'dx' of -1 diagonally relative to the center coordinate
+    pub const BITMASK_EDGE_X_MINUS_CORNERS: u16 = 0b_000_000_101;
+
     /// Bitmask for the three neighbors that have have the same X coordinate as the center
     pub const BITMASK_MIDDLE_X: u16 = 0b_000_111_000;
 
