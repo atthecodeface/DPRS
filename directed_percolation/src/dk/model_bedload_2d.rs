@@ -4,7 +4,7 @@ use crate::{DualState, Parameters};
 use rand::{Rng, RngExt};
 
 /// See ModelBedload1D for explanation of model physics.
-/// 
+///
 /// ModelBedload2D implements the GrowthModel<Cell2D> trait, plus these.
 #[derive(Clone, Copy, Debug)]
 pub struct ModelBedload2D {
@@ -41,7 +41,8 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
         let n_occupied_upstream_nbrs = interesting_upstream_nbrs.count_ones();
         let are_some_upstream_nbrs_occupied = n_occupied_upstream_nbrs >= 1;
 
-        let do_survive = ((is_here_occupied | are_some_upstream_nbrs_occupied) & rng.random_bool(self.p_1))
+        let do_survive = ((is_here_occupied | are_some_upstream_nbrs_occupied)
+            & rng.random_bool(self.p_1))
             | ((is_here_occupied & are_some_upstream_nbrs_occupied) & rng.random_bool(self.p_2));
         do_survive.into()
     }
