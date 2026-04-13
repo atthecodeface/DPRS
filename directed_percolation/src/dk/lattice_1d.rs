@@ -140,7 +140,7 @@ impl<GM: GrowthModel<Cell1D>> EvolvableLatticeDualState<Cell1D> for Lattice1D<GM
         let mass = total as f64;
         // Don't bother computing the mean radius unless we're central seeding
         let moment: f64 = match self.parameters.initial_condition {
-            InitialCondition::CentralSeed => (0..self.lattice_n_x)
+            InitialCondition::CentralCell => (0..self.lattice_n_x)
                 .map(|i| {
                     let x = ((i as i64) - (self.lattice_n_x as i64) / 2).abs() as usize;
                     let occupancy: usize = self.lattice[i].into();

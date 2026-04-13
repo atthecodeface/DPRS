@@ -109,7 +109,7 @@ class Viz:
         x_span = (lattices.shape[0] if x is None else min(x, lattices.shape[0]))
         t = (lattices.shape[1] if t is None else min(t, lattices.shape[1]))
         match p.initial_condition:
-            case InitialCondition.CentralSeed: 
+            case InitialCondition.CentralCell: 
                 x = (lattices.shape[0]//2-x_span, lattices.shape[0]//2+x_span,)
             case InitialCondition.Randomized: 
                 x = (0, x_span,)

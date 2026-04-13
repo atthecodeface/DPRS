@@ -35,7 +35,7 @@ impl std::fmt::Display for Processing {
 pub enum InitialCondition {
     #[default]
     Randomized,
-    CentralSeed,
+    CentralCell,
     Preserved,
 }
 

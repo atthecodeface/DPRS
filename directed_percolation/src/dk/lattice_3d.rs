@@ -271,7 +271,7 @@ impl<GM: GrowthModel<Cell3D>> EvolvableLatticeDualState<Cell3D> for Lattice3D<GM
         let mass = total as f64;
         // Don't bother computing the mean radius unless we're central seeding
         let moment = match self.parameters.initial_condition {
-            InitialCondition::CentralSeed => (0..self.lattice_n_z)
+            InitialCondition::CentralCell => (0..self.lattice_n_z)
                 .flat_map(|k| {
                     (0..self.lattice_n_y).flat_map(move |j| {
                         (0..self.lattice_n_x).map(move |i| {

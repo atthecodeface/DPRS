@@ -23,7 +23,7 @@ pub fn simulation_nd<
         InitialCondition::Randomized => {
             lm.create_randomized_lattice(&mut rng);
         }
-        InitialCondition::CentralSeed => {
+        InitialCondition::CentralCell => {
             lm.create_seeded_lattice();
         }
         InitialCondition::Preserved => {}
