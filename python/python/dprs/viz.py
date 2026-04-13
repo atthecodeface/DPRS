@@ -90,7 +90,7 @@ class Viz:
         fig.set_dpi(dpi_)
         return fig
 
-    def image_lattice_history(
+    def lattice_history(
             self,
             name: str,
             title: str,
@@ -135,7 +135,7 @@ class Viz:
         plt.grid(ls=":")
         # plt.close()
 
-    def image_lattice(
+    def lattice(
             self,
             name: str,
             title: str,
