@@ -22,7 +22,7 @@ class Main {
         // For staggered p_c = 0.705485152
         //
         // For simplified p_c = 0.538910
-        params_1d.probabilities.p_initial = 0.7;
+        params_1d.probabilities.p_initial = 0.5;
         params_1d.probabilities.p_1 = 0.705485152;
         params_1d.probabilities.p_2 = 0.705485152;
         params_1d.params.n_iterations = 600;
@@ -31,15 +31,16 @@ class Main {
         params_1d.dims.n_x = 400;
         params_1d.dims.n_y = 1;
         params_1d.dims.n_z = 1;
+        // 0.62 is good
         const params_2d = new JsParameters();
-        params_2d.probabilities.p_initial = 0.03;
-        params_2d.probabilities.p_1 = 0.62;
-        params_2d.probabilities.p_2 = 0.62;
+        params_2d.probabilities.p_initial = 0.5;
+        params_2d.probabilities.p_1 = 0.5909;
+        params_2d.probabilities.p_2 = 0.5909;
         params_2d.params.n_iterations = 600;
         params_2d.params.sample_period = 1;
         params_2d.params.random_seed = 3;
-        params_2d.dims.n_x = 100;
-        params_2d.dims.n_y = 100;
+        params_2d.dims.n_x = 300;
+        params_2d.dims.n_y = 150;
         params_2d.dims.n_z = 1;
         this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1);
         this.simulation_controls_1d.parameters = params_1d;
