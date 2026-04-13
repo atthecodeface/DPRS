@@ -3,7 +3,7 @@ use crate::{Cell2D, GrowthModel};
 use crate::{DualState, Parameters};
 use rand::{Rng, RngExt};
 
-/// See model_bedload_2D.rs for explanation of model physics.
+/// See ModelBedload1D for explanation of model physics.
 /// 
 /// ModelBedload2D implements the GrowthModel<Cell2D> trait, plus these.
 #[derive(Clone, Copy, Debug)]
@@ -30,7 +30,6 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
         rng: &mut R,
         nbrhood: &CellNbrhood2D,
     ) -> DualState {
-        // let is_upstream_occupied = nbrhood[0];
         let is_here_occupied = (nbrhood.bitmask() & CellNbrhood2D::BITMASK_CENTER) != 0;
 
         // TODO: model not yet finalized; this is a decent first attempt
