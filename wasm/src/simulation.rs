@@ -1,6 +1,6 @@
-use directed_percolation::dk::ModelBedload1D;
 use directed_percolation::dk::{Cell1D, Lattice1D};
 use directed_percolation::dk::{Cell2D, Lattice2D};
+use directed_percolation::dk::{ModelBedload1D, ModelBedload2D};
 use directed_percolation::dk::{ModelDKSimplified1D, ModelDKSimplified2D};
 use directed_percolation::dk::{ModelStaggeredDK1D, ModelStaggeredDK2D};
 use directed_percolation::simulation_nd;
@@ -76,6 +76,7 @@ impl Simulation {
                 (2, "staggered_dk") => {
                     sim_2d::<ModelStaggeredDK2D>(self.parameters.sim_parameters())
                 }
+                (2, "bedload") => sim_2d::<ModelBedload2D>(self.parameters.sim_parameters()),
                 _ => {
                     return Err(format!(
                         "Unable to perform {dims}D simulation with {:?} simulation kind at present",
