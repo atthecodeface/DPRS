@@ -31,7 +31,12 @@ export class SimulationControls {
         this.populate_value("n_x", this.parameters.dims.n_x);
         this.populate_value("n_y", this.parameters.dims.n_y);
         this.populate_value("n_z", this.parameters.dims.n_z);
-        html.set_input_checked(this.ele_id + "initial_center", this.parameters.params.initial_center);
+        if (this.parameters.params.initial_center) {
+            html.set_input_checked(this.ele_id + "seed_center", true);
+        }
+        else {
+            html.set_input_checked(this.ele_id + "seed_random", true);
+        }
         if (this.parameters.params.simulation_kind == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
         }
@@ -44,7 +49,12 @@ export class SimulationControls {
     }
     populate_parameters() {
         const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
-        const initial_center = html.get_input_checked(this.ele_id + "initial_center");
+        const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
+        console.log(seed_kind);
+        var initial_center = false;
+        if (seed_kind == "center") {
+            initial_center = true;
+        }
         this.parameters.probabilities.p_1 = this.get_float("p_1", 0, 1);
         this.parameters.probabilities.p_2 = this.get_float("p_2", 0, 1);
         this.parameters.probabilities.p_initial = this.get_float("p_initial", 0, 1);
@@ -68,7 +78,6 @@ export class SimulationControls {
         const probs_table = table.add_ele("tr").add_ele("td").add_ele("table");
         const param_table = table.add_ele("tr").add_ele("td").add_ele("table");
         const seed_table = table.add_ele("tr").add_ele("td").add_ele("table");
-        const sim_table = table.add_ele("tr").add_ele("td").add_ele("table");
         const control_table = table.add_ele("tr").add_ele("td").add_ele("table");
         {
             const tr = dims_table.add_ele("tr", ele_id + "dims");
@@ -99,6 +108,7 @@ export class SimulationControls {
             for (const [name, value] of [
                 ["n_iterations", "1000"],
                 ["sample_period", "20"],
+                ["random_seed", "1"],
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(name).set_content(name + ":");
@@ -106,15 +116,16 @@ export class SimulationControls {
             }
         }
         {
-            const tr = seed_table.add_ele("tr", ele_id + "seed_controls");
-            for (const [name, value] of [["random_seed", "1"]]) {
+            const tr = seed_table.add_ele("tr", ele_id + "_seed_kind");
+            for (const [name, value] of [
+                ["center", "Center"],
+                ["edge", "Edge"],
+                ["random", "Random"],
+            ]) {
                 const td = tr.add_ele("td");
-                td.add_label(name).set_content(name + ":");
-                td.add_input_text(name, value, this.ele_id + name, "sim_controls " + name);
+                td.add_input_radio(ele_id + "_seed_kind", name, true, ele_id + "seed_" + name, "seed_kind " + name);
+                td.add_label(ele_id + "seed_" + name).set_content(value);
             }
-            const td = tr.add_ele("td");
-            td.add_input_checkbox(this.ele_id + "initial_center", this.ele_id + "initial_center", "sim_controls ");
-            td.add_label(this.ele_id + "initial_center").set_content("Central cell (or: randomized)");
         }
         {
             const tr = seed_table.add_ele("tr", ele_id + "sim_kind");
@@ -126,8 +137,6 @@ export class SimulationControls {
                 const td = tr.add_ele("td");
                 td.add_input_radio(ele_id + "_sim_kind", name, true, ele_id + "sk_" + name, "sim_kind " + name);
                 td.add_label(ele_id + "sk_" + name).set_content(value);
-                //          checked: first,
-                // style: "padding-right: 25px",
             }
         }
         {
