@@ -62,10 +62,10 @@ impl CellNbrhood2D {
     pub const BITMASK_EDGE_CENTERS: u16 = 0b_010_101_010;
 
     /// Bitmask for the neighbors (x,y), (x-1,y-1), (x-1,y) and (x,y-1)
-    pub const BITMASK_CORNER_PATCH_MINUS: u16 = 0b_000_011_011;
+    pub const BITMASK_CORNER_PATCH_XYMINUS: u16 = 0b_000_011_011;
 
     /// Bitmask for the neighbors (x,y), (x+1,y+1), (x+1,y) and (x,y+1)
-    pub const BITMASK_CORNER_PATCH_PLUS: u16 = 0b_110_110_000;
+    pub const BITMASK_CORNER_PATCH_XYPLUS: u16 = 0b_110_110_000;
 
     /// Create a new neighborhood centred on an xyz in the given lattice,
     /// with the specified n_x and n_y (the lattice must be Z-major, X-minor)
