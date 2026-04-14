@@ -99,7 +99,7 @@ export class SimulationControls {
     const dims = this.dims;
     this.div.clear();
 
-    const table = this.div.add_ele("table");
+    const table = this.div.add_ele("table", "", "sim_ctrl");
     const dims_table = table
       .add_ele("tr")
       .add_ele("td")
@@ -107,7 +107,7 @@ export class SimulationControls {
     const probs_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", "", "probabilities");
+      .add_ele("table", "", "probability");
     const param_table = table
       .add_ele("tr")
       .add_ele("td")

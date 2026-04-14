@@ -1,0 +1,86 @@
+.dims_n_text {
+    width: 6ch;
+}
+
+.prob_text {
+    width: 12ch;
+}
+
+.params_text {
+    padding: 5px;
+    width: 6ch;
+}
+
+.controls {
+    border: 1px solid rgb(83, 83, 83);
+    padding: 5px;
+    margin-left: 10px;
+    margin-right: 15px;
+}
+
+.sim_controls_text {
+    border: 1px solid rgb(142, 142, 207);
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+table.probability td {
+    /*! padding: 10px; */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+table.dims td {
+    /*! padding: 10px; */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+table.param td {
+    /*! padding: 10px; */
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+table.seed td {
+    padding: 3px;
+}
+
+table.seed td input {
+    margin-right: 7px;
+}
+
+table.control tr td {
+    padding: 0px;
+}
+
+
+
+/* .md-typeset h1 {
+    margin-bottom: 20px;
+} */
+
+
+#upper {
+    overflow-y: scroll;
+
+    /* This height SHOULD be fixed */
+    /* height: 260px; */
+}
+
+/* Would do phone stuff like this */
+@media (min-width: 320px) {
+    /* smartphones, portrait */
+}
+
+table,
+th,
+td {
+    border: none !important;
+}
