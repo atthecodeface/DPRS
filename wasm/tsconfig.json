@@ -58,5 +58,6 @@
     "typescript/visualize_controls.ts",
     "typescript/dk.ts",
     "typescript/1d.ts",
+    "typescript/2d.ts",
   ],
 }
