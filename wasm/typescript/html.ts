@@ -88,12 +88,12 @@ export class HtmlElement {
     }
   }
 
-  add_ele(ele_type: string, id?: string, classes?: string) {
+  add_ele(ele_type: string, id: string = "", classes?: string) {
     const ele = document.createElement(ele_type);
-    if (id !== undefined) {
+    if (id != "") {
       ele.setAttribute("id", id);
     }
-    if (classes) {
+    if (classes !== undefined) {
       ele.className = classes;
     }
     this.ele.appendChild(ele);
