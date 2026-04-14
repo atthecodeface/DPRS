@@ -100,11 +100,26 @@ export class SimulationControls {
     this.div.clear();
 
     const table = this.div.add_ele("table");
-    const dims_table = table.add_ele("tr").add_ele("td").add_ele("table");
-    const probs_table = table.add_ele("tr").add_ele("td").add_ele("table");
-    const param_table = table.add_ele("tr").add_ele("td").add_ele("table");
-    const seed_table = table.add_ele("tr").add_ele("td").add_ele("table");
-    const control_table = table.add_ele("tr").add_ele("td").add_ele("table");
+    const dims_table = table
+      .add_ele("tr")
+      .add_ele("td")
+      .add_ele("table", "", "dims");
+    const probs_table = table
+      .add_ele("tr")
+      .add_ele("td")
+      .add_ele("table", "", "probabilities");
+    const param_table = table
+      .add_ele("tr")
+      .add_ele("td")
+      .add_ele("table", "", "param");
+    const seed_table = table
+      .add_ele("tr")
+      .add_ele("td")
+      .add_ele("table", "", "seed");
+    const control_table = table
+      .add_ele("tr")
+      .add_ele("td")
+      .add_ele("table", "", "control");
 
     {
       const tr = dims_table.add_ele("tr", ele_id + "dims");
@@ -136,12 +151,15 @@ export class SimulationControls {
           "sim_controls_text dims_n_text",
         );
       }
-      td.set_style("padding", "0px");
     }
 
     {
       const tr = probs_table.add_ele("tr", ele_id + "probability");
-      for (const [label, thing] of [["p1", "p_1"], ["p2", "p_2"], ["p0", "p_initial"],]) {
+      for (const [label, thing] of [
+        ["p1", "p_1"],
+        ["p2", "p_2"],
+        ["p0", "p_initial"],
+      ]) {
         const td = tr.add_ele("td");
         td.add_label(thing!, "sim_controls_label").set_content(label + ":");
         td.add_input_text(
@@ -150,7 +168,6 @@ export class SimulationControls {
           this.ele_id + thing,
           "sim_controls_text prob_text",
         );
-        td.set_style("padding", "0px");
       }
     }
 
@@ -169,7 +186,6 @@ export class SimulationControls {
           this.ele_id + name,
           "sim_controls_text params_text",
         );
-        td.set_style("padding", "0px");
       }
     }
 
@@ -191,7 +207,6 @@ export class SimulationControls {
         td.add_label(ele_id + "seed_" + name, "sim_controls_label").set_content(
           value,
         );
-        td.set_style("padding", "3px");
       }
     }
 
@@ -213,7 +228,6 @@ export class SimulationControls {
         td.add_label(ele_id + "sk_" + name, "sim_controls_label").set_content(
           value,
         );
-        td.set_style("padding", "3px");
       }
     }
 
@@ -239,10 +253,6 @@ export class SimulationControls {
         ele_id + "save_simulation",
         "controls save_simulation",
       );
-
-      tr.set_style("padding", "0px");
-      td_run.set_style("padding", "0px");
-      td_save.set_style("padding", "0px");
     }
   }
 }
