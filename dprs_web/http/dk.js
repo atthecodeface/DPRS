@@ -19,7 +19,7 @@ class Main {
         this.anim = new Animate((time) => this.animation_tick(time));
         this.tick = 0;
         this.last_time = 0;
-        this.frames_per_second = 60;
+        this.frames_per_second = 25;
         this.first_frame_time = 0;
         this.last_frame_time = 0;
         this.simulation = new JsSimulation(logger);
