@@ -1,7 +1,7 @@
-# site/wasm/*
-# docs/wasm/*
-wasm/target/
-wasm/dprs.zip
+# site/wasm_dprs/*
+# docs/wasm_dprs/*
+wasm_dprs/target/
+wasm_dprs/dprs.zip
 py_dprs/target/
 dprs_core/target/
 site/
