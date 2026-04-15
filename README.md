@@ -27,15 +27,15 @@ See [here](documentation/docs/HOWTO.md) for some rough "how-to" notes on wrappin
 
 Simplified DP-class Domany-Kinzel model simulations are demonstrated in the following Jupyter notebooks. The emphasis here is on checking the t-decay of mean ρ(t), which has well-established power-law tail-scaling behavior. 
 
-- [**1d DP**](https://github.com/cstarkjp/DPRS/tree/main/python/notebooks/dp_1d.ipynb)
+- [**1d DP**](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/notebooks/dp_1d.ipynb)
 
-- [**2d DP**](https://github.com/cstarkjp/DPRS/tree/main/python/notebooks/dp_2d.ipynb)
+- [**2d DP**](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/notebooks/dp_2d.ipynb)
 
-- [**3d DP**](https://github.com/cstarkjp/DPRS/tree/main/python/notebooks/dp_3d.ipynb)
+- [**3d DP**](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/notebooks/dp_3d.ipynb)
 
 Related pure-Python demos can be found here:
 
- - [Python demos](https://github.com/cstarkjp/DPRS/tree/main/python/demos/)
+ - [Python demos](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/demos/)
 
 
 
