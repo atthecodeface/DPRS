@@ -1,18 +1,17 @@
-# site/wasm/*
-# docs/wasm/*
-wasm/target/
-wasm/dprs.zip
-python/target/
-directed_percolation/target/
+# site/wasm_dprs/*
+# docs/wasm_dprs/*
+wasm_dprs/target/
+wasm_dprs/dprs.zip
+py_dprs/target/
+dprs_core/target/
 site/
 
-python/notebooks/plots/*
+py_dprs/notebooks/plots/*
 notebooks/plots/*
 plots/*
 
 Cargo.lock
 /target
-python/dprs/libdprs.dylib.dSYM/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
