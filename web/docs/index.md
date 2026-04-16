@@ -11,7 +11,7 @@
 ##  DPRS
 
 DPRS implements solvers for a variety of directed-percolation class models. The code is largely written in Rust.
-The [solver](https://github.com/cstarkjp/DPRS/tree/main/dprs_core/src) is accessed via a [wrapper](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/src) that exposes it to Python. This wrapping makes experimentation more convenient. 
+The [solver](https://github.com/cstarkjp/DPRS/tree/main/dprs_core/src) is accessed via a [wrapper](https://github.com/cstarkjp/DPRS/tree/main/dprs_py/src) that exposes it to Python. This wrapping makes experimentation more convenient. 
 
 The Python wrapper is available as a [PyPI package called DPRS](https://pypi.org/project/dprs/) and can be installed using `pip`. It has multi-platform support.
 Jupyter notebooks are used to implement the Python-wrapped simulations. 
@@ -21,7 +21,7 @@ Jupyter notebooks are used to implement the Python-wrapped simulations.
 
 
 You can experiment with [interactive demos of the DP solver here.](live-demos/index.md)
-These demos run the same Rust code as the Python-wrapped solver, but instead are made available using WebAssembly and accessed via a Typescript/Javascript wrapper.
+These demos run the same Rust code as the Python-wrapped solver, but instead are made available using WebAssembly and accessed via a [Typescript/Javascript wrapper](https://github.com/cstarkjp/DPRS/tree/main/dprs_web/src).
 
 
 
