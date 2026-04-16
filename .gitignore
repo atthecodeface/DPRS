@@ -2,11 +2,12 @@
 # docs/wasm_dprs/*
 wasm_dprs/target/
 wasm_dprs/dprs.zip
-py_dprs/target/
+dprs_py/target/
 dprs_core/target/
-site/
+dprs_web/target/
+web/site/
 
-py_dprs/notebooks/plots/*
+dprs_py/notebooks/plots/*
 notebooks/plots/*
 plots/*
 
