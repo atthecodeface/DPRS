@@ -9,33 +9,19 @@ In this project, we implement a variety of directed percolation models in Rust. 
 
 ![1d DP-class, simplified Domany-Kinzel evolution for p_c ~ p=0.53891, n_x=300, t=200](https://raw.githubusercontent.com/cstarkjp/DPRS/main/web/docs/images/lattice_p0p538910_s5_nx300.png)
 
-We have two motivations for adopting Rust: one is to ensure maximum performance; another is to achieve this in a memory-safe and bug-free fashion (which is not easy to do in C or C++). 
+<!-- We have two motivations for adopting Rust: one is to ensure maximum performance; another is to achieve this in a memory-safe and bug-free fashion (which is not easy to do in C or C++). 
 Fast run times are achieved through parallelization using the [`Rayon`](https://docs.rs/rayon/latest/rayon/) crate. 
-We anticipate boosting performance further with GPU-compute using [`wgpu`](https://wgpu.rs/).
+We anticipate boosting performance further with GPU-compute using [`wgpu`](https://wgpu.rs/). -->
 
-See [here](web/docs/HOWTO.md) for some rough "how-to" notes on wrapping Rust with Python.
+Follow these links for more information:
 
-
-![2d DP-class, simplified Domany-Kinzel t-decay of mean order parameter mean ρ(t), for p_c ~ p=0.163145, n_x=30000, n_y=30000, t=50000](https://raw.githubusercontent.com/cstarkjp/DPRS/main/web/docs/images/ρmean_p0p163145_s1_nx30000_ny30000.png)
-
-## Demos
-
-<!-- For now, only a simplified form of Domany-Kinzel has been implemented.  A series of related models are in development. -->
-
-
-### Domany-Kinzel
-
-Simplified DP-class Domany-Kinzel model simulations are demonstrated in the following Jupyter notebooks. The emphasis here is on checking the t-decay of mean ρ(t), which has well-established power-law tail-scaling behavior. 
-
-- [**1d DP**](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/notebooks/dp_1d.ipynb)
-
-- [**2d DP**](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/notebooks/dp_2d.ipynb)
-
-- [**3d DP**](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/notebooks/dp_3d.ipynb)
-
-Related pure-Python demos can be found here:
-
- - [Python demos](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/demos/)
-
-
-
+ - [live online demos](https://cstarkjp.github.io/DPRS/live-demos/)
+    - [in 1d](https://cstarkjp.github.io/DPRS/live-demos/1d_DP_simulations/)
+    - [in 2d](https://cstarkjp.github.io/DPRS/live-demos/2d_DP_simulations/)
+ - [documentation](https://cstarkjp.github.io/DPRS/)
+ - [PyPI package](https://pypi.org/project/dprs/)
+ - [Jupyter notebooks](https://github.com/cstarkjp/DPRS/tree/main/dprs_py/notebooks)
+ - [core Rust solver](https://github.com/cstarkjp/DPRS/tree/main/dprs_core/src)
+ - [Python wrapper](https://github.com/cstarkjp/DPRS/tree/main/dprs_py/src)
+ - [WebAssembly/TypeScript wrapper](https://github.com/cstarkjp/DPRS/tree/main/dprs_web/src)
+ 
