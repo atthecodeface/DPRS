@@ -32,7 +32,7 @@ use rand::{Rng, RngExt};
 pub struct ModelBedload1D {
     p_1: f64,
     p_2: f64,
-    _p_3: f64,
+    p_3: f64,
 }
 
 // Implement GrowthModel<Cell1D> trait for ModelBedload1D.
@@ -42,7 +42,7 @@ impl GrowthModel<Cell1D> for ModelBedload1D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            _p_3: parameters.p_3,
+            p_3: parameters.p_3,
         })
     }
 
@@ -55,7 +55,8 @@ impl GrowthModel<Cell1D> for ModelBedload1D {
         let is_upstream_occupied = nbrhood[0];
         let is_here_occupied = nbrhood[1];
         let do_survive = ((is_here_occupied | is_upstream_occupied) & rng.random_bool(self.p_1))
-            | ((is_here_occupied & is_upstream_occupied) & rng.random_bool(self.p_2));
+            | ((is_here_occupied & is_upstream_occupied) & rng.random_bool(self.p_2))
+            | rng.random_bool(self.p_3);
         do_survive.into()
     }
 }
