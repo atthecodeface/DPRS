@@ -10,7 +10,7 @@ use rand::{Rng, RngExt};
 pub struct ModelBedload2D {
     p_1: f64,
     p_2: f64,
-    _p_3: f64,
+    p_3: f64,
 }
 
 // Implement GrowthModel<Cell2D> trait for ModelBedload2D.
@@ -20,7 +20,7 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
-            _p_3: parameters.p_3,
+            p_3: parameters.p_3,
         })
     }
 
@@ -44,8 +44,10 @@ impl GrowthModel<Cell2D> for ModelBedload2D {
             (is_here_occupied | are_some_upstream_nbrs_occupied) & rng.random_bool(self.p_1);
         let not_do_collective_detrainment =
             (is_here_occupied & are_some_upstream_nbrs_occupied) & rng.random_bool(self.p_2);
-        let do_survive =
-            do_keep_moving_or_do_collective_entrainment | not_do_collective_detrainment;
+        let do_solo_entrainment = rng.random_bool(self.p_3);
+        let do_survive = do_keep_moving_or_do_collective_entrainment
+            | not_do_collective_detrainment
+            | do_solo_entrainment;
         do_survive.into()
     }
 }
