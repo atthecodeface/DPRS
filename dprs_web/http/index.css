@@ -111,7 +111,7 @@ input.controls.simulation {
 }
 
 #VisualizationControls table:not([class]) {
-    width: 320px;
+    width: 370px;
 
     table {
         width: 100%;
