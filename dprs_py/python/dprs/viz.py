@@ -202,6 +202,7 @@ class Viz:
             self,
             name: str,
             title: str,
+            p: sim.Parameters,
             tracking: dict,
             choices: tuple[str, str],
             exponent: float, 
@@ -210,6 +211,8 @@ class Viz:
             fig_size: tuple[float,float]=(6,4,),
             i_offset: int=3,
             do_ref_curve: bool=True,
+            do_semilogy: bool=False,
+            do_hop_times: bool=False,
         ) -> tuple[Figure, Any]:
         """
         Plot time evolution of mean cluster radius.
@@ -218,21 +221,29 @@ class Viz:
         plt.title(title, fontdict={"fontsize": 13}, pad=10,)
         t: NDArray = tracking[choices[0]][i_offset:]
         statistic: NDArray = tracking[choices[1]][i_offset:]
-        statistic_fn = lambda t: scale*t**exponent
-        plt.plot(t, statistic, lw=0.4, color="k",)
+        if do_hop_times:
+            scale: float = p.p_initial
+            exponent: float = p.p_1
+            statistic_fn = lambda t: scale * np.exp(-t*(1-exponent))
+        else:
+            statistic_fn = lambda t: scale * t**exponent
+        plt.plot(t, statistic, lw=1, color="k",)
         if do_ref_curve:
             if labels is not None:
                 label = rf"{labels[1]}" + rf"$\quad$" + rf"{labels[2]}" + rf"$={exponent:0.4f}$"
             else:
                 label = None
             plt.plot(
-                t, statistic_fn(t), color="blue", alpha=0.5, label=label,
+                t, statistic_fn(t), "--", lw=3, color="blue", alpha=0.3, label=label,
             )
         if labels is not None:
             plt.legend()
         axes = plt.gca()
         axes.autoscale(enable=True, axis="both", tight=True)
-        plt.loglog()
+        if do_semilogy:
+            plt.semilogy()
+        else:
+            plt.loglog()
         # plt.ylim(0,)
         # plt.xlim(0,)
         plt.ylabel(rf"{labels[0] if labels is not None else ''}")
