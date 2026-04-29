@@ -32,14 +32,14 @@ class Main {
     //
     // For simplified p_c = 0.538910
     params_1d.probabilities.p_initial = 0.5;
-    params_1d.probabilities.p_1 = 0.70548515;
-    params_1d.probabilities.p_2 = 0.70548515;
+    params_1d.probabilities.p_1 = 0.7054; //0.70548515
+    params_1d.probabilities.p_2 = 0.7054;
 
     params_1d.params.n_iterations = 500;
     params_1d.params.sample_period = 1;
     params_1d.params.random_seed = 1;
 
-    params_1d.dims.n_x = 300;
+    params_1d.dims.n_x = 350;
     params_1d.dims.n_y = 1;
     params_1d.dims.n_z = 1;
 
@@ -69,6 +69,7 @@ class Main {
     this.simulation_controls_1d.populate_parameters();
     this.simulation_controls_1d.parameters.dims.n_y = 1;
     this.simulation_controls_1d.parameters.dims.n_z = 1;
+    this.simulation_controls_1d.set_staggered_dk()
 
     const sim_parameters = this.simulation_controls_1d.parameters;
     this.simulation.run(sim_parameters);

@@ -49,7 +49,7 @@ export class Visualize {
   /** Zoom scale to use
    *
    */
-  scale: number = 1.2;
+  scale: number = 1;
 
   /** Which 'time slice' to use for 2D
    *

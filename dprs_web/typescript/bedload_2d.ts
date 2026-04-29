@@ -28,17 +28,17 @@ class Main {
     );
 
     const params_2d = new JsParameters();
-    params_2d.probabilities.p_1 = 0.59;
-    params_2d.probabilities.p_2 = 0.59;
+    params_2d.probabilities.p_1 = 0.58;
+    params_2d.probabilities.p_2 = 0.58;
     params_2d.probabilities.p_initial = 0.5;
     params_2d.probabilities.p_conj = 0.0;
 
-    params_2d.params.n_iterations = 500;
+    params_2d.params.n_iterations = 600;
     params_2d.params.sample_period = 1;
-    params_2d.params.random_seed = 6;
+    params_2d.params.random_seed = 5;
 
-    params_2d.dims.n_x = 300;
-    params_2d.dims.n_y = 150;
+    params_2d.dims.n_x = 350;
+    params_2d.dims.n_y = 200;
     params_2d.dims.n_z = 1;
 
     params_2d.params.seed_kind = "edge";
@@ -51,6 +51,7 @@ class Main {
     );
     this.simulation_controls_2d.parameters = params_2d;
     this.simulation_controls_2d.populate_values();
+    this.simulation_controls_2d.set_bedload()
 
     this.log.info("HTML built, running initial simulation");
 
@@ -66,6 +67,7 @@ class Main {
 
     this.simulation_controls_2d.populate_parameters();
     this.simulation_controls_2d.parameters.dims.n_z = 1;
+    // this.simulation_controls_2d.set_ic_centralcell()
 
     const sim_parameters = this.simulation_controls_2d.parameters;
     this.simulation.run(sim_parameters);
