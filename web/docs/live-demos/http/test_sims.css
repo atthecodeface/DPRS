@@ -1,3 +1,21 @@
+/* Some global stuff to mimic the mkdoc style
+*/
+html {
+    font-size: 125%;
+    font-family: "Roboto";
+}
+td {
+    font-weight: 400;
+}
+.md-typeset {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+}
+
+/* End of global stuff
+*/
+
 /* ---------------------------------------------------------------------------------- */
 /* From here goes in sim.css */
 /* ---------------------------------------------------------------------------------- */
@@ -43,7 +61,7 @@ div.md-container div div.md-content article.md-content__inner {
         .sim_controls_text {
             border: 1px solid rgb(142, 142, 207);
             margin-left: 5px;
-            margin-right: 20px;
+            margin-right: 10px;
             padding: 5px;
         }
 
@@ -66,7 +84,6 @@ div.md-container div div.md-content article.md-content__inner {
     /* For the 'Run Simulation', 'Save Simulation' and the media control buttons */
     input.controls {
         border-radius: 5px;
-        padding-left: 0px;
         border: 1px solid rgb(83, 83, 83);
     }
 
@@ -76,11 +93,7 @@ div.md-container div div.md-content article.md-content__inner {
         margin-top: 10px;
         padding-top: 8px;
         padding-bottom: 8px;
-        font-size: 105%;
-    }
-
-    input.controls.save_simulation {
-        display: none;
+        font-size: 90%;
     }
 
     #VisualizationControls table:not([class]) {
@@ -110,7 +123,7 @@ div.md-container div div.md-content article.md-content__inner {
         /* For the media control buttons */
         input.controls.playback {
             font-size: 130%;
-            width: 45px;
+            width: 36px;
             margin: 0px;
         }
     }
