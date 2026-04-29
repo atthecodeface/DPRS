@@ -72,7 +72,7 @@ div.md-container div div.md-content article.md-content__inner {
 
     /* For the 'Run Simulation', 'Save Simulation' */
     input.controls.simulation {
-        width: 80%;
+        width: 50%;
         margin-top: 10px;
         padding-top: 8px;
         padding-bottom: 8px;
@@ -94,8 +94,8 @@ div.md-container div div.md-content article.md-content__inner {
         td {
             padding-top: 10px;
             padding-bottom: 0px;
-            padding-left: 10px;
-            padding-right: 5px;
+            padding-left: 8px;
+            padding-right: 8px;
         }
 
         tr.zoom_slice td.label {
