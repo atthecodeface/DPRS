@@ -1,4 +1,4 @@
-# Domany-Kinzel models in 1d
+# Domany-Kinzel in 1d
 
 <div>
     <link href="../sims.css" rel="stylesheet" type="text/css" />
