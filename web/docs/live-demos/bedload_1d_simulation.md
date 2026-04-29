@@ -1,9 +1,9 @@
-# Domany-Kinzel models in 1d
+# Bedload model in 1d
 
 <div>
     <link href="../sims.css" rel="stylesheet" type="text/css" />
-    <link href="../dk.css" rel="stylesheet" type="text/css" />
-    <script type="module" src="../http/dk_1d.js"></script>
+    <link href="../bedload.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="../http/bedload_1d.js"></script>
         <div id="tab-1D">
             <div id="1d_sim_controls"></div>
         </div>

@@ -114,8 +114,10 @@ nav:
     # - Navigation: navigation.md
     - Live demos: 
         - live-demos/index.md
-        - live-demos/1d_DP_simulations.md
-        - live-demos/2d_DP_simulations.md
+        - live-demos/dk_1d_simulation.md
+        - live-demos/dk_2d_simulation.md
+        - live-demos/bedload_1d_simulation.md
+        - live-demos/bedload_2d_simulation.md
     - Jupyter notebooks: 
         - jupyter-notebooks/index.md
         - jupyter-notebooks/DomanyKinzel.md

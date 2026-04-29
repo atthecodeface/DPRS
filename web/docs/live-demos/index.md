@@ -1,4 +1,8 @@
 # Live demos
 
-- [Simulations of DP-type models in 1d](1d_DP_simulations.md)
-- [Simulations of DP-type models in 2d](2d_DP_simulations.md)
+Simulations of: 
+
+- [Domany-Kinzel models in 1d](dk_1d_simulation.md)
+- [Domany-Kinzel models in 2d](dk_2d_simulation.md)
+- [Bedload model in 1d](bedload_1d_simulation.md)
+- [Bedload model in 2d](bedload_2d_simulation.md)

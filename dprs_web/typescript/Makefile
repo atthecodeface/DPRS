@@ -10,4 +10,4 @@ blah:
 	cp js/simulation_controls.js js/simulation_controls.js.map ../http
 	cp js/saved_simulations.js js/saved_simulations.js.map ../http
 	cp js/visualize.js js/visualize.js.map ../http
-	cp js/dk.js js/dk.js.map ../http
+	cp js/dp.js js/dp.js.map ../http

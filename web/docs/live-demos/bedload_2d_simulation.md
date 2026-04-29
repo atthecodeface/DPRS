@@ -1,9 +1,9 @@
-# Domany-Kinzel models in 2d
+# Bedload model in 2d
 
 <div>
     <link href="../sims.css" rel="stylesheet" type="text/css" />
-    <link href="../dk.css" rel="stylesheet" type="text/css" />
-    <script type="module" src="../http/dk_2d.js"></script>
+    <link href="../bedload.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="../http/bedload_2d.js"></script>
         <div id="tab-2D">
             <div id="2d_sim_controls"></div>
         </div>

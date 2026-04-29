@@ -3,29 +3,21 @@
   "compilerOptions": {
     "rootDir": "./typescript/",
     "outDir": "./http",
-
     // No idea what this is but it breaks stuff
     // "module": "commonjs",
-
     // Need at least 2015 for set iteration; does not seem onerous
     "target": "ES2015",
-
     // Presumably libraries that we target
     // "lib": ["DOM", "ES2017", "DOM.Iterable", "ScriptHost"],
-
     // Whether to generate sourceMap?
     "sourceMap": false,
-
     // Whether to generate ts declaration files?
     "declaration": false,
-
     // Whether to generate ts declaration map files?
     "declarationMap": false,
-
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
     // Style Options
     // "noImplicitReturns": true,
     // "noImplicitOverride": true,
@@ -33,18 +25,18 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
-
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-
     // "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["pkg/*"],
+  "include": [
+    "pkg/*"
+  ],
   "files": [
     "typescript/animate.ts",
     "typescript/html.ts",
@@ -57,8 +49,10 @@
     "typescript/saved_simulations.ts",
     "typescript/visualize.ts",
     "typescript/visualize_controls.ts",
-    "typescript/dk.ts",
-    "typescript/1d.ts",
-    "typescript/2d.ts",
+    "typescript/dp.ts",
+    "typescript/dk_1d.ts",
+    "typescript/dk_2d.ts",
+    "typescript/bedload_1d.ts",
+    "typescript/bedload_2d.ts",
   ],
 }
