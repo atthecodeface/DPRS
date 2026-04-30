@@ -171,7 +171,6 @@ export class Visualize {
       this.t_increment = 1;
     }
 
-
     const x_scale = this.scale;
     const y_scale = this.scale;
 
@@ -204,18 +203,20 @@ export class Visualize {
     ctx.fillRect(0, 0, this.width, this.height);
     ctx.fillStyle = "purple";
 
-    // Get this lattice slice (flattened into a 1d array)
+    // Get this lattice slice (flattened into a 1d array) maybe
     let lattice_slice = this.simulation.result(this.slice);
     if (!lattice_slice) {
       this.log.info(`No data in slice ${this.slice}`);
     } else {
-      // Plot lattice for this time slice
+      // Plot this lattice slice
       var i_cell = 0;
       // Loop over the lattice in (x,y) - once scaled we have canvas pixel coordinates
       for (let y = 0; y < this.simulation.parameters.dims.n_y; y++) {
         var previous_cell_value = null;
         var x_start = null;
         for (let x = 0; x < this.simulation.parameters.dims.n_x; x++) {
+          // This is where a velocity v_x shift can be implemented for time slice t
+          // with a shift ~ (v_x * t * (n_x/L)) modulo n_x
           const cell_value = lattice_slice[i_cell];
           // At the start of the row, when x=0, previous_cell_value=null, 
           // so this is skipped
