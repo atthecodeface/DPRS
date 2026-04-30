@@ -111,12 +111,27 @@ export class VisualizeControls {
       classes: "playback",
     });
     // ⏮ ⏪⏩⏭ (Add #fe0e to make them plain)
+    // Turning off by hand because I can't turn it off in CSS
     tr_playback.add_ele("td").add_input_button(
       "⏪︎",
       () => {
         this.parent.playback_simulation(-60);
       },
-      { classes: "controls playback" },
+      { classes: "controls playback reverse" },
+    );
+    tr_playback.add_ele("td").add_input_button(
+      "⏸",
+      () => {
+        this.parent.playback_simulation(0);
+      },
+      { classes: "controls playback stop" },
+    );
+    tr_playback.add_ele("td").add_input_button(
+      "⏩︎",
+      () => {
+        this.parent.playback_simulation(60);
+      },
+      { classes: "controls playback play" },
     );
     tr_playback.add_ele("td").add_input_button(
       "⏴",
@@ -125,14 +140,7 @@ export class VisualizeControls {
         // this.parent.playback_simulation(-10);
         this.parent.decrement_slice();
       },
-      { classes: "controls playback" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      "⏸",
-      () => {
-        this.parent.playback_simulation(0);
-      },
-      { classes: "controls playback" },
+      { classes: "controls playback decrement" },
     );
     tr_playback.add_ele("td").add_input_button(
       "⏵",
@@ -141,14 +149,7 @@ export class VisualizeControls {
         // this.parent.playback_simulation(10);
         this.parent.increment_slice();
       },
-      { classes: "controls playback" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      "⏩︎",
-      () => {
-        this.parent.playback_simulation(60);
-      },
-      { classes: "controls playback" },
+      { classes: "controls playback increment" },
     );
   }
 
