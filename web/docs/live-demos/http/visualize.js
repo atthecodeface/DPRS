@@ -145,6 +145,7 @@ export class Visualize {
             return;
         }
         // Make a blank canvas
+        // Unoccupied cells are colored grey
         ctx.fillStyle = "lightgrey";
         ctx.fillRect(0, 0, this.width, this.height);
         // Get this lattice slice (flattened into a 1d array) maybe
@@ -156,7 +157,7 @@ export class Visualize {
         ctx.font = "12px Arial";
         ctx.fillStyle = "#505050";
         ctx.fillText(t_slice.toString(), 10, n_y * y_scale - 10);
-        // ctx.fillText(t_slice_str, n_x * x_scale, n_y * y_scale);
+        // Occupied cells are colored purple
         ctx.fillStyle = "purple";
         if (!lattice_slice) {
             this.log.info(`No data in slice ${this.slice}`);

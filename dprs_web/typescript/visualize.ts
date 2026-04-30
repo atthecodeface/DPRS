@@ -200,6 +200,7 @@ export class Visualize {
     }
 
     // Make a blank canvas
+    // Unoccupied cells are colored grey
     ctx.fillStyle = "lightgrey";
     ctx.fillRect(0, 0, this.width, this.height);
 
@@ -208,16 +209,14 @@ export class Visualize {
     let lattice_slice = this.simulation.result(t_slice);
     console.log("Time slice:", t_slice);
 
-
     const n_x = this.simulation.parameters.dims.n_x;
     const n_y = this.simulation.parameters.dims.n_y;
     ctx.font = "12px Arial";
     ctx.fillStyle = "#505050";
     ctx.fillText(t_slice.toString(), 10, n_y * y_scale - 10);
-    // ctx.fillText(t_slice_str, n_x * x_scale, n_y * y_scale);
 
+    // Occupied cells are colored purple
     ctx.fillStyle = "purple";
-
     if (!lattice_slice) {
       this.log.info(`No data in slice ${this.slice}`);
     } else {
