@@ -6,8 +6,8 @@ Simplified DP-class Domany-Kinzel model simulations are demonstrated in the Pyth
 
 Quick tests to check all is working:
 
-- [dp_test_1d.py](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/demos/dp_1d.py)
+- [dp_1d.py](https://github.com/cstarkjp/DPRS/tree/main/dprs_py/demos/dp_1d.py)
 
-- [dp_test_2d.py](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/demos/dp_2d.py)
+- [dp_2d.py](https://github.com/cstarkjp/DPRS/tree/main/dprs_py/demos/dp_2d.py)
 
-- [dp_test_3d.py](https://github.com/cstarkjp/DPRS/tree/main/py_dprs/demos/dp_3d.py)
+- [dp_3d.py](https://github.com/cstarkjp/DPRS/tree/main/dprs_py/demos/dp_3d.py)
