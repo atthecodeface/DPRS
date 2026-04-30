@@ -153,7 +153,7 @@ class Main {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
-    this.visualize.stop_animation();
+    this.visualize.animation_stop();
 
     this.simulation_controls_1d.populate_parameters();
     this.simulation_controls_2d.populate_parameters();
