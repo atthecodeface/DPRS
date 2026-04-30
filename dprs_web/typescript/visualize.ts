@@ -246,45 +246,29 @@ export class Visualize {
     }
   }
 
-  /** Stop any animation
-   *
-   */
+  /** Stop any animation */
   animation_stop(): void {
     this.set_animation_state(0);
     this.anim.stop();
   }
 
-  set_zoom(zoom: number): void {
-    this.scale = zoom;
-    this.redraw();
-  }
+  animation_start(time: number): void {
+    this.log.info("animation", "Start");
 
-  set_slice(slice: number): void {
-    this.animation_stop();
-    this.slice = slice;
-    this.redraw();
-  }
-
-  // Step backward by one iteration, freezing the playback if need bed
-  decrement_slice(): void {
-    this.animation_stop();
-    const next_slice = this.slice - 1;
-    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
-      this.slice = next_slice;
+    if (this.simulation.dim < 2) {
+      return;
     }
-    this.redraw();
-    html.set_input_value("slice", this.slice);
+    this.set_animation_state(1);
+    this.anim.schedule();
   }
 
-  // Step forward by one iteration, freezing the playback if need bed
-  increment_slice(): void {
-    this.animation_stop();
-    const next_slice = this.slice + 1;
-    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
-      this.slice = next_slice;
-    }
-    this.redraw();
-    html.set_input_value("slice", this.slice);
+  // Need this to have a dual-function pause/or/play button
+  get_animation_state(): number {
+    return this.is_playing;
+  }
+
+  set_animation_state(is_playing: number): void {
+    this.is_playing = is_playing;
   }
 
   get_fps(): number {
@@ -297,13 +281,28 @@ export class Visualize {
     this.frames_per_second = fps;
   }
 
-  // Need this to have a dual-function pause/or/play button
-  get_animation_state(): number {
-    return this.is_playing;
+  // Step backward by one iteration, freezing the playback if need bed
+  decrement_slice(): void {
+    this.animation_stop();
+    this.set_animation_state(0);
+    const next_slice = this.slice - 1;
+    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
+      this.slice = next_slice;
+    }
+    this.redraw();
+    html.set_input_value("slice", this.slice);
   }
 
-  set_animation_state(is_playing: number): void {
-    this.is_playing = is_playing;
+  // Step forward by one iteration, freezing the playback if need bed
+  increment_slice(): void {
+    this.animation_stop();
+    this.set_animation_state(0);
+    const next_slice = this.slice + 1;
+    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
+      this.slice = next_slice;
+    }
+    this.redraw();
+    html.set_input_value("slice", this.slice);
   }
 
   playback_simulation(fps: number): void {
@@ -320,16 +319,6 @@ export class Visualize {
     this.set_fps(fps);
     this.set_animation_state(1);
     this.anim.restart(0, (time) => this.animation_start(time));
-  }
-
-  animation_start(time: number): void {
-    this.log.info("animation", "Start");
-
-    if (this.simulation.dim < 2) {
-      return;
-    }
-    this.set_animation_state(1);
-    this.anim.schedule();
   }
 
   animation_tick(time: number): void {
@@ -357,4 +346,16 @@ export class Visualize {
       );
     }
   }
+
+  set_zoom(zoom: number): void {
+    this.scale = zoom;
+    this.redraw();
+  }
+
+  set_slice(slice: number): void {
+    this.animation_stop();
+    this.slice = slice;
+    this.redraw();
+  }
+
 }
