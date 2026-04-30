@@ -269,6 +269,7 @@ export class Visualize {
       this.slice = next_slice;
     }
     this.redraw();
+    html.set_input_value("slice", this.slice);
   }
 
   // Step forward by one iteration, freezing the playback if need bed
@@ -279,6 +280,7 @@ export class Visualize {
       this.slice = next_slice;
     }
     this.redraw();
+    html.set_input_value("slice", this.slice);
   }
 
   playback_simulation(fps: number): void {
