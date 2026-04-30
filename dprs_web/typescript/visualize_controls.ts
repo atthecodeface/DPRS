@@ -12,6 +12,8 @@ export interface VisualizationControlClient {
   playback_simulation(fps: number): void;
   set_zoom(zoom: number): void;
   set_slice(slice: number): void;
+  decrement_slice(): void;
+  increment_slice(): void;
 }
 
 export class VisualizeControls {
@@ -118,7 +120,8 @@ export class VisualizeControls {
     tr_playback.add_ele("td").add_input_button(
       "⏴",
       () => {
-        this.parent.playback_simulation(-10);
+        // this.parent.playback_simulation(-10);
+        this.parent.decrement_slice();
       },
       { classes: "controls playback" },
     );
@@ -132,7 +135,8 @@ export class VisualizeControls {
     tr_playback.add_ele("td").add_input_button(
       "⏵",
       () => {
-        this.parent.playback_simulation(10);
+        // this.parent.playback_simulation(10);
+        this.parent.increment_slice();
       },
       { classes: "controls playback" },
     );

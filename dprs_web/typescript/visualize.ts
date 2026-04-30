@@ -261,6 +261,24 @@ export class Visualize {
     this.redraw();
   }
 
+  decrement_slice(): void {
+    this.stop_animation();
+    const next_slice = this.slice - 1;
+    if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+      this.slice = next_slice;
+    }
+    this.redraw();
+  }
+
+  increment_slice(): void {
+    this.stop_animation();
+    const next_slice = this.slice + 1;
+    if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+      this.slice = next_slice;
+    }
+    this.redraw();
+  }
+
   playback_simulation(fps: number): void {
     if (fps == 0) {
       this.anim.stop();
