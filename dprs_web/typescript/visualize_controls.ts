@@ -17,8 +17,8 @@ export interface VisualizationControlClient {
   // Functions replacing slow back/forward playback
   decrement_slice(): void;
   increment_slice(): void;
-  get_fps(): number;
-  set_fps(fps: number): void;
+  // get_fps(): number;
+  // set_fps(fps: number): void;
   get_animation_state(): boolean;
 }
 
