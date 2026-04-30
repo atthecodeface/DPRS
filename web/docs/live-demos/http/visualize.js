@@ -150,8 +150,8 @@ export class Visualize {
         ctx.fillRect(0, 0, this.width, this.height);
         // Get this lattice slice (flattened into a 1d array) maybe
         const t_slice = this.slice;
-        let lattice_slice = this.simulation.result(t_slice);
-        console.log("Time slice:", t_slice);
+        const lattice_slice = this.simulation.result(t_slice);
+        // console.log("Time slice:", t_slice);
         const n_x = this.simulation.parameters.dims.n_x;
         const n_y = this.simulation.parameters.dims.n_y;
         ctx.font = "12px Arial";
@@ -164,11 +164,11 @@ export class Visualize {
         }
         else {
             // Plot this lattice slice
-            var i_cell = 0;
+            let i_cell = 0;
             // Loop over the lattice in (x,y) - once scaled we have canvas pixel coordinates
             for (let y = 0; y < n_y; y++) {
-                var previous_cell_value = null;
-                var x_start = null;
+                let previous_cell_value = null;
+                let x_start = null;
                 for (let x = 0; x < n_x; x++) {
                     // This is where a velocity v_x shift can be implemented for time slice t
                     // with a shift ~ (v_x * t * (n_x/L)) modulo n_x
