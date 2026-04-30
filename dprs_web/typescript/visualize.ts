@@ -261,6 +261,7 @@ export class Visualize {
     this.redraw();
   }
 
+  // Step backward by one iteration, freezing the playback if need bed
   decrement_slice(): void {
     this.stop_animation();
     const next_slice = this.slice - 1;
@@ -270,6 +271,7 @@ export class Visualize {
     this.redraw();
   }
 
+  // Step forward by one iteration, freezing the playback if need bed
   increment_slice(): void {
     this.stop_animation();
     const next_slice = this.slice + 1;

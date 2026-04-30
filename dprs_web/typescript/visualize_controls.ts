@@ -12,6 +12,7 @@ export interface VisualizationControlClient {
   playback_simulation(fps: number): void;
   set_zoom(zoom: number): void;
   set_slice(slice: number): void;
+  // Functions replacing slow back/forward playback
   decrement_slice(): void;
   increment_slice(): void;
 }
@@ -120,6 +121,7 @@ export class VisualizeControls {
     tr_playback.add_ele("td").add_input_button(
       "⏴",
       () => {
+        // Step backward by one iteration: replaces slow reverse playback
         // this.parent.playback_simulation(-10);
         this.parent.decrement_slice();
       },
@@ -135,6 +137,7 @@ export class VisualizeControls {
     tr_playback.add_ele("td").add_input_button(
       "⏵",
       () => {
+        // Step forward by one iteration: replaces slow forward playback
         // this.parent.playback_simulation(10);
         this.parent.increment_slice();
       },
