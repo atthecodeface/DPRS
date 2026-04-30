@@ -62,7 +62,7 @@ export class Visualize {
   slice_delta: number = 1;
 
   /** Target frames per second of animation */
-  frames_per_second: number = 60;
+  frames_per_second: number = 120;
 
   /** Animation state (I see no reason why we can't track this...) */
   is_playing: boolean = false;

@@ -19,6 +19,7 @@ export interface VisualizationControlClient {
   increment_slice(): void;
   // Allows toggling of playback
   get_animation_state(): boolean;
+  // redraw(): void;
 }
 
 export class VisualizeControls {
@@ -111,6 +112,8 @@ export class VisualizeControls {
       { id: "slice" },
     );
 
+    const fps = 120;
+
     const tr_playback = playback_table.add_ele("tr", {
       classes: "playback",
     });
@@ -119,7 +122,7 @@ export class VisualizeControls {
     tr_playback.add_ele("td").add_input_button(
       "⏪︎",
       () => {
-        this.parent.playback_simulation(-60);
+        this.parent.playback_simulation(-fps);
       },
       { classes: "controls playback reverse" },
     );
@@ -135,7 +138,7 @@ export class VisualizeControls {
       // "⏩︎",
       "⏵",
       () => {
-        this.parent.playback_simulation(60);
+        this.parent.playback_simulation(fps);
       },
       { classes: "controls playback play" },
     );
@@ -150,7 +153,7 @@ export class VisualizeControls {
           // this.parent.playback_simulation(0);
           this.parent.animation_stop();
         } else {
-          // this.parent.playback_simulation(60);
+          // this.parent.playback_simulation(fps);
           this.parent.animation_start(0);
         }
       },
@@ -186,15 +189,18 @@ export class VisualizeControls {
       this.td_slice!.set_style("display");
       this.td_playback!.set_style("display");
     }
-    html.set_input_range("slice", 0, simulation.n_results() - 1);
     this.visualize.scale = html.get_input_float("zoom", 1, 5);
+    html.set_input_range("slice", 0, simulation.n_results() - 1);
+    this.visualize.slice = html.get_input_int(
+      "slice",
+      simulation.n_results() * 0,
+      simulation.n_results() - 1,
+    );
     // CPS mod: I want to, perhaps, start with a non-zero time slice
     //          so the user can actually see the demo is *doing* something.
     //          Again, not ideal, but ^shrug^.
-    this.visualize.slice = html.get_input_int(
-      "slice",
-      simulation.n_results() / 2,
-      simulation.n_results() - 1,
-    );
+    // html.set_input_value("zoom", 2);
+    // html.set_input_value("slice", simulation.n_results() / 2);
+    // this.visualize.redraw();
   }
 }

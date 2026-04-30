@@ -45,22 +45,25 @@ export class JsSimulation {
     this.parameters = parameters;
 
     this.log.info(
-      `Probabilities p_initial:${parameters.probabilities.p_initial} ` +
-        `p_1: ${parameters.probabilities.p_1} ` +
-        `p_2: ${parameters.probabilities.p_2} ` +
-        `p_conj: ${parameters.probabilities.p_conj} `,
+      `Probabilities  ` +
+      `p_1: ${parameters.probabilities.p_1} ` +
+      `p_2: ${parameters.probabilities.p_2} ` +
+      `p_diag: ${parameters.probabilities.p_diag} ` +
+      `p_conj: ${parameters.probabilities.p_conj} ` +
+      `p_initial:${parameters.probabilities.p_initial} `
+      ,
     );
     this.log.info(
       `Dims n_x:${parameters.dims.n_x} ` +
-        `n_y:${parameters.dims.n_y} ` +
-        `n_z:${parameters.dims.n_z}`,
+      `n_y:${parameters.dims.n_y} ` +
+      `n_z:${parameters.dims.n_z}`,
     );
     this.log.info(
       `Params n_iterations:${parameters.params.n_iterations} ` +
-        `sample_period:${parameters.params.sample_period} ` +
-        `random_seed:${parameters.params.random_seed} ` +
-        `seed_kind:${parameters.params.seed_kind} ` +
-        `simulation_kind:${parameters.params.simulation_kind}`,
+      `sample_period:${parameters.params.sample_period} ` +
+      `random_seed:${parameters.params.random_seed} ` +
+      `seed_kind:${parameters.params.seed_kind} ` +
+      `simulation_kind:${parameters.params.simulation_kind}`,
     );
 
     this.simulation = new Simulation(this.parameters.as_parameters());
