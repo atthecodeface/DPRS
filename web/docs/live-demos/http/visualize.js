@@ -39,10 +39,13 @@ export class Visualize {
         this.frames_per_second = 120;
         /** Animation state (I see no reason why we can't track this...) */
         this.is_playing = false;
+        /** Slice increment for simple vs staggered */
+        this.t_increment = 1;
         this.log = new log.Logger(logger, "viz");
         this.simulation = simulation;
         this.anim = new Animate((time) => this.animation_tick(time));
         this.slice = 0;
+        this.t_increment = 1;
         const div = document.getElementById(div_id);
         if (!div) {
             throw new Error(`div ${div_id} not found, to create a Visualize canvas`);
@@ -56,17 +59,21 @@ export class Visualize {
      */
     canvas_1d(sim_control) {
         this.log.push_reason("canvas_1d");
-        const stagger = this.simulation.results_are_staggered();
         var x_ofs = 0;
         const x_scale = this.scale;
         var y_scale = this.scale;
-        if (stagger) {
+        const is_staggered = this.simulation.results_are_staggered();
+        if (is_staggered) {
             y_scale = 0.5 * y_scale;
             x_ofs = 0.5;
+            this.t_increment = 2;
+        }
+        else {
+            this.t_increment = 1;
         }
         this.width = this.simulation.parameters.dims.n_x * x_scale;
         this.height = this.simulation.n_results() * y_scale;
-        this.log.info(`Created canvas size ${this.width} x ${this.height} with stagger ${stagger} and scale ${x_scale}x${y_scale}`);
+        this.log.info(`Created canvas size ${this.width} x ${this.height} with stagger ${is_staggered} and scale ${x_scale}x${y_scale}`);
         this.div.clear();
         const canvas = this.div.add_ele("canvas", {
             classes: "visualize canvas_1d",
@@ -94,7 +101,7 @@ export class Visualize {
                 }
                 ctx.fillRect((x + x_ofs) * x_scale, y * y_scale, x_scale, y_scale);
             }
-            if (stagger) {
+            if (is_staggered) {
                 x_ofs = 0.5 - x_ofs;
             }
         }
@@ -108,6 +115,13 @@ export class Visualize {
      */
     canvas_2d(sim_control) {
         this.log.push_reason("canvas_2d");
+        const is_staggered = this.simulation.results_are_staggered();
+        if (is_staggered) {
+            this.t_increment = 2;
+        }
+        else {
+            this.t_increment = 1;
+        }
         const x_scale = this.scale;
         const y_scale = this.scale;
         this.width = this.simulation.parameters.dims.n_x * x_scale;
@@ -226,7 +240,7 @@ export class Visualize {
     // Step forward by one iteration, freezing the playback if need bed
     increment_slice() {
         this.animation_stop();
-        const next_slice = this.slice + 1;
+        const next_slice = this.slice + this.t_increment;
         if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
             this.slice = next_slice;
         }

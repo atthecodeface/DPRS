@@ -1,10 +1,12 @@
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 export class SimulationControls {
+    // t_increment: number;
     constructor(ele_id, div_id, dims) {
         this.parameters = new JsParameters();
         this.ele_id = ele_id;
         this.dims = dims;
+        // this.t_increment = 1;
         const div = document.getElementById(div_id);
         if (!div) {
             throw new Error(`Failed to find ${div_id} to build SimulationControls`);
@@ -44,12 +46,15 @@ export class SimulationControls {
         }
         if (this.parameters.params.simulation_kind == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
+            // this.t_increment = 1;
         }
         else if (this.parameters.params.simulation_kind == "staggered_dk") {
             html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
+            // this.t_increment = 2;
         }
         else if (this.parameters.params.simulation_kind == "bedload") {
             html.set_input_checked(this.ele_id + "sk_bedload", true);
+            // this.t_increment = 1;
         }
     }
     set_ic_randomize() {
@@ -63,12 +68,15 @@ export class SimulationControls {
     }
     set_simple_dk() {
         html.set_input_checked(this.ele_id + "sk_simple_dk", true);
+        // this.t_increment = 1;
     }
     set_staggered_dk() {
         html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
+        // this.t_increment = 2;
     }
     set_bedload() {
         html.set_input_checked(this.ele_id + "sk_bedload", true);
+        // this.t_increment = 1;
     }
     populate_parameters() {
         const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
@@ -119,6 +127,7 @@ export class SimulationControls {
         {
             const tr = dims_table.add_ele("tr", { id: ele_id + "dims" });
             const td = tr.add_ele("td");
+            // const label_nx = "<div><mjx-container class='MathJax CtxtMenu_Attached_0' jax='CHTML' style='font-size: 119.5%; position: relative;' tabindex='0' ctxtmenu_counter='1'><mjx-math class='MJX-TEX' aria-hidden='true'><mjx-msub><mjx-mi class='mjx-i'><mjx-c class='mjx-c1D45B TEX-I'></mjx-c></mjx-mi><mjx-script style='vertical-align: -0.15em;'><mjx-mi class='mjx-i' size='s'><mjx-c class='mjx-c1D465 TEX-I'></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable='on' display='inline'><mjx-container class='MathJax CtxtMenu_Attached_0' jax='CHTML' style='font-size: 119.5%; position: relative;' tabindex='0' ctxtmenu_counter='4'><mjx-math class='MJX-TEX' aria-hidden='true'><mjx-msub><mjx-mi class='mjx-i'><mjx-c class='mjx-c1D45B TEX-I'></mjx-c></mjx-mi><mjx-script style='vertical-align: -0.15em;'><mjx-mi class='mjx-i' size='s'><mjx-c class='mjx-c1D465 TEX-I'></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable='on' display='inline'><math xmlns='http://www.w3.org/1998/Math/MathML'><msub><mi>n</mi><mi>x</mi></msub></math></mjx-assistive-mml></mjx-container></mjx-assistive-mml></mjx-container></div>";
             td.add_label("n_x", { classes: "sim_controls_label" }).set_content("x:");
             td.add_input_text("n_x", "20", {
                 id: this.ele_id + "n_x",
