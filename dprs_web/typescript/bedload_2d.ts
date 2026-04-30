@@ -43,7 +43,7 @@ class Main {
     // params_2d.probabilities.p_1 = 0.99677;  // random_seed: ?
     // params_2d.probabilities.p_2 = 0.01; 
 
-    params_2d.probabilities.p_conj = 0.000001;
+    params_2d.probabilities.p_conj = 1e-6;
     params_2d.probabilities.p_initial = 0.001;
     params_2d.probabilities.p_diag = 0.1;
 
@@ -88,7 +88,7 @@ class Main {
       `Simulation complete with ${this.simulation.n_results()} results`,
     );
 
-    const initial_zoom = 2;
+    const initial_zoom = 2.2;
     this.visualize_controls.populate_values(this.simulation, initial_zoom);
     this.visualize.set_redraw(this.simulation_controls_2d);
     this.visualize.redraw();
