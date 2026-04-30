@@ -313,8 +313,7 @@ export class Visualize {
 
   playback_simulation(fps: number): void {
     if (fps == 0) {
-      this.set_animation_is_stopped();
-      this.anim.stop();
+      this.animation_stop();
       return;
     }
     this.slice_delta = 1;
