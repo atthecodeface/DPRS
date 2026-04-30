@@ -66,7 +66,7 @@ class Main {
 
     this.simulation_controls_2d.populate_parameters();
     this.simulation_controls_2d.parameters.dims.n_z = 1;
-    this.simulation_controls_2d.set_staggered_dk()
+    // this.simulation_controls_2d.set_staggered_dk()
 
     const sim_parameters = this.simulation_controls_2d.parameters;
     this.simulation.run(sim_parameters);
