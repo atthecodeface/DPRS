@@ -147,29 +147,40 @@ export class Visualize {
         ctx.fillStyle = "lightgrey";
         ctx.fillRect(0, 0, this.width, this.height);
         ctx.fillStyle = "purple";
-        let data = this.simulation.result(this.slice);
-        if (!data) {
+        // Get this lattice slice (flattened into a 1d array)
+        let lattice_slice = this.simulation.result(this.slice);
+        if (!lattice_slice) {
             this.log.info(`No data in slice ${this.slice}`);
         }
         else {
-            var n = 0;
+            // Plot lattice for this time slice
+            var i_cell = 0;
+            // Loop over the lattice in (x,y) - once scaled we have canvas pixel coordinates
             for (let y = 0; y < this.simulation.parameters.dims.n_y; y++) {
-                var last = null;
+                var previous_cell_value = null;
                 var x_start = null;
-                for (let x = 0; x < this.simulation.parameters.dims.n_x; x += 1) {
-                    const d = data[n];
-                    if (last !== null && d != last) {
-                        if (last != 0) {
+                for (let x = 0; x < this.simulation.parameters.dims.n_x; x++) {
+                    const cell_value = lattice_slice[i_cell];
+                    // At the start of the row, when x=0, previous_cell_value=null, 
+                    // so this is skipped
+                    if (previous_cell_value !== null && cell_value != previous_cell_value) {
+                        // Plot a rectangle that's the RLE width of occupied cells,
+                        // and height of one cell, with both sizes scaled to canvas pixels
+                        if (previous_cell_value != 0) {
                             ctx.fillRect(x_start * x_scale, y * y_scale, (x - x_start) * x_scale, y_scale);
                         }
                     }
-                    if (d != last) {
+                    if (cell_value != previous_cell_value) {
                         x_start = x;
-                        last = d;
+                        previous_cell_value = cell_value;
                     }
-                    n = n + 1;
+                    // Move to next cell in the flattened lattice slice
+                    i_cell = i_cell + 1;
                 }
-                if (last != 0) {
+                if (previous_cell_value != 0) {
+                    // At end of each lattice row:
+                    // plot a rectangle that's the RLE width of occupied cells,
+                    // and height of one cell, with both sizes scaled to canvas pixels
                     ctx.fillRect(x_start * x_scale, y * y_scale, (this.simulation.parameters.dims.n_x - x_start) * x_scale, y_scale);
                 }
             }
@@ -227,7 +238,7 @@ export class Visualize {
         console.log("Setting fps:", this.frames_per_second);
         this.frames_per_second = fps;
     }
-    // Step backward by one iteration, freezing the playback if need bed
+    // Step backward by one iteration, freezing the playback if need be
     decrement_slice() {
         this.animation_stop();
         const next_slice = this.slice - 1;
@@ -237,7 +248,7 @@ export class Visualize {
         this.redraw();
         html.set_input_value("slice", this.slice);
     }
-    // Step forward by one iteration, freezing the playback if need bed
+    // Step forward by one iteration, freezing the playback if need be
     increment_slice() {
         this.animation_stop();
         const next_slice = this.slice + this.t_increment;
