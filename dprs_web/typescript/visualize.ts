@@ -199,22 +199,35 @@ export class Visualize {
       return;
     }
 
+    // Make a blank canvas
     ctx.fillStyle = "lightgrey";
     ctx.fillRect(0, 0, this.width, this.height);
-    ctx.fillStyle = "purple";
 
     // Get this lattice slice (flattened into a 1d array) maybe
-    let lattice_slice = this.simulation.result(this.slice);
+    const t_slice = this.slice;
+    let lattice_slice = this.simulation.result(t_slice);
+    console.log("Time slice:", t_slice);
+
+
+    const n_x = this.simulation.parameters.dims.n_x;
+    const n_y = this.simulation.parameters.dims.n_y;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "DimGray";
+    ctx.fillText(t_slice.toString(), 10, n_y * y_scale - 10);
+    // ctx.fillText(t_slice_str, n_x * x_scale, n_y * y_scale);
+
+    ctx.fillStyle = "purple";
+
     if (!lattice_slice) {
       this.log.info(`No data in slice ${this.slice}`);
     } else {
       // Plot this lattice slice
       var i_cell = 0;
       // Loop over the lattice in (x,y) - once scaled we have canvas pixel coordinates
-      for (let y = 0; y < this.simulation.parameters.dims.n_y; y++) {
+      for (let y = 0; y < n_y; y++) {
         var previous_cell_value = null;
         var x_start = null;
-        for (let x = 0; x < this.simulation.parameters.dims.n_x; x++) {
+        for (let x = 0; x < n_x; x++) {
           // This is where a velocity v_x shift can be implemented for time slice t
           // with a shift ~ (v_x * t * (n_x/L)) modulo n_x
           const cell_value = lattice_slice[i_cell];
@@ -246,7 +259,7 @@ export class Visualize {
           ctx.fillRect(
             x_start! * x_scale,
             y * y_scale,
-            (this.simulation.parameters.dims.n_x - x_start!) * x_scale,
+            (n_x - x_start!) * x_scale,
             y_scale,
           );
         }
@@ -307,12 +320,12 @@ export class Visualize {
   }
 
   get_fps(): number {
-    console.log("Current fps:", this.frames_per_second);
+    // console.log("Current fps:", this.frames_per_second);
     return this.frames_per_second;
   }
 
   set_fps(fps: number): void {
-    console.log("Setting fps:", this.frames_per_second);
+    // console.log("Setting fps:", this.frames_per_second);
     this.frames_per_second = fps;
   }
 
@@ -320,7 +333,7 @@ export class Visualize {
   decrement_slice(): void {
     this.animation_stop();
     const next_slice = this.slice - 1;
-    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
+    if (next_slice >= 0 && next_slice <= this.simulation.n_results()) {
       this.slice = next_slice;
     }
     this.redraw();
@@ -331,7 +344,7 @@ export class Visualize {
   increment_slice(): void {
     this.animation_stop();
     const next_slice = this.slice + this.t_increment;
-    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
+    if (next_slice >= 0 && next_slice <= this.simulation.n_results()) {
       this.slice = next_slice;
     }
     this.redraw();
@@ -359,13 +372,13 @@ export class Visualize {
       return;
     }
 
-    if (this.slice >= 0 && this.slice < this.simulation.n_results()) {
+    if (this.slice >= 0 && this.slice <= this.simulation.n_results()) {
       html.set_input_value("slice", this.slice);
       this.redraw();
     }
 
     const next_slice = this.slice + this.slice_delta;
-    if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+    if (next_slice > 0 && next_slice <= this.simulation.n_results()) {
       this.slice = next_slice;
       this.anim.schedule_at(time + 1000 / this.get_fps());
     } else {
