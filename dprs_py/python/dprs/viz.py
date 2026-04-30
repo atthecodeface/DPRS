@@ -202,6 +202,7 @@ class Viz:
             self,
             name: str,
             title: str,
+            p: sim.Parameters,
             tracking: dict,
             choices: tuple[str, str],
             exponent: float, 
@@ -210,6 +211,8 @@ class Viz:
             fig_size: tuple[float,float]=(6,4,),
             i_offset: int=3,
             do_ref_curve: bool=True,
+            do_semilogy: bool=False,
+            do_hop_times: bool=False,
         ) -> tuple[Figure, Any]:
         """
         Plot time evolution of mean cluster radius.
@@ -218,21 +221,29 @@ class Viz:
         plt.title(title, fontdict={"fontsize": 13}, pad=10,)
         t: NDArray = tracking[choices[0]][i_offset:]
         statistic: NDArray = tracking[choices[1]][i_offset:]
-        statistic_fn = lambda t: scale*t**exponent
-        plt.plot(t, statistic, lw=0.4, color="k",)
+        if do_hop_times:
+            scale: float = p.p_initial
+            exponent: float = p.p_1
+            statistic_fn = lambda t: scale * np.exp(-t*(1-exponent))
+        else:
+            statistic_fn = lambda t: scale * t**exponent
+        plt.plot(t, statistic, lw=1, color="k",)
         if do_ref_curve:
             if labels is not None:
                 label = rf"{labels[1]}" + rf"$\quad$" + rf"{labels[2]}" + rf"$={exponent:0.4f}$"
             else:
                 label = None
             plt.plot(
-                t, statistic_fn(t), color="blue", alpha=0.5, label=label,
+                t, statistic_fn(t), "--", lw=3, color="blue", alpha=0.3, label=label,
             )
         if labels is not None:
             plt.legend()
         axes = plt.gca()
         axes.autoscale(enable=True, axis="both", tight=True)
-        plt.loglog()
+        if do_semilogy:
+            plt.semilogy()
+        else:
+            plt.loglog()
         # plt.ylim(0,)
         # plt.xlim(0,)
         plt.ylabel(rf"{labels[0] if labels is not None else ''}")
@@ -246,7 +257,10 @@ class Viz:
             title: str,
             p: sim.Parameters,
             expts: dict,
-            i_equal: int,
+            i_equal: int | None=None,
+            text_locs: tuple[tuple,tuple] | None=None,
+            x_label: str|None = r"$p_1$",
+            y_label: str|None = r"$p_2$",
             fig_size: tuple[float,float]=(4,4,),
         ) -> None:
         """
@@ -261,29 +275,39 @@ class Viz:
         p1c = np.concat([p1_p2[0, :], [p1_p2[0, -1]], [1, 1, p1_p2[0, 0], p1_p2[0, 0]]])
         p2c = np.concat([p1_p2[1, :], [0], [0, 1, 1, p1_p2[1, 0]]])
 
-        # plt.plot(*p1_p2, "o", ms=3, color="DarkBlue",)
+        plt.plot(*p1_p2, "o", ms=3, color="DarkBlue",)
         plt.plot(*p1_p2, "-", color="DarkBlue",)
         plt.fill(p1, p2, color="DarkBlue", alpha=0.1,)
         plt.fill(p1c, p2c, color="DarkRed", alpha=0.1,)
-        plt.plot((0,1), (0,1), ":", color="DarkBlue", alpha=0.3,)
-        sym_expt = expts[i_equal]
-        plt.plot(sym_expt["p_1"], sym_expt["p_2"], ".", ms=5, color="DarkBlue",)
+        if i_equal is not None:
+            sym_expt = expts[i_equal]
+            plt.plot((0,1), (0,1), ":", color="DarkBlue", alpha=0.3,)
+            plt.plot(sym_expt["p_1"], sym_expt["p_2"], ".", ms=5, color="DarkBlue",)
         plt.xlim(0, 1,)
         plt.ylim(0, 1,)
-        plt.xlabel(r"$p_1$")
-        plt.ylabel(r"$p_2$")
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
         # plt.xlabel(r"Collective entrainment - solo detrainment  $p_1$")
         # plt.ylabel(r"Collective detrainment  $p_2$")
         axes = plt.gca()
         axes.set_aspect(1)
-        plt.text(x=0.12, y=0.47, s="stable bed", color="DarkBlue", font={"size": 14},)
-        if p.dim==Dimension.D2:
-            x = 0.8
+        if text_locs is None:
+            x_stable = 0.12
+            y_stable = 0.47
+            if p.dim==Dimension.D2:
+                x_unstable = 0.8
+            else:
+                x_unstable = 0.85
+            y_unstable = 0.45
         else:
-            x = 0.85
+            ((x_stable, y_stable,),  (x_unstable, y_unstable,),) = text_locs
         plt.text(
-            x=x, y=0.45, s="unstable\nbed", color="DarkRed", 
-            horizontalalignment="center", font={"size": 14},
+            x=x_stable, y=y_stable, 
+            s="stable bed", color="DarkBlue", horizontalalignment="center", font={"size": 14},
+        )
+        plt.text(
+            x=x_unstable, y=y_unstable, 
+            s="unstable\nbed", color="DarkRed", horizontalalignment="center", font={"size": 14},
         )
         plt.grid(ls=":")
         # plt.close()

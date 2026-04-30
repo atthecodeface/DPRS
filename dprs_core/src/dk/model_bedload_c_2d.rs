@@ -3,16 +3,16 @@ use crate::{Cell2D, GrowthModel};
 use crate::{DualState, Parameters};
 use rand::{Rng, RngExt};
 
-/// ModelBedloadB2D implements the GrowthModel<Cell2D> trait, plus these.
+/// ModelBedloadC2D implements the GrowthModel<Cell2D> trait, plus these.
 #[derive(Clone, Copy, Debug)]
-pub struct ModelBedloadB2D {
+pub struct ModelBedloadC2D {
     p_1: f64,
     p_2: f64,
+    p_diag: f64,
     p_conj: f64,
-    // p_nbr: f64,
 }
 
-/// Growth rules for ModelBedloadB2D.
+/// Growth rules for ModelBedloadC2D.
 ///
 /// If a cell is occupied <=> the grain located there is moving.
 ///
@@ -28,38 +28,34 @@ pub struct ModelBedloadB2D {
 ///
 /// decide whether there is {upstream activity} =
 ///    (
-///          (a) the NW-upstream nbr is moving AND Bern(p_nbr) AND Bern(p_diag)
-///       OR (b) the  W-upstream nbr is moving AND Bern(p_nbr)
-///       OR (c) the SW-upstream nbr is moving AND Bern(p_nbr) AND Bern(p_diag)
+///          (a) the NW-upstream nbr is moving AND Bern(1/2) AND Bern(p_diag)
+///       OR (b) the  W-upstream nbr is moving AND Bern(1/2)
+///       OR (c) the SW-upstream nbr is moving AND Bern(1/2) AND Bern(p_diag)
 ///    )
 ///
 /// Here Bern(p) means a random Bernoulli variate or weighted coin-flip with weight p.
-/// Currently, p_nbr=1/2 and p_diag=1/2.
-/// This reduces the 2d 3x3-site problem, hopefully, into a 1d 2-site problem.
+/// The probability p_diag adjusts the effect of upstream-diagonal neighbors,
+/// which subsequently controls the ~elliptical "zone of influence" of a single seeded cell.
+/// This reduces the 2d 3x3-site problem, hopefully, into a 1d 2-site problem,
+/// while maintaining the underlying 2d DP-universal physics.
 ///
 /// Part #2: Decide whether, at the next step i+1, the central grain will be moving or not,
 ///          i.e., grain may keep moving or be triggered into motion by an upstream neighbour.
 ///
 /// decide if {central grain will be moving at step i+1} =
 ///   EITHER
-///    (
-///      Bern(p_1) AND ({central grain is moving at step i} OR {upstream activity})
-///    )
+///      {central grain is moving at step i} AND Bern(p_1)
 ///   OR
-///    (
-///      Bern(p_2) AND {central grain is moving at step i} AND {upstream activity}
-///    )
+///      {upstream activity} AND Bern(p_2)
 ///
-/// DP behavior is observed for all 0<=p_2<1, so for a simple model, consider p_2=0.
-///
-impl GrowthModel<Cell2D> for ModelBedloadB2D {
+impl GrowthModel<Cell2D> for ModelBedloadC2D {
     fn create_from_parameters(parameters: &Parameters) -> Result<Self, ()> {
         // Growth model probabilities
         Ok(Self {
             p_1: parameters.p_1,
             p_2: parameters.p_2,
+            p_diag: parameters.p_diag,
             p_conj: parameters.p_conj,
-            // p_nbr: parameters.p_nbr,
         })
     }
 
@@ -76,7 +72,8 @@ impl GrowthModel<Cell2D> for ModelBedloadB2D {
         // which we'll use to randomly select/deselect upstream cells
         let random_bits = rng.random::<u16>();
         // let bernoulli_pnbr = (random_bits & CellNbrhood2D::BITMASK_SPARE_BIT1) != 0;
-        let bernoulli_pdiag = (random_bits & CellNbrhood2D::BITMASK_SPARE_BIT2) != 0;
+        // let bernoulli_pdiag = (random_bits & CellNbrhood2D::BITMASK_SPARE_BIT2) != 0;
+        let bernoulli_pdiag = rng.random_bool(self.p_diag);
 
         // In the 3x3 window, check if the central cell is occupied => moving
         let is_moving = (nbrhood.bitmask() & CellNbrhood2D::BITMASK_CENTER) != 0;
@@ -104,18 +101,16 @@ impl GrowthModel<Cell2D> for ModelBedloadB2D {
             entrain_by_upstream_yplus || entrain_by_upstream_ycenter || entrain_by_upstream_yminus;
 
         // In the next time step, consider central cell to be moving
-        //   - if it's already moving /or/ it's forced into motion by an upstream interaction
-        //   - AND if a biased coin toss, with probability p1, succeeds
-        let keep_moving_or_get_entrained = (is_moving || has_active_upstream_nbrs) && bernoulli_p1;
-        // In the next time step, consider central cell to be moving
-        //   - if it's already moving /AND/ it's kept in motion by an upstream interaction
-        //   - AND if a biased coin toss, with probability p2, succeeds
-        let get_multientrained = (is_moving && has_active_upstream_nbrs) && bernoulli_p2;
+        //  if
+        //    - it's already moving AND a biased coin toss, with probability p1, succeeds
+        //  or
+        //    - it's forced into motion by an upstream interaction AND a biased coin toss, with probability p2, succeeds
+        let keep_moving = is_moving && bernoulli_p1;
+        let get_entrained = has_active_upstream_nbrs && bernoulli_p2;
 
         // In the next time step, consider central cell to be moving
         //   - if either of these two mechanisms are in action
-        let do_survive =
-            keep_moving_or_get_entrained || get_multientrained | rng.random_bool(self.p_conj);
+        let do_survive = keep_moving | get_entrained | rng.random_bool(self.p_conj);
         do_survive.into()
     }
 }
