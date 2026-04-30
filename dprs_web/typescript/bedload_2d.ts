@@ -28,10 +28,15 @@ class Main {
     );
 
     const params_2d = new JsParameters();
-    params_2d.probabilities.p_1 = 0.58;
-    params_2d.probabilities.p_2 = 0.58;
-    params_2d.probabilities.p_initial = 0.5;
+    params_2d.probabilities.p_1 = 0.61487;  // random_seed: 5
+    params_2d.probabilities.p_2 = 0.9;
+    // params_2d.probabilities.p_1 = 0.8135;
+    // params_2d.probabilities.p_2 = 0.5;
+    // params_2d.probabilities.p_1 = 0.96693;  // random_seed: 13
+    // params_2d.probabilities.p_2 = 0.1;
+    params_2d.probabilities.p_diag = 0.1;
     params_2d.probabilities.p_conj = 0.000001;
+    params_2d.probabilities.p_initial = 0.001;
 
     params_2d.params.n_iterations = 600;
     params_2d.params.sample_period = 1;
@@ -67,7 +72,6 @@ class Main {
 
     this.simulation_controls_2d.populate_parameters();
     this.simulation_controls_2d.parameters.dims.n_z = 1;
-    // this.simulation_controls_2d.set_ic_centralcell()
 
     const sim_parameters = this.simulation_controls_2d.parameters;
     this.simulation.run(sim_parameters);
