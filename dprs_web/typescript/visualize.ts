@@ -64,7 +64,7 @@ export class Visualize {
   /** Target frames per second of animation */
   frames_per_second: number = 60;
 
-  /** Animation state (why can't we track this?) */
+  /** Animation state (I see no reason why we can't track this...) */
   is_playing: number = 0;
 
   /**
