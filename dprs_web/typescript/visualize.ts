@@ -304,7 +304,7 @@ export class Visualize {
     this.frames_per_second = fps;
   }
 
-  // Step backward by one iteration, freezing the playback if need bed
+  // Step backward by one iteration, freezing the playback if need be
   decrement_slice(): void {
     this.animation_stop();
     const next_slice = this.slice - 1;
@@ -315,7 +315,7 @@ export class Visualize {
     html.set_input_value("slice", this.slice);
   }
 
-  // Step forward by one iteration, freezing the playback if need bed
+  // Step forward by one iteration, freezing the playback if need be
   increment_slice(): void {
     this.animation_stop();
     const next_slice = this.slice + this.t_increment;
