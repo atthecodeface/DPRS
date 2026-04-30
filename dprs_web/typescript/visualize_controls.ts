@@ -112,7 +112,7 @@ export class VisualizeControls {
       { id: "slice" },
     );
 
-    const fps = 100;
+    const fps = 120;
 
     const tr_playback = playback_table.add_ele("tr", {
       classes: "playback",
