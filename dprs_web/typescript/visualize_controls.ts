@@ -19,7 +19,7 @@ export interface VisualizationControlClient {
   increment_slice(): void;
   get_fps(): number;
   set_fps(fps: number): void;
-  get_animation_state(): number;
+  get_animation_state(): boolean;
 }
 
 export class VisualizeControls {
@@ -147,7 +147,7 @@ export class VisualizeControls {
       // "⏯",
       "⏵",
       () => {
-        if (this.parent.get_animation_state() == 1) {
+        if (this.parent.get_animation_state()) {
           // this.parent.playback_simulation(0);
           this.parent.animation_stop();
         } else {

@@ -66,7 +66,7 @@ export class VisualizeControls {
         // There must be a choice of font-family that does, but I don't know what.
         // "⏯",
         "⏵", () => {
-            if (this.parent.get_animation_state() == 1) {
+            if (this.parent.get_animation_state()) {
                 // this.parent.playback_simulation(0);
                 this.parent.animation_stop();
             }

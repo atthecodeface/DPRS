@@ -38,7 +38,7 @@ export class Visualize {
         /** Target frames per second of animation */
         this.frames_per_second = 60;
         /** Animation state (I see no reason why we can't track this...) */
-        this.is_playing = 0;
+        this.is_playing = false;
         this.log = new log.Logger(logger, "viz");
         this.simulation = simulation;
         this.anim = new Animate((time) => this.animation_tick(time));
@@ -181,7 +181,7 @@ export class Visualize {
     }
     /** Stop any animation */
     animation_stop() {
-        this.set_animation_state(0);
+        this.set_animation_state(false);
         this.anim.stop();
     }
     animation_start(time) {
@@ -189,7 +189,7 @@ export class Visualize {
         if (this.simulation.dim < 2) {
             return;
         }
-        this.set_animation_state(1);
+        this.set_animation_state(true);
         this.anim.schedule();
     }
     // Need this to have a dual-function pause/or/play button
@@ -210,7 +210,7 @@ export class Visualize {
     // Step backward by one iteration, freezing the playback if need bed
     decrement_slice() {
         this.animation_stop();
-        this.set_animation_state(0);
+        this.set_animation_state(false);
         const next_slice = this.slice - 1;
         if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
             this.slice = next_slice;
@@ -221,7 +221,7 @@ export class Visualize {
     // Step forward by one iteration, freezing the playback if need bed
     increment_slice() {
         this.animation_stop();
-        this.set_animation_state(0);
+        this.set_animation_state(false);
         const next_slice = this.slice + 1;
         if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
             this.slice = next_slice;
@@ -231,7 +231,7 @@ export class Visualize {
     }
     playback_simulation(fps) {
         if (fps == 0) {
-            this.set_animation_state(0);
+            this.set_animation_state(false);
             this.anim.stop();
             return;
         }
@@ -241,7 +241,7 @@ export class Visualize {
             fps = -fps;
         }
         this.set_fps(fps);
-        this.set_animation_state(1);
+        this.set_animation_state(true);
         this.anim.restart(0, (time) => this.animation_start(time));
     }
     animation_tick(time) {
