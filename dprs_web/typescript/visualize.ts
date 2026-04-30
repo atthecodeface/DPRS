@@ -265,7 +265,7 @@ export class Visualize {
   decrement_slice(): void {
     this.stop_animation();
     const next_slice = this.slice - 1;
-    if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
       this.slice = next_slice;
     }
     this.redraw();
@@ -275,7 +275,7 @@ export class Visualize {
   increment_slice(): void {
     this.stop_animation();
     const next_slice = this.slice + 1;
-    if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
       this.slice = next_slice;
     }
     this.redraw();

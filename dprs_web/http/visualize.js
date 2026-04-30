@@ -192,18 +192,20 @@ export class Visualize {
         this.slice = slice;
         this.redraw();
     }
+    // Step backward by one iteration, freezing the playback if need bed
     decrement_slice() {
         this.stop_animation();
         const next_slice = this.slice - 1;
-        if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+        if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
             this.slice = next_slice;
         }
         this.redraw();
     }
+    // Step forward by one iteration, freezing the playback if need bed
     increment_slice() {
         this.stop_animation();
         const next_slice = this.slice + 1;
-        if (next_slice > 0 && next_slice < this.simulation.n_results()) {
+        if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
             this.slice = next_slice;
         }
         this.redraw();
