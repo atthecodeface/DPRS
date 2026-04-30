@@ -95,7 +95,7 @@ export class Visualize {
 
     const stagger = this.simulation.results_are_staggered();
     var x_ofs = 0;
-    var x_scale = this.scale;
+    const x_scale = this.scale;
     var y_scale = this.scale;
     if (stagger) {
       y_scale = 0.5 * y_scale;
@@ -154,8 +154,8 @@ export class Visualize {
   canvas_2d(sim_control: any): void {
     this.log.push_reason("canvas_2d");
 
-    var x_scale = this.scale;
-    var y_scale = this.scale;
+    const x_scale = this.scale;
+    const y_scale = this.scale;
 
     this.width = this.simulation.parameters.dims.n_x * x_scale;
     this.height = this.simulation.parameters.dims.n_y * y_scale;
@@ -314,7 +314,7 @@ export class Visualize {
       this.redraw();
     }
 
-    var next_slice = this.slice + this.slice_delta;
+    const next_slice = this.slice + this.slice_delta;
     if (next_slice > 0 && next_slice < this.simulation.n_results()) {
       this.slice = next_slice;
       this.anim.schedule_at(time + 1000 / this.frames_per_second);
