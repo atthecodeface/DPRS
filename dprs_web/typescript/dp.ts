@@ -76,7 +76,7 @@ class Main {
     params_2d.params.sample_period = 1;
     params_2d.params.random_seed = 6;
 
-    params_2d.dims.n_x = 300;
+    params_2d.dims.n_x = 350;
     params_2d.dims.n_y = 150;
     params_2d.dims.n_z = 1;
 
@@ -153,7 +153,7 @@ class Main {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
-    this.visualize.stop_animation();
+    this.visualize.animation_stop();
 
     this.simulation_controls_1d.populate_parameters();
     this.simulation_controls_2d.populate_parameters();

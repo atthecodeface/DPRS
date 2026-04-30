@@ -9,9 +9,16 @@ export interface VisualizationControlClient {
    * @param {number} fps The frames-per-second to set replay to; if this is 0,
    *                     then stop; if this is -ve then a backwards animation is desired
    */
+  animation_stop(): void;
+  animation_start(time: number): void;
   playback_simulation(fps: number): void;
   set_zoom(zoom: number): void;
   set_slice(slice: number): void;
+  // Functions replacing slow back/forward playback
+  decrement_slice(): void;
+  increment_slice(): void;
+  // Allows toggling of playback
+  get_animation_state(): boolean;
 }
 
 export class VisualizeControls {
@@ -108,40 +115,66 @@ export class VisualizeControls {
       classes: "playback",
     });
     // ⏮ ⏪⏩⏭ (Add #fe0e to make them plain)
+    // Turning off by hand because I can't turn it off in CSS
     tr_playback.add_ele("td").add_input_button(
       "⏪︎",
       () => {
         this.parent.playback_simulation(-60);
       },
-      { classes: "controls playback" },
+      { classes: "controls playback reverse" },
     );
     tr_playback.add_ele("td").add_input_button(
-      "⏴",
-      () => {
-        this.parent.playback_simulation(-10);
-      },
-      { classes: "controls playback" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      "⏸",
+      // "⏸", // unicode version U+23F8
+      "⏸",  // emoji version, &#9208, possibly
       () => {
         this.parent.playback_simulation(0);
       },
-      { classes: "controls playback" },
+      { classes: "controls playback pause" },
     );
     tr_playback.add_ele("td").add_input_button(
+      // "⏩︎",
       "⏵",
-      () => {
-        this.parent.playback_simulation(10);
-      },
-      { classes: "controls playback" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      "⏩︎",
       () => {
         this.parent.playback_simulation(60);
       },
-      { classes: "controls playback" },
+      { classes: "controls playback play" },
+    );
+    tr_playback.add_ele("td").add_input_button(
+      // This does not render correctly on the iPhone.
+      // Nor does "⏸"
+      // There must be a choice of font-family that does, but I don't know what.
+      // "⏯",
+      "⏵",
+      () => {
+        if (this.parent.get_animation_state()) {
+          // this.parent.playback_simulation(0);
+          this.parent.animation_stop();
+        } else {
+          // this.parent.playback_simulation(60);
+          this.parent.animation_start(0);
+        }
+      },
+      { classes: "controls playback pauseplay" },
+    );
+    tr_playback.add_ele("td").add_input_button(
+      // "⏴",
+      "➖",
+      () => {
+        // Step backward by one iteration: replaces slow reverse playback
+        // this.parent.playback_simulation(-10);
+        this.parent.decrement_slice();
+      },
+      { classes: "controls playback decrement" },
+    );
+    tr_playback.add_ele("td").add_input_button(
+      // "⏵",
+      "➕",
+      () => {
+        // Step forward by one iteration: replaces slow forward playback
+        // this.parent.playback_simulation(10);
+        this.parent.increment_slice();
+      },
+      { classes: "controls playback increment" },
     );
   }
 
@@ -155,9 +188,12 @@ export class VisualizeControls {
     }
     html.set_input_range("slice", 0, simulation.n_results() - 1);
     this.visualize.scale = html.get_input_float("zoom", 1, 5);
+    // CPS mod: I want to, perhaps, start with a non-zero time slice
+    //          so the user can actually see the demo is *doing* something.
+    //          Again, not ideal, but ^shrug^.
     this.visualize.slice = html.get_input_int(
       "slice",
-      0,
+      simulation.n_results() / 2,
       simulation.n_results() - 1,
     );
   }

@@ -62,7 +62,10 @@ export class Visualize {
   slice_delta: number = 1;
 
   /** Target frames per second of animation */
-  frames_per_second: number = 25;
+  frames_per_second: number = 60;
+
+  /** Animation state (I see no reason why we can't track this...) */
+  is_playing: boolean = false;
 
   /**
    *
@@ -95,7 +98,7 @@ export class Visualize {
 
     const stagger = this.simulation.results_are_staggered();
     var x_ofs = 0;
-    var x_scale = this.scale;
+    const x_scale = this.scale;
     var y_scale = this.scale;
     if (stagger) {
       y_scale = 0.5 * y_scale;
@@ -154,8 +157,8 @@ export class Visualize {
   canvas_2d(sim_control: any): void {
     this.log.push_reason("canvas_2d");
 
-    var x_scale = this.scale;
-    var y_scale = this.scale;
+    const x_scale = this.scale;
+    const y_scale = this.scale;
 
     this.width = this.simulation.parameters.dims.n_x * x_scale;
     this.height = this.simulation.parameters.dims.n_y * y_scale;
@@ -243,37 +246,10 @@ export class Visualize {
     }
   }
 
-  /** Stop any animation
-   *
-   */
-  stop_animation(): void {
+  /** Stop any animation */
+  animation_stop(): void {
+    this.set_animation_is_stopped();
     this.anim.stop();
-  }
-
-  set_zoom(zoom: number): void {
-    this.scale = zoom;
-    this.redraw();
-  }
-
-  set_slice(slice: number): void {
-    this.stop_animation();
-    this.slice = slice;
-    this.redraw();
-  }
-
-  playback_simulation(fps: number): void {
-    if (fps == 0) {
-      this.anim.stop();
-      return;
-    }
-    this.slice_delta = 1;
-    if (fps < 0) {
-      this.slice_delta = -1;
-      fps = -fps;
-    }
-    this.frames_per_second = fps;
-    console.log("Set fps to", this.frames_per_second);
-    this.anim.restart(0, (time) => this.animation_start(time));
   }
 
   animation_start(time: number): void {
@@ -282,7 +258,72 @@ export class Visualize {
     if (this.simulation.dim < 2) {
       return;
     }
+    this.set_animation_is_playing();
     this.anim.schedule();
+  }
+
+  // Need this to have a dual-function pause/or/play button
+  get_animation_state(): boolean {
+    return this.is_playing;
+  }
+
+  set_animation_state(is_playing: boolean): void {
+    this.is_playing = is_playing;
+  }
+
+  set_animation_is_stopped(): void {
+    this.set_animation_state(false);
+  }
+
+  set_animation_is_playing(): void {
+    this.set_animation_state(true);
+  }
+
+  get_fps(): number {
+    console.log("Current fps:", this.frames_per_second);
+    return this.frames_per_second;
+  }
+
+  set_fps(fps: number): void {
+    console.log("Setting fps:", this.frames_per_second);
+    this.frames_per_second = fps;
+  }
+
+  // Step backward by one iteration, freezing the playback if need bed
+  decrement_slice(): void {
+    this.animation_stop();
+    const next_slice = this.slice - 1;
+    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
+      this.slice = next_slice;
+    }
+    this.redraw();
+    html.set_input_value("slice", this.slice);
+  }
+
+  // Step forward by one iteration, freezing the playback if need bed
+  increment_slice(): void {
+    this.animation_stop();
+    const next_slice = this.slice + 1;
+    if (next_slice >= 0 && next_slice < this.simulation.n_results()) {
+      this.slice = next_slice;
+    }
+    this.redraw();
+    html.set_input_value("slice", this.slice);
+  }
+
+  playback_simulation(fps: number): void {
+    if (fps == 0) {
+      this.animation_stop();
+      return;
+    }
+    this.slice_delta = 1;
+    if (fps < 0) {
+      this.slice_delta = -1;
+      fps = -fps;
+    }
+    this.set_fps(fps);
+    this.set_animation_is_playing();
+    this.anim.restart(0, (time) => this.animation_start(time));
   }
 
   animation_tick(time: number): void {
@@ -296,10 +337,10 @@ export class Visualize {
       this.redraw();
     }
 
-    var next_slice = this.slice + this.slice_delta;
+    const next_slice = this.slice + this.slice_delta;
     if (next_slice > 0 && next_slice < this.simulation.n_results()) {
       this.slice = next_slice;
-      this.anim.schedule_at(time + 1000 / this.frames_per_second);
+      this.anim.schedule_at(time + 1000 / this.get_fps());
     } else {
       const total_time = this.anim.duration();
       const n_frames = this.simulation.n_results();
@@ -310,4 +351,16 @@ export class Visualize {
       );
     }
   }
+
+  set_zoom(zoom: number): void {
+    this.scale = zoom;
+    this.redraw();
+  }
+
+  set_slice(slice: number): void {
+    this.animation_stop();
+    this.slice = slice;
+    this.redraw();
+  }
+
 }

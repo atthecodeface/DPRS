@@ -1,8 +1,9 @@
-# 2d DP simulations
+# Domany-Kinzel in 2d
 
 <div>
     <link href="../sims.css" rel="stylesheet" type="text/css" />
-    <script type="module" src="../http/2d.js"></script>
+    <link href="../dk.css" rel="stylesheet" type="text/css" />
+    <script type="module" src="../http/dk_2d.js"></script>
         <div id="tab-2D">
             <div id="2d_sim_controls"></div>
         </div>

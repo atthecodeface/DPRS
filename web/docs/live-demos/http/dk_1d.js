@@ -13,37 +13,41 @@ class Main {
         this.simulation = new JsSimulation(logger);
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
-        const params_2d = new JsParameters();
-        params_2d.probabilities.p_1 = 0.59;
-        params_2d.probabilities.p_2 = 0.59;
-        params_2d.probabilities.p_initial = 0.5;
-        params_2d.probabilities.p_conj = 0.0;
-        params_2d.params.n_iterations = 500;
-        params_2d.params.sample_period = 1;
-        params_2d.params.random_seed = 6;
-        params_2d.dims.n_x = 350;
-        params_2d.dims.n_y = 150;
-        params_2d.dims.n_z = 1;
-        params_2d.params.seed_kind = "edge";
-        params_2d.params.simulation_kind = "bedload";
-        this.simulation_controls_2d = new SimulationControls("2d_sc_", "2d_sim_controls", 2);
-        this.simulation_controls_2d.parameters = params_2d;
-        this.simulation_controls_2d.populate_values();
+        const params_1d = new JsParameters();
+        // For staggered p_c = 0.70548515
+        //
+        // For simplified p_c = 0.538910
+        params_1d.probabilities.p_initial = 0.5;
+        params_1d.probabilities.p_1 = 0.7054; //0.70548515
+        params_1d.probabilities.p_2 = 0.7054;
+        params_1d.params.n_iterations = 500;
+        params_1d.params.sample_period = 1;
+        params_1d.params.random_seed = 1;
+        params_1d.dims.n_x = 350;
+        params_1d.dims.n_y = 1;
+        params_1d.dims.n_z = 1;
+        params_1d.params.seed_kind = "random";
+        params_1d.params.simulation_kind = "staggered_dk";
+        this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1);
+        this.simulation_controls_1d.parameters = params_1d;
+        this.simulation_controls_1d.populate_values();
         this.log.info("HTML built, running initial simulation");
-        this.run_simulation(2);
+        this.run_simulation(1);
         this.log.info("Initialization complete");
         this.log.pop_reason();
     }
     run_simulation(dim) {
         this.log.push_reason("sim");
         this.log.info(`Running simulation of dimension ${dim}`);
-        this.simulation_controls_2d.populate_parameters();
-        this.simulation_controls_2d.parameters.dims.n_z = 1;
-        const sim_parameters = this.simulation_controls_2d.parameters;
+        this.simulation_controls_1d.populate_parameters();
+        this.simulation_controls_1d.parameters.dims.n_y = 1;
+        this.simulation_controls_1d.parameters.dims.n_z = 1;
+        this.simulation_controls_1d.set_staggered_dk();
+        const sim_parameters = this.simulation_controls_1d.parameters;
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation complete with ${this.simulation.n_results()} results`);
         this.visualize_controls.populate_values(this.simulation);
-        this.visualize.set_redraw(this.simulation_controls_2d);
+        this.visualize.set_redraw(this.simulation_controls_1d);
         this.visualize.redraw();
         this.log.pop_reason();
     }

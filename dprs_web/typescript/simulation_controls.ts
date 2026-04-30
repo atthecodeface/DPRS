@@ -62,6 +62,30 @@ export class SimulationControls {
     }
   }
 
+  set_ic_randomize() {
+      html.set_input_checked(this.ele_id + "seed_random", true);
+  }
+
+  set_ic_centralcell() {
+      html.set_input_checked(this.ele_id + "seed_center", true);
+  }
+
+  set_ic_edgecell() {
+      html.set_input_checked(this.ele_id + "seed_edge", true);
+  }
+
+  set_simple_dk() {
+      html.set_input_checked(this.ele_id + "sk_simple_dk", true);
+  }
+
+  set_staggered_dk() {
+      html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
+  }
+
+  set_bedload() {
+      html.set_input_checked(this.ele_id + "sk_bedload", true);
+  }
+
   populate_parameters() {
     const simulation_choice = html.get_input_radio_checked(
       this.ele_id + "sim_kind",
@@ -126,27 +150,24 @@ export class SimulationControls {
     {
       const tr = dims_table.add_ele("tr", { id: ele_id + "dims" });
       const td = tr.add_ele("td");
-      td.add_label("n_x", { classes: "sim_controls_label" }).set_content("nx:");
+      td.add_label("n_x", { classes: "sim_controls_label" }).set_content("x:");
       td.add_input_text("n_x", "20", {
         id: this.ele_id + "n_x",
         classes: "sim_controls_text dims_n_text",
       });
       if (dims >= 2) {
         const td = tr.add_ele("td");
-        td.add_label("n_y", { classes: "sim_controls_label" }).set_content(
-          "ny:",
-        );
+        td.add_label("n_y", { classes: "sim_controls_label" }).set_content("y:");
         td.add_input_text("n_y", "20", {
           id: this.ele_id + "n_y",
           classes: "sim_controls_text dims_n_text",
         });
+
       }
       if (dims >= 3) {
         const td = tr.add_ele("td");
-        td.add_label("n_z", { classes: "sim_controls_label" }).set_content(
-          "nz:",
-        );
-        td.add_input_text("n_z", "20", {
+        td.add_label("n_z", { classes: "sim_controls_label" }).set_content("z:");
+        const x = td.add_input_text("n_z", "20", {
           id: this.ele_id + "n_z",
           classes: "sim_controls_text dims_n_text",
         });
@@ -194,7 +215,7 @@ export class SimulationControls {
       const tr = param_table.add_ele("tr", { id: ele_id + "sim_controls" });
       for (const [label, name, value] of [
         ["Steps", "n_iterations", "1000"],
-        ["Sampling", "sample_period", "20"],
+        ["Slicing", "sample_period", "20"],
         ["Seed", "random_seed", "1"],
       ]) {
         const td = tr.add_ele("td");
@@ -239,7 +260,7 @@ export class SimulationControls {
           classes: "sim_controls_radio " + name,
         });
         td.add_label(ele_id + "sk_" + name, {
-          classes: "sim_controls_label",
+          classes: "sim_controls_label " + name,
         }).set_content(value);
       }
     }

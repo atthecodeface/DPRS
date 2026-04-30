@@ -44,7 +44,7 @@ zip: dprs.zip
 dprs.zip:
 	@echo "Zipping package"
 	zip dprs.zip favicon.ico
-	zip dprs.zip http/dk.js
+	zip dprs.zip http/dp.js
 	zip dprs.zip http/html.js
 	zip dprs.zip http/log.js
 	zip dprs.zip http/utils.js

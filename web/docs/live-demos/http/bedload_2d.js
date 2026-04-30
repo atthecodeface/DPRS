@@ -14,21 +14,22 @@ class Main {
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
         const params_2d = new JsParameters();
-        params_2d.probabilities.p_1 = 0.59;
-        params_2d.probabilities.p_2 = 0.59;
+        params_2d.probabilities.p_1 = 0.58;
+        params_2d.probabilities.p_2 = 0.58;
         params_2d.probabilities.p_initial = 0.5;
-        params_2d.probabilities.p_conj = 0.0;
-        params_2d.params.n_iterations = 500;
+        params_2d.probabilities.p_conj = 0.000001;
+        params_2d.params.n_iterations = 600;
         params_2d.params.sample_period = 1;
-        params_2d.params.random_seed = 6;
+        params_2d.params.random_seed = 5;
         params_2d.dims.n_x = 350;
-        params_2d.dims.n_y = 150;
+        params_2d.dims.n_y = 200;
         params_2d.dims.n_z = 1;
         params_2d.params.seed_kind = "edge";
         params_2d.params.simulation_kind = "bedload";
         this.simulation_controls_2d = new SimulationControls("2d_sc_", "2d_sim_controls", 2);
         this.simulation_controls_2d.parameters = params_2d;
         this.simulation_controls_2d.populate_values();
+        this.simulation_controls_2d.set_bedload();
         this.log.info("HTML built, running initial simulation");
         this.run_simulation(2);
         this.log.info("Initialization complete");
@@ -39,6 +40,7 @@ class Main {
         this.log.info(`Running simulation of dimension ${dim}`);
         this.simulation_controls_2d.populate_parameters();
         this.simulation_controls_2d.parameters.dims.n_z = 1;
+        // this.simulation_controls_2d.set_ic_centralcell()
         const sim_parameters = this.simulation_controls_2d.parameters;
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation complete with ${this.simulation.n_results()} results`);
