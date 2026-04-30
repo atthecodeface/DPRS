@@ -335,7 +335,7 @@ export class Visualize {
     const next_slice = this.slice + this.slice_delta;
     if (next_slice > 0 && next_slice < this.simulation.n_results()) {
       this.slice = next_slice;
-      this.anim.schedule_at(time + 1000 / this.frames_per_second);
+      this.anim.schedule_at(time + 1000 / this.get_fps());
     } else {
       const total_time = this.anim.duration();
       const n_frames = this.simulation.n_results();
@@ -354,6 +354,7 @@ export class Visualize {
 
   set_slice(slice: number): void {
     this.animation_stop();
+    this.set_animation_state(false);
     this.slice = slice;
     this.redraw();
   }
