@@ -20,6 +20,7 @@ export interface VisualizationControlClient {
   // Allows toggling of playback
   get_animation_state(): boolean;
   // redraw(): void;
+  reset_rough_canvas(): void;
 }
 
 export class VisualizeControls {
@@ -90,6 +91,8 @@ export class VisualizeControls {
       { min: 1, max: 5, step: 0.1 },
       (_e: Event, value) => {
         this.parent.set_zoom(value);
+        // Don't do this, because we have already generated a rough bgrd for max zoom
+        // this.parent.reset_rough_canvas();
       },
       { id: "zoom" },
     );
@@ -112,37 +115,35 @@ export class VisualizeControls {
       { id: "slice" },
     );
 
-    const fps = 120;
+    // const fps = 120;
 
     const tr_playback = playback_table.add_ele("tr", {
       classes: "playback",
     });
-    // ⏮ ⏪⏸⏩⏭ (Add #fe0e to make them plain)⏸️#fe0e #fe0e  ⏯#fe0e
+    // ⏮ ⏪⏸⏩⏭ (Add #fe0e to make them plain)
     // Turning off by hand because I can't turn it off in CSS
+    // tr_playback.add_ele("td").add_input_button(
+    //   "⏪︎",
+    //   () => {
+    //     this.parent.playback_simulation(-fps);
+    //   },
+    //   { classes: "controls playback reverse" },
+    // );
+    // tr_playback.add_ele("td").add_input_button(
+    //   "⏸︎",
+    //   () => {
+    //     this.parent.playback_simulation(0);
+    //   },
+    //   { classes: "controls playback pause" },
+    // );
+    // tr_playback.add_ele("td").add_input_button(
+    //   "⏹︎",
+    //   () => {
+    //     this.parent.playback_simulation(fps);
+    //   },
+    //   { classes: "controls playback play" },
+    // );
     tr_playback.add_ele("td").add_input_button(
-      "⏪︎",
-      () => {
-        this.parent.playback_simulation(-fps);
-      },
-      { classes: "controls playback reverse" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      // "⏸︎",
-      "⏸︎",
-      () => {
-        this.parent.playback_simulation(0);
-      },
-      { classes: "controls playback pause" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      "⏹︎",
-      () => {
-        this.parent.playback_simulation(fps);
-      },
-      { classes: "controls playback play" },
-    );
-    tr_playback.add_ele("td").add_input_button(
-      // "⏵︎",
       "⏯︎",
       () => {
         if (this.parent.get_animation_state()) {
@@ -156,21 +157,17 @@ export class VisualizeControls {
       { classes: "controls playback pauseplay" },
     );
     tr_playback.add_ele("td").add_input_button(
-      // "⏴︎",
       "➖",
       () => {
         // Step backward by one iteration: replaces slow reverse playback
-        // this.parent.playback_simulation(-10);
         this.parent.decrement_slice();
       },
       { classes: "controls playback decrement" },
     );
     tr_playback.add_ele("td").add_input_button(
-      // "⏵",
       "➕",
       () => {
         // Step forward by one iteration: replaces slow forward playback
-        // this.parent.playback_simulation(10);
         this.parent.increment_slice();
       },
       { classes: "controls playback increment" },
@@ -194,11 +191,5 @@ export class VisualizeControls {
       simulation.n_results() * 0,
       simulation.n_results(),
     );
-    // CPS mod: I want to, perhaps, start with a non-zero time slice
-    //          so the user can actually see the demo is *doing* something.
-    //          Again, not ideal, but ^shrug^.
-    // html.set_input_value("zoom", 2);
-    // html.set_input_value("slice", simulation.n_results() / 2);
-    // this.visualize.redraw();
   }
 }
