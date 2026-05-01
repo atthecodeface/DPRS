@@ -76,6 +76,7 @@ export class Visualize {
   do_rough_background: boolean = true;
 
   /** Drift speed */
+  // Move this to JsParameters
   x_speed: number = 0;
   // do_drift: boolean = false;
 

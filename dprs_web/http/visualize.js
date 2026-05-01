@@ -47,6 +47,7 @@ export class Visualize {
         this.rough_background = null;
         this.do_rough_background = true;
         /** Drift speed */
+        // Move this to JsParameters
         this.x_speed = 0;
         this.log = new log.Logger(logger, "viz");
         this.simulation = simulation;

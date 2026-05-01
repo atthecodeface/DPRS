@@ -6,7 +6,6 @@ export class SimulationControls {
         this.parameters = new JsParameters();
         this.ele_id = ele_id;
         this.dims = dims;
-        // this.t_increment = 1;
         const div = document.getElementById(div_id);
         if (!div) {
             throw new Error(`Failed to find ${div_id} to build SimulationControls`);
@@ -46,15 +45,12 @@ export class SimulationControls {
         }
         if (this.parameters.params.simulation_kind == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-            // this.t_increment = 1;
         }
         else if (this.parameters.params.simulation_kind == "staggered_dk") {
             html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
-            // this.t_increment = 2;
         }
         else if (this.parameters.params.simulation_kind == "bedload") {
             html.set_input_checked(this.ele_id + "sk_bedload", true);
-            // this.t_increment = 1;
         }
     }
     set_ic_randomize() {
@@ -68,15 +64,12 @@ export class SimulationControls {
     }
     set_simple_dk() {
         html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-        // this.t_increment = 1;
     }
     set_staggered_dk() {
         html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
-        // this.t_increment = 2;
     }
     set_bedload() {
         html.set_input_checked(this.ele_id + "sk_bedload", true);
-        // this.t_increment = 1;
     }
     populate_parameters() {
         const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
@@ -168,7 +161,7 @@ export class SimulationControls {
         {
             const tr = probs_table.add_ele("tr", { id: ele_id + "probability" });
             for (const [label, thing] of [
-                ["p_0", "p_initial"], ["p_x", "p_conj"],
+                ["p_0", "p_initial"], ["u_x", "x_speed"], ["p_ext", "p_conj"],
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(thing, { classes: "sim_controls_label" }).set_content(label + ":");
