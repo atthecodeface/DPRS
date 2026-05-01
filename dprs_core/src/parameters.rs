@@ -27,6 +27,9 @@ pub struct Parameters {
     /// Probability used to (try to) suppress grid anisotropy.
     pub p_diag: f64,
 
+    /// For bedload: drift speed.
+    pub u_x: f64,
+
     /// Total number of iterations in the simulation.
     pub n_iterations: usize,
 
@@ -91,6 +94,9 @@ impl std::fmt::Display for Parameters {
         writeln!(fmt, "Grid shape:    {:?}", (self.n_x, self.n_y, self.n_z))?;
         writeln!(fmt, "Prob. p_1:     {}", self.p_1)?;
         writeln!(fmt, "Prob. p_2:     {}", self.p_2)?;
+        writeln!(fmt, "Prob. p_conj:  {}", self.p_conj)?;
+        writeln!(fmt, "Prob. p_nbr:   {}", self.p_nbr)?;
+        writeln!(fmt, "Prob. p_diag:  {}", self.p_diag)?;
         writeln!(fmt, "Iterations:    {}", self.n_iterations)?;
         writeln!(fmt, "Sample period: {}", self.sample_period)?;
         writeln!(fmt, "Initial cond.: {:?}", self.initial_condition)?;

@@ -22,6 +22,7 @@ pub struct PyParameters {
     pub p_conj: f64,
     pub p_nbr: f64,
     pub p_diag: f64,
+    pub u_x: f64,
     pub n_iterations: usize,
     pub sample_period: usize,
     pub initial_condition: InitialCondition,
@@ -51,6 +52,7 @@ impl std::fmt::Display for PyParameters {
         writeln!(fmt, "Prob. p_conj:  {}", self.p_conj)?;
         writeln!(fmt, "Prob. p_nbr:   {}", self.p_nbr)?;
         writeln!(fmt, "Prob. p_diag:  {}", self.p_diag)?;
+        writeln!(fmt, "Speed u_x:     {}", self.u_x)?;
         writeln!(fmt, "Iterations:    {}", self.n_iterations)?;
         writeln!(fmt, "Sample period: {}", self.sample_period)?;
         writeln!(fmt, "Random seed:   {}", self.random_seed)?;
@@ -121,6 +123,12 @@ impl PyParameters {
                 py_p.p_nbr
             )));
         }
+        if py_p.u_x.is_nan() {
+            return Err(DprsError::BadParameter(format!(
+                "Speed u_x={} must be a number",
+                py_p.u_x
+            )));
+        }
         if py_p.p_diag < 0. || py_p.p_diag > 1. {
             return Err(DprsError::BadParameter(format!(
                 "Probability p_diag={} must be [0,1]",
@@ -166,6 +174,7 @@ impl PyParameters {
             p_conj: py_p.p_conj,
             p_nbr: py_p.p_nbr,
             p_diag: py_p.p_diag,
+            u_x: py_p.u_x,
             n_iterations: py_p.n_iterations,
             sample_period: py_p.sample_period,
             initial_condition: InitialCondition::from(py_p.initial_condition),
