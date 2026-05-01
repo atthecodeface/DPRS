@@ -13,6 +13,8 @@ class Main {
         this.simulation = new JsSimulation(logger);
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
+        this.visualize.x_speed = 0;
+        this.visualize.do_rough_background = false;
         const params_1d = new JsParameters();
         // For staggered p_c = 0.70548515
         //

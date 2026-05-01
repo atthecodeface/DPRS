@@ -6,6 +6,7 @@ import { Animate } from "./animate.js";
  *
  */
 export class Visualize {
+    // do_drift: boolean = false;
     /**
      *
      * Create a new Visualize for a simulation
@@ -44,7 +45,9 @@ export class Visualize {
         this.t_increment = 1;
         /** Random canvas for "rough" background */
         this.rough_background = null;
-        this.do_rough_canvas = true;
+        this.do_rough_background = true;
+        /** Drift speed */
+        this.x_speed = 0;
         this.log = new log.Logger(logger, "viz");
         this.simulation = simulation;
         this.anim = new Animate((time) => this.animation_tick(time));
@@ -151,7 +154,7 @@ export class Visualize {
         // Get the lattice size
         const n_x = this.simulation.parameters.dims.n_x;
         const n_y = this.simulation.parameters.dims.n_y;
-        if (this.do_rough_canvas) {
+        if (this.do_rough_background) {
             // Make a "rough" looking canvas
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, this.width, this.height);
@@ -183,7 +186,6 @@ export class Visualize {
         // Occupied cells are colored purple
         ctx.fillStyle = "purple";
         // Color in the occupied cells with appropriately size pixel rectangles
-        const x_speed = -0.2;
         const empty = 0;
         if (!lattice_slice) {
             this.log.info(`No data in slice ${this.slice}`);
@@ -193,8 +195,8 @@ export class Visualize {
             for (let y = 0; y < n_y; y++) {
                 let previous_cell_state = null;
                 let x_start = null;
-                const x_sense = Math.sign(x_speed);
-                const x_drift = Math.abs(x_speed) * t_slice;
+                const x_sense = Math.sign(this.x_speed);
+                const x_drift = Math.abs(this.x_speed) * t_slice;
                 const x_shift = Math.trunc(x_drift) % n_x;
                 // const x_error = x_drift - x_shift;
                 for (let x = 0; x < n_x; x++) {

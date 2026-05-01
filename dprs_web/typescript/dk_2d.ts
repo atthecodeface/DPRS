@@ -26,6 +26,8 @@ class Main {
       this.visualize,
       "VisualizationControls",
     );
+    this.visualize.x_speed = 0;
+    this.visualize.do_rough_background = false;
 
     const params_2d = new JsParameters();
     params_2d.probabilities.p_1 = 0.38;  //0.70548515
