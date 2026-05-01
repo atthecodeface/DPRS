@@ -175,6 +175,7 @@ export class JsParameters {
   params: Params;
   topo: Array<Topo>;
   dims: Dims;
+  preset: number;
 
   constructor() {
     this.parameters = new DprsWasm.Parameters();
@@ -182,6 +183,7 @@ export class JsParameters {
     this.params = new Params();
     this.topo = [new Topo(), new Topo(), new Topo()];
     this.dims = new Dims();
+    this.preset = 1;
 
     this.topo[0]!.periodic = true;
     this.topo[1]!.periodic = true;
