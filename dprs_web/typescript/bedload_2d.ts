@@ -34,7 +34,7 @@ class Main {
     // params_2d.probabilities.p_2 = 0.9;
     // params_2d.probabilities.p_1 = 0.72082;   // random_seed: 2
     // params_2d.probabilities.p_2 = 0.7;
-    params_2d.probabilities.p_1 = 0.8135;   // random_seed: 13
+    params_2d.probabilities.p_1 = 0.8135;   // random_seed: 13  // 31
     params_2d.probabilities.p_2 = 0.5;
     // params_2d.probabilities.p_1 = 0.8945;   // random_seed: 6
     // params_2d.probabilities.p_2 = 0.3;
@@ -43,16 +43,16 @@ class Main {
     // params_2d.probabilities.p_1 = 0.99677;  // random_seed: ?
     // params_2d.probabilities.p_2 = 0.01; 
 
-    params_2d.probabilities.p_conj = 0.000001;
+    params_2d.probabilities.p_conj = 1e-6;
     params_2d.probabilities.p_initial = 0.001;
     params_2d.probabilities.p_diag = 0.1;
 
-    params_2d.params.n_iterations = 600;
+    params_2d.params.n_iterations = 500;
     params_2d.params.sample_period = 1;
-    params_2d.params.random_seed = 13;
+    params_2d.params.random_seed = 31;
 
-    params_2d.dims.n_x = 350;
-    params_2d.dims.n_y = 200;
+    params_2d.dims.n_x = 150;
+    params_2d.dims.n_y = 100;
     params_2d.dims.n_z = 1;
 
     params_2d.params.seed_kind = "edge";
@@ -88,7 +88,8 @@ class Main {
       `Simulation complete with ${this.simulation.n_results()} results`,
     );
 
-    this.visualize_controls.populate_values(this.simulation);
+    const initial_zoom = 2.2;
+    this.visualize_controls.populate_values(this.simulation, initial_zoom);
     this.visualize.set_redraw(this.simulation_controls_2d);
     this.visualize.redraw();
 

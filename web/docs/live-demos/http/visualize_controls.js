@@ -45,28 +45,22 @@ export class VisualizeControls {
         const tr_playback = playback_table.add_ele("tr", {
             classes: "playback",
         });
-        // ⏮ ⏪⏩⏭ (Add #fe0e to make them plain)
+        // ⏮ ⏪⏸⏩⏭ (Add #fe0e to make them plain)⏸️#fe0e #fe0e  ⏯#fe0e
         // Turning off by hand because I can't turn it off in CSS
         tr_playback.add_ele("td").add_input_button("⏪︎", () => {
             this.parent.playback_simulation(-fps);
         }, { classes: "controls playback reverse" });
         tr_playback.add_ele("td").add_input_button(
-        // "⏸", // unicode version U+23F8
-        "⏸", // emoji version, &#9208, possibly
-        () => {
+        // "⏸︎",
+        "⏸︎", () => {
             this.parent.playback_simulation(0);
         }, { classes: "controls playback pause" });
-        tr_playback.add_ele("td").add_input_button(
-        // "⏩︎",
-        "⏵", () => {
+        tr_playback.add_ele("td").add_input_button("⏹︎", () => {
             this.parent.playback_simulation(fps);
         }, { classes: "controls playback play" });
         tr_playback.add_ele("td").add_input_button(
-        // This does not render correctly on the iPhone.
-        // Nor does "⏸"
-        // There must be a choice of font-family that does, but I don't know what.
-        // "⏯",
-        "⏵", () => {
+        // "⏵︎",
+        "⏯︎", () => {
             if (this.parent.get_animation_state()) {
                 // this.parent.playback_simulation(0);
                 this.parent.animation_stop();
@@ -77,7 +71,7 @@ export class VisualizeControls {
             }
         }, { classes: "controls playback pauseplay" });
         tr_playback.add_ele("td").add_input_button(
-        // "⏴",
+        // "⏴︎",
         "➖", () => {
             // Step backward by one iteration: replaces slow reverse playback
             // this.parent.playback_simulation(-10);
@@ -91,7 +85,7 @@ export class VisualizeControls {
             this.parent.increment_slice();
         }, { classes: "controls playback increment" });
     }
-    populate_values(simulation) {
+    populate_values(simulation, initial_zoom = 1) {
         if (simulation.dim < 2) {
             this.td_slice.set_style("display", "none");
             this.td_playback.set_style("display", "none");
@@ -100,9 +94,11 @@ export class VisualizeControls {
             this.td_slice.set_style("display");
             this.td_playback.set_style("display");
         }
+        html.set_input_value("zoom", initial_zoom);
         this.visualize.scale = html.get_input_float("zoom", 1, 5);
-        html.set_input_range("slice", 0, simulation.n_results() - 1);
-        this.visualize.slice = html.get_input_int("slice", simulation.n_results() * 0, simulation.n_results() - 1);
+        html.set_input_range("slice", 0, simulation.n_results());
+        html.set_input_value("slice", simulation.n_results() / 2);
+        this.visualize.slice = html.get_input_int("slice", simulation.n_results() * 0, simulation.n_results());
         // CPS mod: I want to, perhaps, start with a non-zero time slice
         //          so the user can actually see the demo is *doing* something.
         //          Again, not ideal, but ^shrug^.
