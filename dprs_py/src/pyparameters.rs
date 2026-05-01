@@ -123,16 +123,16 @@ impl PyParameters {
                 py_p.p_nbr
             )));
         }
-        if py_p.u_x.is_nan() {
-            return Err(DprsError::BadParameter(format!(
-                "Speed u_x={} must be a number",
-                py_p.u_x
-            )));
-        }
         if py_p.p_diag < 0. || py_p.p_diag > 1. {
             return Err(DprsError::BadParameter(format!(
                 "Probability p_diag={} must be [0,1]",
                 py_p.p_diag
+            )));
+        }
+        if py_p.u_x.is_nan() {
+            return Err(DprsError::BadParameter(format!(
+                "Speed u_x={} must be a number",
+                py_p.u_x
             )));
         }
         if py_p.p_initial < 0. || py_p.p_initial > 1. {

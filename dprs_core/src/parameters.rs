@@ -30,6 +30,9 @@ pub struct Parameters {
     /// For bedload: drift speed.
     pub u_x: f64,
 
+    /// For random initial conditions, the probability that a cell is occupied initially
+    pub p_initial: f64,
+
     /// Total number of iterations in the simulation.
     pub n_iterations: usize,
 
@@ -44,9 +47,6 @@ pub struct Parameters {
 
     /// The initial condition to use for the simulation (such as fixed central seed, or random)
     pub initial_condition: InitialCondition,
-
-    /// For random initial conditions, the probability that a cell is occupied initially
-    pub p_initial: f64,
 
     /// The random seed to use as the basis for all the random number generators in a simulation
     pub random_seed: usize,

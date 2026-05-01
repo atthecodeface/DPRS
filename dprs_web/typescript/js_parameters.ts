@@ -11,21 +11,27 @@ class Probabilities {
    */
   p_1: number = 0.70548515;
   p_2: number = 0.70548515;
-  p_diag: number = 0.1;
   p_conj: number = 0.0;
+  p_nbr: number = 0.5;
+  p_diag: number = 0.1;
+  u_x: number = 0.0;
   p_initial: number = 0.5;
   set_parameters(parameters: DprsWasm.Parameters) {
     parameters.p_1 = this.p_1;
     parameters.p_2 = this.p_2;
-    parameters.p_diag = this.p_diag;
     parameters.p_conj = this.p_conj;
+    parameters.p_nbr = this.p_nbr;
+    parameters.p_diag = this.p_diag;
+    parameters.u_x = this.u_x;
     parameters.p_initial = this.p_initial;
   }
   from_json(probabilities: any) {
     const p_1 = probabilities["p_1"];
     const p_2 = probabilities["p_2"];
-    const p_diag = probabilities["p_diag"];
     const p_conj = probabilities["p_conj"];
+    const p_nbr = probabilities["p_nbr"];
+    const p_diag = probabilities["p_diag"];
+    const u_x = probabilities["u_x"];
     const p_initial = probabilities["p_initial"];
     if (typeof p_1 == "number") {
       this.p_1 = p_1;
@@ -33,11 +39,17 @@ class Probabilities {
     if (typeof p_2 == "number") {
       this.p_2 = p_2;
     }
+    if (typeof p_conj == "number") {
+      this.p_conj = p_conj;
+    }
+    if (typeof p_nbr == "number") {
+      this.p_nbr = p_nbr;
+    }
     if (typeof p_diag == "number") {
       this.p_diag = p_diag;
     }
-    if (typeof p_conj == "number") {
-      this.p_conj = p_conj;
+    if (typeof u_x == "number") {
+      this.u_x = u_x;
     }
     if (typeof p_initial == "number") {
       this.p_initial = p_initial;

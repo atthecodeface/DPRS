@@ -77,7 +77,7 @@ export class Visualize {
 
   /** Drift speed */
   // Move this to JsParameters
-  u_x: number = 0;
+  // u_x: number = 0;
   // do_drift: boolean = false;
 
   /**
@@ -255,8 +255,9 @@ export class Visualize {
       for (let y = 0; y < n_y; y++) {
         let previous_cell_state = null;
         let x_start = null;
-        const x_sense = Math.sign(this.u_x);
-        const x_drift = Math.abs(this.u_x) * t_slice;
+        const u_x = this.simulation.parameters.probabilities.u_x;
+        const x_sense = Math.sign(u_x);
+        const x_drift = Math.abs(u_x) * t_slice;
         const x_shift = Math.trunc(x_drift) % n_x;
         // const x_error = x_drift - x_shift;
         for (let x = 0; x < n_x; x++) {
