@@ -13,7 +13,7 @@ class Main {
         this.simulation = new JsSimulation(logger);
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
-        this.visualize.x_speed = -0.2;
+        this.visualize.u_x = -0.2;
         this.visualize.do_rough_background = true;
         const params_2d = new JsParameters();
         // These values are chosen to lie on the p1-p2 phase diagram boundary

@@ -26,7 +26,7 @@ class Main {
       this.visualize,
       "VisualizationControls",
     );
-    this.visualize.x_speed = -0.2;
+    this.visualize.u_x = -0.2;
     this.visualize.do_rough_background = true;
 
     const params_2d = new JsParameters();

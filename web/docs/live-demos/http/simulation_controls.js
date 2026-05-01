@@ -161,7 +161,7 @@ export class SimulationControls {
         {
             const tr = probs_table.add_ele("tr", { id: ele_id + "probability" });
             for (const [label, thing] of [
-                ["p_0", "p_initial"], ["u_x", "x_speed"], ["p_ext", "p_conj"],
+                ["p_0", "p_initial"], ["u_x", "u_x"], ["p_ext", "p_conj"],
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(thing, { classes: "sim_controls_label" }).set_content(label + ":");

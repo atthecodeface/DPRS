@@ -77,7 +77,7 @@ export class Visualize {
 
   /** Drift speed */
   // Move this to JsParameters
-  x_speed: number = 0;
+  u_x: number = 0;
   // do_drift: boolean = false;
 
   /**
@@ -255,13 +255,13 @@ export class Visualize {
       for (let y = 0; y < n_y; y++) {
         let previous_cell_state = null;
         let x_start = null;
-        const x_sense = Math.sign(this.x_speed);
-        const x_drift = Math.abs(this.x_speed) * t_slice;
+        const x_sense = Math.sign(this.u_x);
+        const x_drift = Math.abs(this.u_x) * t_slice;
         const x_shift = Math.trunc(x_drift) % n_x;
         // const x_error = x_drift - x_shift;
         for (let x = 0; x < n_x; x++) {
           // This is where a velocity shift can be implemented for time slice t
-          // with a shift ~ (x_speed * t * (n_x/L)) modulo n_x
+          // with a shift ~ (u_x * t * (n_x/L)) modulo n_x
           let i_cell = y * n_x + (x - x_sense * x_shift + n_x) % n_x;
           const cell_state = lattice_slice[i_cell];
           // At the start of the row, when x=0, previous_cell_state=null, 
