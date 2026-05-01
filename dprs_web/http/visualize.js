@@ -196,7 +196,10 @@ export class Visualize {
             for (let y = 0; y < n_y; y++) {
                 let previous_cell_state = null;
                 let x_start = null;
-                const u_x = this.simulation.parameters.probabilities.u_x;
+                // This isn't the correct way to get ux, but...
+                const u_x = this.simulation_controls.get_float("u_x", -100, 100);
+                // const u_x = this.simulation_controls!.parameters.probabilities.u_x;
+                // const u_x = this.simulation.parameters.probabilities.u_x;
                 const x_sense = Math.sign(u_x);
                 const x_drift = Math.abs(u_x) * t_slice;
                 const x_shift = Math.trunc(x_drift) % n_x;
