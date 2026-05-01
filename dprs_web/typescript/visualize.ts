@@ -36,12 +36,12 @@ export class Visualize {
    */
   div: html.HtmlElement;
 
-  /** Width of the required canvs
+  /** Width of the required canvas
    *
    */
   width: number = 0;
 
-  /** Height of the required canvs
+  /** Height of the required canvas
    *
    */
   height: number = 0;
@@ -249,7 +249,7 @@ export class Visualize {
             previous_cell_value = cell_value;
           }
           // Move to next cell in the flattened lattice slice
-          i_cell = i_cell + 1;
+          i_cell++;
         }
         if (previous_cell_value != 0) {
           // At end of each lattice row:
@@ -331,7 +331,7 @@ export class Visualize {
   // Step backward by one iteration, freezing the playback if need be
   decrement_slice(): void {
     this.animation_stop();
-    const next_slice = this.slice - 1;
+    const next_slice = this.slice - this.t_increment;
     if (next_slice >= 0 && next_slice <= this.simulation.n_results()) {
       this.slice = next_slice;
     }
