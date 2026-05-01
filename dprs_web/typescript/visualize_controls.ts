@@ -20,7 +20,7 @@ export interface VisualizationControlClient {
   // Allows toggling of playback
   get_animation_state(): boolean;
   // redraw(): void;
-  reset_rough_canvas(): void;
+  reset_rough_background(): void;
 }
 
 export class VisualizeControls {
@@ -92,7 +92,7 @@ export class VisualizeControls {
       (_e: Event, value) => {
         this.parent.set_zoom(value);
         // Don't do this, because we have already generated a rough bgrd for max zoom
-        // this.parent.reset_rough_canvas();
+        // this.parent.reset_rough_background();
       },
       { id: "zoom" },
     );

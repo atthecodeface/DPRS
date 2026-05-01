@@ -159,7 +159,22 @@ export class Visualize {
             // Make a "rough" looking canvas
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, this.width, this.height);
+            var redo;
             if (this.rough_background == null) {
+                redo = true;
+            }
+            else {
+                // Make sure to rebuild the rough bgrd if we've made the lattice bigger
+                // and run a new sim
+                if (this.rough_background.width < n_x * this.max_zoom
+                    || this.rough_background.height < n_y * this.max_zoom) {
+                    redo = true;
+                }
+                else {
+                    redo = false;
+                }
+            }
+            if (redo) {
                 this.rough_background = ctx.createImageData(n_x * this.max_zoom, n_y * this.max_zoom);
                 let rough_canvas_data = this.rough_background.data;
                 for (let i = 0; i < rough_canvas_data.length; i += 4) {
@@ -237,7 +252,7 @@ export class Visualize {
         this.log.pop_reason();
     }
     /** If we're zooming etc, need to reset rough canvas to force redraw */
-    reset_rough_canvas() {
+    reset_rough_background() {
         this.rough_background = null;
     }
     /** Set redraw */

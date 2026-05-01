@@ -31,7 +31,7 @@ export class VisualizeControls {
         tr_zoom.add_ele("td").add_input_range("zoom", { min: 1, max: 5, step: 0.1 }, (_e, value) => {
             this.parent.set_zoom(value);
             // Don't do this, because we have already generated a rough bgrd for max zoom
-            // this.parent.reset_rough_canvas();
+            // this.parent.reset_rough_background();
         }, { id: "zoom" });
         this.td_playback = playback_table;
         const tr_slice = zoom_table.add_ele("tr", { classes: "zoom_slice" });
