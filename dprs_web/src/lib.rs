@@ -70,8 +70,8 @@ macro_rules! field_getter_setter {
 
 mod parameters;
 mod simulation;
-mod topo_bc;
+mod topology_bc;
 
 pub use parameters::Parameters;
 pub use simulation::Simulation;
-pub use topo_bc::TopoBc;
+pub use topology_bc::TopologyBc;

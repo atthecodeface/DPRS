@@ -262,6 +262,26 @@ export class HtmlElement {
     return new HtmlElement(input);
   }
 
+  add_input_radio_with_callback(
+    name: string,
+    value: string,
+    required: boolean,
+    callback: (event: Event) => void,
+    id_classes: IdClasses = {},
+  ) {
+    const input = document.createElement("input");
+    input.setAttribute("type", "radio");
+    input.setAttribute("name", name);
+    input.setAttribute("value", value);
+    if (required) {
+      input.setAttribute("required", "true");
+    }
+    HtmlElement.set_id_classes(input, id_classes);
+    input.addEventListener("change", callback);
+    this.ele.appendChild(input);
+    return new HtmlElement(input);
+  }
+
   add_input_range(
     name: string,
     range: Range,

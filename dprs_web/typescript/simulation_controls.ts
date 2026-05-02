@@ -4,15 +4,18 @@ import { JsParameters } from "./js_parameters.js";
 export class SimulationControls {
   ele_id: string;
   div: html.HtmlElement;
-  dims: number;
+  dim: number;
   parameters: JsParameters;
-  // t_increment: number;
+  presets: any | null;
 
-  constructor(ele_id: string, div_id: string, dims: number) {
+  constructor(
+    ele_id: string, div_id: string, dim: number, presets: any | null = null
+  ) {
     this.parameters = new JsParameters();
 
     this.ele_id = ele_id;
-    this.dims = dims;
+    this.dim = dim;
+    this.presets = presets;
 
     const div = document.getElementById(div_id);
     if (!div) {
@@ -35,6 +38,7 @@ export class SimulationControls {
     html.set_input_value(this.ele_id + id, value);
   }
 
+  // Set parameter values in web page
   populate_values() {
     this.populate_value("p_1", this.parameters.probabilities.p_1);
     this.populate_value("p_2", this.parameters.probabilities.p_2);
@@ -43,25 +47,31 @@ export class SimulationControls {
     this.populate_value("p_diag", this.parameters.probabilities.p_diag);
     this.populate_value("u_x", this.parameters.probabilities.u_x);
     this.populate_value("p_initial", this.parameters.probabilities.p_initial);
-    this.populate_value("n_iterations", this.parameters.params.n_iterations);
-    this.populate_value("sample_period", this.parameters.params.sample_period);
-    this.populate_value("random_seed", this.parameters.params.random_seed);
-    this.populate_value("n_x", this.parameters.dims.n_x);
-    this.populate_value("n_y", this.parameters.dims.n_y);
-    this.populate_value("n_z", this.parameters.dims.n_z);
+    this.populate_value("n_iterations", this.parameters.settings.n_iterations);
+    this.populate_value("sample_period", this.parameters.settings.sample_period);
+    this.populate_value("random_seed", this.parameters.settings.random_seed);
+    this.populate_value("n_x", this.parameters.dimensions.n_x);
+    this.populate_value("n_y", this.parameters.dimensions.n_y);
+    this.populate_value("n_z", this.parameters.dimensions.n_z);
 
-    if (this.parameters.params.seed_kind == "center") {
+    if (this.parameters.settings.seed_kind == "center") {
       html.set_input_checked(this.ele_id + "seed_center", true);
-    } else if (this.parameters.params.seed_kind == "edge") {
+    } else if (this.parameters.settings.seed_kind == "edge") {
       html.set_input_checked(this.ele_id + "seed_edge", true);
     } else {
       html.set_input_checked(this.ele_id + "seed_random", true);
     }
-    if (this.parameters.params.simulation_kind == "simple_dk") {
+
+    if (this.presets != null) {
+      console.log(`Setting preset in web page`,)
+      html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
+    }
+
+    if (this.parameters.settings.simulation_kind == "simple_dk") {
       html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-    } else if (this.parameters.params.simulation_kind == "staggered_dk") {
+    } else if (this.parameters.settings.simulation_kind == "staggered_dk") {
       html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
-    } else if (this.parameters.params.simulation_kind == "bedload") {
+    } else if (this.parameters.settings.simulation_kind == "bedload") {
       html.set_input_checked(this.ele_id + "sk_bedload", true);
     }
   }
@@ -90,12 +100,25 @@ export class SimulationControls {
     html.set_input_checked(this.ele_id + "sk_bedload", true);
   }
 
-  populate_parameters() {
-    const simulation_choice = html.get_input_radio_checked(
-      this.ele_id + "sim_kind",
-    );
-    const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
+  // set_preset() {
+  //   html.set_input_checked(this.ele_id + "sim_preset1", true);
+  // }
 
+  // Get parameter values from web page
+  populate_parameters() {
+    const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
+    const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
+    const preset = html.get_input_radio_checked(this.ele_id + "_preset");
+
+    if (simulation_choice !== null) {
+      this.parameters.settings.simulation_kind = simulation_choice;
+    }
+    if (seed_kind !== null) {
+      this.parameters.settings.seed_kind = seed_kind;
+    }
+    if (preset !== null) {
+      this.parameters.preset = Number(preset);
+    }
     this.parameters.probabilities.p_1 = this.get_float("p_1", 0, 1);
     this.parameters.probabilities.p_2 = this.get_float("p_2", 0, 1);
     this.parameters.probabilities.p_conj = this.get_float("p_conj", 0, 1);
@@ -103,70 +126,64 @@ export class SimulationControls {
     this.parameters.probabilities.p_diag = this.get_float("p_diag", 0, 1);
     this.parameters.probabilities.u_x = this.get_float("u_x", -1e9, +1e9);
     this.parameters.probabilities.p_initial = this.get_float("p_initial", 0, 1);
-
-    if (simulation_choice !== null) {
-      this.parameters.params.simulation_kind = simulation_choice;
-    }
-    if (seed_kind !== null) {
-      this.parameters.params.seed_kind = seed_kind;
-    }
-    this.parameters.params.n_iterations = this.get_int(
-      "n_iterations",
-      0,
-      1000000,
-    );
-    this.parameters.params.sample_period = this.get_int(
-      "sample_period",
-      1,
-      100000,
-    );
-    this.parameters.params.random_seed = this.get_int("random_seed", 1, 100000);
-
-    this.parameters.dims.n_x = this.get_int("n_x", 10, 10000);
-    this.parameters.dims.n_y = this.get_int("n_y", 10, 10000);
-    this.parameters.dims.n_z = this.get_int("n_z", 10, 10000);
+    this.parameters.settings.n_iterations = this.get_int("n_iterations", 0, 1000000);
+    this.parameters.settings.sample_period = this.get_int("sample_period", 1, 100000);
+    this.parameters.settings.random_seed = this.get_int("random_seed", 1, 100000);
+    this.parameters.dimensions.n_x = this.get_int("n_x", 10, 10000);
+    this.parameters.dimensions.n_y = this.get_int("n_y", 10, 10000);
+    this.parameters.dimensions.n_z = this.get_int("n_z", 10, 10000);
   }
 
   build_html() {
     const ele_id = this.ele_id;
-    const dims = this.dims;
+    const dims = this.dim;
     this.div.clear();
 
     const table = this.div.add_ele("table", { classes: "sim_ctrl" });
-    const dims_table = table
+    const dims_probabilities_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "dims" });
-    const probs_table = table
+      .add_ele("table", { classes: "dims_probabilities_table" });
+    const steps_slicing_seed_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "probability" });
-    const param_table = table
+      .add_ele("table", { classes: "steps_slicing_seed" });
+    const edge_center_randomized_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "param" });
-    const seed_table = table
+      .add_ele("table", { classes: "edge_center_randomized" });
+    const simple_staggered_bedload_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "seed" });
-    const control_table = table
+      .add_ele("table", { classes: "simple_staggered_bedload" });
+    const presets_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "control" });
+      .add_ele("table", { classes: "presets" });
+    const run_save_table = table
+      .add_ele("tr")
+      .add_ele("td")
+      .add_ele("table", { classes: "run_save" });
 
+
+    // Dims
     {
-      const tr = dims_table.add_ele("tr", { id: ele_id + "dims" });
+      let id = ele_id + "dims";
+      const tr = dims_probabilities_table.add_ele("tr", { id: id });
       const td = tr.add_ele("td");
-
       // const label_nx = "<div><mjx-container class='MathJax CtxtMenu_Attached_0' jax='CHTML' style='font-size: 119.5%; position: relative;' tabindex='0' ctxtmenu_counter='1'><mjx-math class='MJX-TEX' aria-hidden='true'><mjx-msub><mjx-mi class='mjx-i'><mjx-c class='mjx-c1D45B TEX-I'></mjx-c></mjx-mi><mjx-script style='vertical-align: -0.15em;'><mjx-mi class='mjx-i' size='s'><mjx-c class='mjx-c1D465 TEX-I'></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable='on' display='inline'><mjx-container class='MathJax CtxtMenu_Attached_0' jax='CHTML' style='font-size: 119.5%; position: relative;' tabindex='0' ctxtmenu_counter='4'><mjx-math class='MJX-TEX' aria-hidden='true'><mjx-msub><mjx-mi class='mjx-i'><mjx-c class='mjx-c1D45B TEX-I'></mjx-c></mjx-mi><mjx-script style='vertical-align: -0.15em;'><mjx-mi class='mjx-i' size='s'><mjx-c class='mjx-c1D465 TEX-I'></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable='on' display='inline'><math xmlns='http://www.w3.org/1998/Math/MathML'><msub><mi>n</mi><mi>x</mi></msub></math></mjx-assistive-mml></mjx-container></mjx-assistive-mml></mjx-container></div>";
-      td.add_label("n_x", { classes: "sim_controls_label" }).set_content("x:");
+      td.add_label("n_x", { classes: "sim_controls_label" }).set_content(
+        "x:"
+      );
       td.add_input_text("n_x", "20", {
         id: this.ele_id + "n_x",
         classes: "sim_controls_text dims_n_text",
       });
       if (dims >= 2) {
         const td = tr.add_ele("td");
-        td.add_label("n_y", { classes: "sim_controls_label" }).set_content("y:");
+        td.add_label("n_y", { classes: "sim_controls_label" }).set_content(
+          "y:"
+        );
         td.add_input_text("n_y", "20", {
           id: this.ele_id + "n_y",
           classes: "sim_controls_text dims_n_text",
@@ -175,18 +192,20 @@ export class SimulationControls {
       }
       if (dims >= 3) {
         const td = tr.add_ele("td");
-        td.add_label("n_z", { classes: "sim_controls_label" }).set_content("z:");
+        td.add_label("n_z", { classes: "sim_controls_label" }).set_content(
+          "z:"
+        );
         const x = td.add_input_text("n_z", "20", {
           id: this.ele_id + "n_z",
           classes: "sim_controls_text dims_n_text",
         });
       }
-      // const td_dummy1 = tr.add_ele("td");
-      // td_dummy1.add_label("dummy1", { classes: "dummy" }).set_content("   ");
     }
 
+    // Probabilities
     {
-      const tr = probs_table.add_ele("tr", { id: ele_id + "probability" });
+      let id = ele_id + "probability";
+      const tr = dims_probabilities_table.add_ele("tr", { id: id });
       for (const [label, thing] of [
         ["p_1", "p_1"], ["p_2", "p_2"], ["p_d", "p_diag"],
       ]) {
@@ -200,9 +219,9 @@ export class SimulationControls {
         });
       }
     }
-
     {
-      const tr = probs_table.add_ele("tr", { id: ele_id + "probability" });
+      let id = ele_id + "probability";
+      const tr = dims_probabilities_table.add_ele("tr", { id: id });
       for (const [label, thing] of [
         ["p_0", "p_initial"], ["u_x", "u_x"], ["p_ext", "p_conj"],
       ]) {
@@ -217,12 +236,14 @@ export class SimulationControls {
       }
     }
 
+    // Steps / slicing / seed
     {
-      const tr = param_table.add_ele("tr", { id: ele_id + "sim_controls" });
-      for (const [label, name, value] of [
-        ["Steps", "n_iterations", "1000"],
-        ["Slicing", "sample_period", "20"],
-        ["Seed", "random_seed", "1"],
+      let id = ele_id + "sim_controls";
+      const tr = steps_slicing_seed_table.add_ele("tr", { id: id });
+      for (const [name, label, value] of [
+        ["n_iterations", "Steps", "1000"],
+        ["sample_period", "Slicing", "20"],
+        ["random_seed", "Seed", "1"],
       ]) {
         const td = tr.add_ele("td");
         td.add_label(name!, { classes: "sim_controls_label" }).set_content(
@@ -235,33 +256,70 @@ export class SimulationControls {
       }
     }
 
+    // Edge / center / randomized
     {
-      const tr = seed_table.add_ele("tr", { id: ele_id + "_seed_kind" });
+      let id = ele_id + "_seed_kind";
+      const tr = edge_center_randomized_table.add_ele("tr", { id: ele_id + "_seed_kind" });
       for (const [name, value] of [
-        ["edge", "Edge cell"],
-        ["center", "Center cell"],
-        ["random", "Randomized"],
+        ["edge", "Edge cell:"],
+        ["center", "Center cell:"],
+        ["random", "Randomized:"],
       ]) {
         const td = tr.add_ele("td");
-        td.add_input_radio(ele_id + "_seed_kind", name!, true, {
-          id: ele_id + "seed_" + name,
-          classes: "sim_controls_radio " + name,
-        });
         td.add_label(ele_id + "seed_" + name, {
           classes: "sim_controls_label",
         }).set_content(value);
+        td.add_input_radio(id, name!, true, {
+          id: ele_id + "seed_" + name,
+          classes: "sim_controls_radio " + name,
+        });
       }
     }
 
+    // Presets
     {
-      const tr = seed_table.add_ele("tr", { id: ele_id + "sim_kind" });
+      let id = ele_id + "sim_preset";
+      const tr = presets_table.add_ele("tr", { id: id });
+
+      // Presets row label
+      // const td = tr.add_ele("td");
+      // const name = "label";
+      // const value = "Presets:"
+      // td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
+
+      // console.log(`Creating radio button for bedload_2d preset ${this.presets}`,)
+      if (this.presets != null) {
+        for (const [name, value] of this.presets) {
+          const td = tr.add_ele("td");
+          td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
+          td.add_input_radio_with_callback(
+            id, name!, true,
+            preset_select,
+            {
+              id: ele_id + "sim_preset" + name,
+              classes: "sim_preset_radio " + name,
+            });
+        }
+      }
+      function preset_select(event: Event) {
+        const target = event.target as HTMLInputElement;
+        const preset = Number(target.value);
+        (window as any).main.enact_preset(preset);
+      }
+
+    }
+
+    // Simple / staggered / bedload
+    {
+      let id = ele_id + "sim_kind";
+      const tr = simple_staggered_bedload_table.add_ele("tr", { id: id });
       for (const [name, value] of [
         ["simple_dk", "Simple"],
         ["staggered_dk", "Staggered"],
         ["bedload", "Bedload"],
       ]) {
         const td = tr.add_ele("td");
-        td.add_input_radio(ele_id + "_sim_kind", name!, true, {
+        td.add_input_radio(id, name!, true, {
           id: ele_id + "sk_" + name,
           classes: "sim_controls_radio " + name,
         });
@@ -271,9 +329,10 @@ export class SimulationControls {
       }
     }
 
+    // Run / save
     {
-      const tr = control_table.add_ele("tr", { id: ele_id + "controls" });
-
+      let id = ele_id + "controls";
+      const tr = run_save_table.add_ele("tr", { id: id });
       const td_run = tr.add_ele("td");
       td_run.add_input_button(
         "Run simulation",
@@ -285,7 +344,6 @@ export class SimulationControls {
           classes: "controls simulation run_simulation",
         },
       );
-
       const td_save = tr.add_ele("td");
       td_save.add_input_button(
         "Save simulation",

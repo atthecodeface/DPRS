@@ -6,10 +6,6 @@ import { Animate } from "./animate.js";
  *
  */
 export class Visualize {
-    /** Drift speed */
-    // Move this to JsParameters
-    // u_x: number = 0;
-    // do_drift: boolean = false;
     /**
      *
      * Create a new Visualize for a simulation
@@ -79,7 +75,7 @@ export class Visualize {
         else {
             this.t_increment = 1;
         }
-        this.width = this.simulation.parameters.dims.n_x * x_scale;
+        this.width = this.simulation.parameters.dimensions.n_x * x_scale;
         this.height = this.simulation.n_results() * y_scale;
         this.log.info(`Created canvas size ${this.width} x ${this.height} with stagger ${is_staggered} and scale ${x_scale}x${y_scale}`);
         this.div.clear();
@@ -132,8 +128,8 @@ export class Visualize {
         }
         const x_scale = this.scale;
         const y_scale = this.scale;
-        this.width = this.simulation.parameters.dims.n_x * x_scale;
-        this.height = this.simulation.parameters.dims.n_y * y_scale;
+        this.width = this.simulation.parameters.dimensions.n_x * x_scale;
+        this.height = this.simulation.parameters.dimensions.n_y * y_scale;
         /*
         this.log.info(
           `Created canvas size ${this.width} x ${this.height} with scale ${x_scale}x${y_scale}`,
@@ -153,8 +149,8 @@ export class Visualize {
             return;
         }
         // Get the lattice size
-        const n_x = this.simulation.parameters.dims.n_x;
-        const n_y = this.simulation.parameters.dims.n_y;
+        const n_x = this.simulation.parameters.dimensions.n_x;
+        const n_y = this.simulation.parameters.dimensions.n_y;
         if (this.do_rough_background) {
             // Make a "rough" looking canvas
             ctx.fillStyle = "black";
@@ -193,7 +189,6 @@ export class Visualize {
         // Get this lattice slice (flattened into a 1d array) maybe
         const t_slice = this.slice;
         const lattice_slice = this.simulation.result(t_slice);
-        // console.log("Time slice:", t_slice);
         // Print the time slice in the lower-left corner of the canvas
         const offset = 10;
         ctx.font = "12px Arial";
@@ -246,9 +241,6 @@ export class Visualize {
                 }
             }
         }
-        /*
-        this.log.info("Completed canvas");
-        */
         this.log.pop_reason();
     }
     /** If we're zooming etc, need to reset rough canvas to force redraw */

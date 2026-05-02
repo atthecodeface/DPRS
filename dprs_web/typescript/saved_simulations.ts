@@ -78,8 +78,8 @@ export class SavedSimulations {
       params.from_json(sim_json);
       this.descriptions.set(
         f,
-        `${params.dims.n_x}x${params.dims.n_y}x${params.dims.n_z}` +
-          `:${params.probabilities.p_1}/${params.probabilities.p_2}`,
+        `${params.dimensions.n_x}x${params.dimensions.n_y}x${params.dimensions.n_z}` +
+        `:${params.probabilities.p_1}/${params.probabilities.p_2}`,
       );
     }
   }
