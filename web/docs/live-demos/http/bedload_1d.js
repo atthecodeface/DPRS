@@ -40,6 +40,9 @@ class Main {
     }
     get_default_parameters() {
         const p = new JsParameters();
+        p.dimensions.n_x = 350;
+        p.dimensions.n_y = 1;
+        p.dimensions.n_z = 1;
         p.probabilities.p_1 = 0.64;
         p.probabilities.p_2 = 0.64;
         p.probabilities.p_conj = 0.0;
@@ -50,9 +53,6 @@ class Main {
         p.settings.n_iterations = 300;
         p.settings.sample_period = 1;
         p.settings.random_seed = 1;
-        p.dimensions.n_x = 350;
-        p.dimensions.n_y = 1;
-        p.dimensions.n_z = 1;
         p.settings.seed_kind = "random";
         p.settings.simulation_kind = "bedload";
         return p;
