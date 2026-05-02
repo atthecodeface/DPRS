@@ -1,23 +1,24 @@
-import init from "../pkg/dprs_wasm.js";
-import { Log, Logger } from "./log.js";
+import { Logger } from "./log.js";
 import { Visualize } from "./visualize.js";
 import { VisualizeControls } from "./visualize_controls.js";
 import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
 import { SimulationControls } from "./simulation_controls.js";
-class Main {
+export class MainBase {
     constructor(logger, _) {
         const dim = 2;
-        this.log = new Logger(logger, `dk_${dim}d`);
+        this.log = new Logger(logger, `bedload_${dim}d`);
         this.log.push_reason("init");
         this.log.info("Starting");
         this.simulation = new JsSimulation(logger);
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
-        this.visualize.do_rough_background = false;
+        // this.visualize.u_x = -0.2;
+        this.visualize.do_rough_background = true;
         this.simulation_controls = new SimulationControls(`${dim}d_sc_`, `${dim}d_sim_controls`, dim, this.get_presets());
         this.simulation_controls.parameters = this.get_default_parameters();
         this.simulation_controls.populate_values();
+        this.simulation_controls.set_bedload();
         this.log.info("HTML built, running initial simulation");
         this.run_simulation(dim);
         this.log.info("Initialization complete");
@@ -31,45 +32,34 @@ class Main {
         const sim_parameters = this.simulation_controls.parameters;
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation complete with ${this.simulation.n_results()} results`);
-        this.visualize_controls.populate_values(this.simulation);
+        const initial_zoom = 2.2;
+        this.visualize_controls.populate_values(this.simulation, initial_zoom);
         this.visualize.set_redraw(this.simulation_controls);
         this.visualize.redraw();
         this.log.pop_reason();
     }
     get_default_parameters() {
         const p = new JsParameters();
-        p.dimensions.n_x = 350;
-        p.dimensions.n_y = 200;
-        p.dimensions.n_z = 1;
-        p.settings.n_iterations = 500;
-        p.settings.sample_period = 1;
-        p.settings.random_seed = 6;
-        p.settings.seed_kind = "center";
-        p.settings.simulation_kind = "staggered_dk";
-        p.probabilities.p_1 = 0.38; //0.70548515
-        p.probabilities.p_2 = 0.38;
-        p.probabilities.p_conj = 0.0;
-        p.probabilities.p_nbr = 0.0;
-        p.probabilities.p_diag = 0.0;
-        p.probabilities.u_x = 0.0;
-        p.probabilities.p_initial = 0.5;
         return p;
     }
     get_presets() {
         return null;
     }
     enact_preset(preset) {
+        var p = this.get_default_parameters();
+        this.simulation_controls.parameters = p;
+        this.simulation_controls.populate_values();
     }
 }
-window.main = null;
-function complete_init() {
-    const window_log = new Log("Log");
-    const main = new Main(window_log, window.location.search);
-    window.log = window_log;
-    window.main = main;
-}
-window.addEventListener("load", (e) => {
-    init().then(() => {
-        complete_init();
-    });
-});
+// (window as any).main = null;
+// function complete_init() {
+//   const window_log = new Log("Log");
+//   const main = new MainBase(window_log, window.location.search);
+//   (window as any).log = window_log;
+//   (window as any).main = main;
+// }
+// window.addEventListener("load", (e) => {
+//   init().then(() => {
+//     complete_init();
+//   });
+// });

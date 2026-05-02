@@ -42,6 +42,11 @@ class Main {
         p.dimensions.n_x = 350;
         p.dimensions.n_y = 1;
         p.dimensions.n_z = 1;
+        p.settings.n_iterations = 500;
+        p.settings.sample_period = 1;
+        p.settings.random_seed = 1;
+        p.settings.seed_kind = "random";
+        p.settings.simulation_kind = "staggered_dk";
         p.probabilities.p_1 = 0.7054; //0.70548515
         p.probabilities.p_2 = 0.7054;
         p.probabilities.p_conj = 0.0;
@@ -49,11 +54,6 @@ class Main {
         p.probabilities.p_diag = 0.0;
         p.probabilities.u_x = 0.0;
         p.probabilities.p_initial = 0.5;
-        p.settings.n_iterations = 500;
-        p.settings.sample_period = 1;
-        p.settings.random_seed = 1;
-        p.settings.seed_kind = "random";
-        p.settings.simulation_kind = "staggered_dk";
         return p;
     }
     get_presets() {
