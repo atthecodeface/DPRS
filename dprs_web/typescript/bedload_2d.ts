@@ -117,7 +117,6 @@ class Main extends MainBase {
   }
 }
 
-
 (window as any).main = null;
 function complete_init() {
   const window_log = new Log("Log");
