@@ -26,14 +26,6 @@ export class SimulationControls {
     this.build_html();
   }
 
-  get_float(id: string, min: number, max: number): number {
-    return html.get_input_float(this.ele_id + id, min, max);
-  }
-
-  get_int(id: string, min: number, max: number): number {
-    return html.get_input_int(this.ele_id + id, min, max);
-  }
-
   // Set parameter values in web page
   populate_webpage_entries() {
     this.set_webpage_entry("p_1", this.parameters.probabilities.p_1);
@@ -67,15 +59,6 @@ export class SimulationControls {
       this.set_webpage_radio_button("staggered", true);
     }
   }
-
-  set_webpage_entry(id: string, value: any) {
-    html.set_input_value(this.ele_id + id, value);
-  }
-
-  set_webpage_radio_button(id: string, value: any) {
-    html.set_input_checked(this.ele_id + id, value);
-  }
-
 
   // Get parameter values from web page
   get_parameters_from_webpage_entries() {
@@ -332,5 +315,21 @@ export class SimulationControls {
         },
       );
     }
+  }
+
+  set_webpage_entry(id: string, value: any) {
+    html.set_input_value(this.ele_id + id, value);
+  }
+
+  set_webpage_radio_button(id: string, value: any) {
+    html.set_input_checked(this.ele_id + id, value);
+  }
+
+  get_float(id: string, min: number, max: number): number {
+    return html.get_input_float(this.ele_id + id, min, max);
+  }
+
+  get_int(id: string, min: number, max: number): number {
+    return html.get_input_int(this.ele_id + id, min, max);
   }
 }
