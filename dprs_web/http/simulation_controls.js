@@ -19,9 +19,6 @@ export class SimulationControls {
     get_int(id, min, max) {
         return html.get_input_int(this.ele_id + id, min, max);
     }
-    set_webpage_entry(id, value) {
-        html.set_input_value(this.ele_id + id, value);
-    }
     // Set parameter values in web page
     populate_webpage_entries() {
         this.set_webpage_entry("p_1", this.parameters.probabilities.p_1);
@@ -38,24 +35,30 @@ export class SimulationControls {
         this.set_webpage_entry("n_y", this.parameters.dimensions.n_y);
         this.set_webpage_entry("n_z", this.parameters.dimensions.n_z);
         if (this.parameters.settings.initial_seeding == "center") {
-            html.set_input_checked(this.ele_id + "seed_center", true);
+            this.set_webpage_radio_button("seed_center", true);
         }
         else if (this.parameters.settings.initial_seeding == "edge") {
-            html.set_input_checked(this.ele_id + "seed_edge", true);
+            this.set_webpage_radio_button("seed_edge", true);
         }
         else {
-            html.set_input_checked(this.ele_id + "seed_random", true);
+            this.set_webpage_radio_button("seed_random", true);
         }
         if (this.presets != null) {
             console.log(`Setting preset in web page`);
-            html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
+            this.set_webpage_radio_button("sim_preset" + this.parameters.preset.toString(), true);
         }
         if (this.parameters.settings.growth_scheme == "Simple") {
-            html.set_input_checked(this.ele_id + "simple", true);
+            this.set_webpage_radio_button("simple", true);
         }
         else if (this.parameters.settings.growth_scheme == "Staggered") {
-            html.set_input_checked(this.ele_id + "staggered", true);
+            this.set_webpage_radio_button("staggered", true);
         }
+    }
+    set_webpage_entry(id, value) {
+        html.set_input_value(this.ele_id + id, value);
+    }
+    set_webpage_radio_button(id, value) {
+        html.set_input_checked(this.ele_id + id, value);
     }
     // Get parameter values from web page
     get_parameters_from_webpage_entries() {
