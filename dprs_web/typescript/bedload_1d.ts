@@ -87,6 +87,7 @@ class Main {
     p.settings.random_seed = 1;
     p.settings.seed_kind = "random";
     p.settings.simulation_kind = "bedload";
+
     return p;
   }
 
