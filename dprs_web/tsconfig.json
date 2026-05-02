@@ -50,6 +50,7 @@
     "typescript/visualize.ts",
     "typescript/visualize_controls.ts",
     "typescript/dp.ts",
+    "typescript/base.ts",
     "typescript/dk_1d.ts",
     "typescript/dk_2d.ts",
     "typescript/bedload_1d.ts",
