@@ -19,28 +19,28 @@ export class SimulationControls {
     get_int(id, min, max) {
         return html.get_input_int(this.ele_id + id, min, max);
     }
-    set_webpage_value(id, value) {
+    set_webpage_entry(id, value) {
         html.set_input_value(this.ele_id + id, value);
     }
     // Set parameter values in web page
-    populate_webpage_values() {
-        this.set_webpage_value("p_1", this.parameters.probabilities.p_1);
-        this.set_webpage_value("p_2", this.parameters.probabilities.p_2);
-        this.set_webpage_value("p_conj", this.parameters.probabilities.p_conj);
-        this.set_webpage_value("p_nbr", this.parameters.probabilities.p_nbr);
-        this.set_webpage_value("p_diag", this.parameters.probabilities.p_diag);
-        this.set_webpage_value("u_x", this.parameters.probabilities.u_x);
-        this.set_webpage_value("p_initial", this.parameters.probabilities.p_initial);
-        this.set_webpage_value("n_iterations", this.parameters.settings.n_iterations);
-        this.set_webpage_value("sample_period", this.parameters.settings.sample_period);
-        this.set_webpage_value("random_seed", this.parameters.settings.random_seed);
-        this.set_webpage_value("n_x", this.parameters.dimensions.n_x);
-        this.set_webpage_value("n_y", this.parameters.dimensions.n_y);
-        this.set_webpage_value("n_z", this.parameters.dimensions.n_z);
-        if (this.parameters.settings.seed_kind == "center") {
+    populate_webpage_entries() {
+        this.set_webpage_entry("p_1", this.parameters.probabilities.p_1);
+        this.set_webpage_entry("p_2", this.parameters.probabilities.p_2);
+        this.set_webpage_entry("p_conj", this.parameters.probabilities.p_conj);
+        this.set_webpage_entry("p_nbr", this.parameters.probabilities.p_nbr);
+        this.set_webpage_entry("p_diag", this.parameters.probabilities.p_diag);
+        this.set_webpage_entry("u_x", this.parameters.probabilities.u_x);
+        this.set_webpage_entry("p_initial", this.parameters.probabilities.p_initial);
+        this.set_webpage_entry("n_iterations", this.parameters.settings.n_iterations);
+        this.set_webpage_entry("sample_period", this.parameters.settings.sample_period);
+        this.set_webpage_entry("random_seed", this.parameters.settings.random_seed);
+        this.set_webpage_entry("n_x", this.parameters.dimensions.n_x);
+        this.set_webpage_entry("n_y", this.parameters.dimensions.n_y);
+        this.set_webpage_entry("n_z", this.parameters.dimensions.n_z);
+        if (this.parameters.settings.initial_seeding == "center") {
             html.set_input_checked(this.ele_id + "seed_center", true);
         }
-        else if (this.parameters.settings.seed_kind == "edge") {
+        else if (this.parameters.settings.initial_seeding == "edge") {
             html.set_input_checked(this.ele_id + "seed_edge", true);
         }
         else {
@@ -50,13 +50,13 @@ export class SimulationControls {
             console.log(`Setting preset in web page`);
             html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
         }
-        if (this.parameters.settings.simulation_kind == "simple_dk") {
+        if (this.parameters.settings.simulation_scheme == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
         }
-        else if (this.parameters.settings.simulation_kind == "staggered_dk") {
+        else if (this.parameters.settings.simulation_scheme == "staggered_dk") {
             html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
         }
-        else if (this.parameters.settings.simulation_kind == "bedload") {
+        else if (this.parameters.settings.simulation_scheme == "bedload") {
             html.set_input_checked(this.ele_id + "sk_bedload", true);
         }
     }
@@ -82,15 +82,15 @@ export class SimulationControls {
     //   html.set_input_checked(this.ele_id + "sim_preset1", true);
     // }
     // Get parameter values from web page
-    get_parameters_from_webpage_values() {
+    get_parameters_from_webpage_entries() {
         const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
-        const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
+        const initial_seeding = html.get_input_radio_checked(this.ele_id + "_seed_kind");
         const preset = html.get_input_radio_checked(this.ele_id + "_preset");
         if (simulation_choice !== null) {
-            this.parameters.settings.simulation_kind = simulation_choice;
+            this.parameters.settings.simulation_scheme = simulation_choice;
         }
-        if (seed_kind !== null) {
-            this.parameters.settings.seed_kind = seed_kind;
+        if (initial_seeding !== null) {
+            this.parameters.settings.initial_seeding = initial_seeding;
         }
         if (preset !== null) {
             this.parameters.preset = Number(preset);

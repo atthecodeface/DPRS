@@ -61,32 +61,32 @@ class Settings {
   n_iterations: number = 500;
   sample_period: number = 1;
   random_seed: number = 1;
-  seed_kind: string = "center";
-  simulation_kind: string = "staggered_dk";
+  initial_seeding: string = "center";
+  simulation_scheme: string = "staggered_dk";
   set_parameters(parameters: DprsWasm.Parameters) {
     parameters.n_iterations = this.n_iterations;
     parameters.sample_period = this.sample_period;
     parameters.random_seed = this.random_seed;
-    parameters.initial_condition = this.seed_kind;
+    parameters.initial_condition = this.initial_seeding;
   }
 
   wasm_simulation_kind(): string {
-    var simulation_kind = "simplified_dk";
-    if (this.simulation_kind == "staggered_dk") {
-      simulation_kind = "staggered_dk";
+    var simulation_scheme = "simplified_dk";
+    if (this.simulation_scheme == "staggered_dk") {
+      simulation_scheme = "staggered_dk";
     }
-    if (this.simulation_kind == "bedload") {
-      simulation_kind = "bedload";
+    if (this.simulation_scheme == "bedload") {
+      simulation_scheme = "bedload";
     }
-    return simulation_kind;
+    return simulation_scheme;
   }
 
   from_json(params_dict: any) {
     const n_iterations = params_dict["n_iterations"];
     const sample_period = params_dict["sample_period"];
     const random_seed = params_dict["random_seed"];
-    const seed_kind = params_dict["seed_kind"];
-    const simulation_kind = params_dict["simulation_kind"];
+    const initial_seeding = params_dict["initial_seeding"];
+    const simulation_scheme = params_dict["simulation_scheme"];
     if (typeof n_iterations == "number") {
       this.n_iterations = n_iterations;
     }
@@ -96,11 +96,11 @@ class Settings {
     if (typeof random_seed == "number") {
       this.random_seed = random_seed;
     }
-    if (typeof seed_kind == "string") {
-      this.seed_kind = seed_kind;
+    if (typeof initial_seeding == "string") {
+      this.initial_seeding = initial_seeding;
     }
-    if (typeof simulation_kind == "string") {
-      this.simulation_kind = simulation_kind;
+    if (typeof simulation_scheme == "string") {
+      this.simulation_scheme = simulation_scheme;
     }
   }
 }

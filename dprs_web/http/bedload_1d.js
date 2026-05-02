@@ -17,8 +17,8 @@ class Main extends MainBase {
         p.settings.n_iterations = 300;
         p.settings.sample_period = 1;
         p.settings.random_seed = 1;
-        p.settings.seed_kind = "random";
-        p.settings.simulation_kind = "bedload";
+        p.settings.initial_seeding = "random";
+        p.settings.simulation_scheme = "bedload";
         p.probabilities.p_1 = 0.64;
         p.probabilities.p_2 = 0.64;
         p.probabilities.p_conj = 0.0;

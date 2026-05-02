@@ -22,8 +22,8 @@ class Main extends MainBase {
     p.settings.n_iterations = 500;
     p.settings.sample_period = 1;
     p.settings.random_seed = 31;
-    p.settings.seed_kind = "edge";
-    p.settings.simulation_kind = "bedload";
+    p.settings.initial_seeding = "edge";
+    p.settings.simulation_scheme = "bedload";
 
     // These values are chosen to lie on the p1-p2 phase diagram boundary
     // p.probabilities.p_1 = 0.61487;  // random_seed: 5
