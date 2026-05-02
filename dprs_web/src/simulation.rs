@@ -71,7 +71,7 @@ impl Simulation {
                 (1, "DomanyKinzel", "Staggered") => {
                     sim_1d::<ModelStaggeredDK1D>(self.parameters.sim_parameters())
                 }
-                (1, "DKBedload", "SchemeC") => {
+                (1, "DKBedload", "BedloadC") => {
                     sim_1d::<ModelBedloadC1D>(self.parameters.sim_parameters())
                 }
                 (2, "DomanyKinzel", "Simple") => {
@@ -80,7 +80,7 @@ impl Simulation {
                 (2, "DomanyKinzel", "Staggered") => {
                     sim_2d::<ModelStaggeredDK2D>(self.parameters.sim_parameters())
                 }
-                (2, "DKBedload", "SchemeC") => {
+                (2, "DKBedload", "BedloadC") => {
                     sim_2d::<ModelBedloadC2D>(self.parameters.sim_parameters())
                 }
                 _ => {
