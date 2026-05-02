@@ -76,6 +76,12 @@ class Main {
     p.dimensions.n_y = 100;
     p.dimensions.n_z = 1;
 
+    p.settings.n_iterations = 500;
+    p.settings.sample_period = 1;
+    p.settings.random_seed = 31;
+    p.settings.seed_kind = "edge";
+    p.settings.simulation_kind = "bedload";
+
     // These values are chosen to lie on the p1-p2 phase diagram boundary
     // p.probabilities.p_1 = 0.61487;  // random_seed: 5
     // p.probabilities.p_2 = 0.9;
@@ -94,12 +100,6 @@ class Main {
     p.probabilities.p_diag = 0.1;
     p.probabilities.u_x = 1;
     p.probabilities.p_initial = 0.001;
-
-    p.settings.n_iterations = 500;
-    p.settings.sample_period = 1;
-    p.settings.random_seed = 31;
-    p.settings.seed_kind = "edge";
-    p.settings.simulation_kind = "bedload";
 
     return p;
   }
