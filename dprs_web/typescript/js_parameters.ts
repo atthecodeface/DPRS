@@ -57,7 +57,7 @@ class Probabilities {
   }
 }
 
-class SimSettings {
+class Settings {
   n_iterations: number = 500;
   sample_period: number = 1;
   random_seed: number = 1;
@@ -172,7 +172,7 @@ export class JsParameters {
    */
   parameters: DprsWasm.Parameters;
   probabilities: Probabilities;
-  simsettings: SimSettings;
+  settings: Settings;
   topology: Array<Topology>;
   dimensions: Dimensions;
   preset: number;
@@ -180,7 +180,7 @@ export class JsParameters {
   constructor() {
     this.parameters = new DprsWasm.Parameters();
     this.probabilities = new Probabilities();
-    this.simsettings = new SimSettings();
+    this.settings = new Settings();
     this.topology = [new Topology(), new Topology(), new Topology()];
     this.dimensions = new Dimensions();
     this.preset = 0;
@@ -196,7 +196,7 @@ export class JsParameters {
 
   as_parameters() {
     this.probabilities.set_parameters(this.parameters);
-    this.simsettings.set_parameters(this.parameters);
+    this.settings.set_parameters(this.parameters);
     this.dimensions.set_parameters(this.parameters);
     this.parameters.topology_bc_x = this.topology[0]!.topology_bc();
     this.parameters.topology_bc_y = this.topology[1]!.topology_bc();
@@ -206,7 +206,7 @@ export class JsParameters {
   }
 
   wasm_simulation_kind() {
-    return this.simsettings.wasm_simulation_kind();
+    return this.settings.wasm_simulation_kind();
   }
 
   dim(): number {
@@ -219,7 +219,7 @@ export class JsParameters {
   as_json() {
     const parameters = {
       probabilities: this.probabilities,
-      simsettings: this.simsettings,
+      settings: this.settings,
       dims: this.dimensions,
       topo: this.topology,
     };
@@ -237,7 +237,7 @@ export class JsParameters {
       return;
     }
     this.dimensions.from_json(obj.dims);
-    this.simsettings.from_json(obj.simsettings);
+    this.settings.from_json(obj.settings);
     this.probabilities.from_json(obj.probabilities);
     this.topology[0]!.from_json(obj.topo[0]);
     this.topology[1]!.from_json(obj.topo[1]);

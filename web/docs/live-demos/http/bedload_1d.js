@@ -47,14 +47,14 @@ class Main {
         p.probabilities.p_diag = 0.0;
         p.probabilities.u_x = 0.0;
         p.probabilities.p_initial = 0.5;
-        p.simsettings.n_iterations = 300;
-        p.simsettings.sample_period = 1;
-        p.simsettings.random_seed = 1;
+        p.settings.n_iterations = 300;
+        p.settings.sample_period = 1;
+        p.settings.random_seed = 1;
         p.dimensions.n_x = 350;
         p.dimensions.n_y = 1;
         p.dimensions.n_z = 1;
-        p.simsettings.seed_kind = "random";
-        p.simsettings.simulation_kind = "bedload";
+        p.settings.seed_kind = "random";
+        p.settings.simulation_kind = "bedload";
         return p;
     }
     get_presets() {

@@ -59,14 +59,14 @@ class Main {
         p.probabilities.p_diag = 0.1;
         p.probabilities.u_x = 1;
         p.probabilities.p_initial = 0.001;
-        p.simsettings.n_iterations = 500;
-        p.simsettings.sample_period = 1;
-        p.simsettings.random_seed = 31;
+        p.settings.n_iterations = 500;
+        p.settings.sample_period = 1;
+        p.settings.random_seed = 31;
         p.dimensions.n_x = 150;
         p.dimensions.n_y = 100;
         p.dimensions.n_z = 1;
-        p.simsettings.seed_kind = "edge";
-        p.simsettings.simulation_kind = "bedload";
+        p.settings.seed_kind = "edge";
+        p.settings.simulation_kind = "bedload";
         return p;
     }
     get_presets() {
@@ -93,40 +93,40 @@ class Main {
                 p.probabilities.p_1 = 0.61487;
                 p.probabilities.p_2 = 0.9;
                 p.probabilities.p_conj = 1e-5;
-                p.simsettings.random_seed = 5;
-                p.simsettings.n_iterations = 2000;
+                p.settings.random_seed = 5;
+                p.settings.n_iterations = 2000;
                 break;
             case 2:
                 p.preset = 2;
                 p.probabilities.p_1 = 0.8135;
                 p.probabilities.p_2 = 0.5;
                 p.probabilities.p_conj = 1e-5;
-                p.simsettings.random_seed = 31;
-                p.simsettings.n_iterations = 2000;
+                p.settings.random_seed = 31;
+                p.settings.n_iterations = 2000;
                 break;
             case 3:
                 p.preset = 3;
                 p.probabilities.p_1 = 0.8945;
                 p.probabilities.p_2 = 0.3;
                 p.probabilities.p_conj = 1e-5;
-                p.simsettings.random_seed = 6;
-                p.simsettings.n_iterations = 2000;
+                p.settings.random_seed = 6;
+                p.settings.n_iterations = 2000;
                 break;
             case 4:
                 p.preset = 4;
                 p.probabilities.p_1 = 0.96693;
                 p.probabilities.p_2 = 0.1;
                 p.probabilities.p_conj = 1e-5;
-                p.simsettings.random_seed = 4;
-                p.simsettings.n_iterations = 2000;
+                p.settings.random_seed = 4;
+                p.settings.n_iterations = 2000;
                 break;
             case 5:
                 p.preset = 5;
                 p.probabilities.p_1 = 0.99677;
                 p.probabilities.p_2 = 0.01;
                 p.probabilities.p_conj = 1e-5;
-                p.simsettings.random_seed = 1;
-                p.simsettings.n_iterations = 2000;
+                p.settings.random_seed = 1;
+                p.settings.n_iterations = 2000;
                 break;
             default:
                 break;

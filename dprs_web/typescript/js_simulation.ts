@@ -63,11 +63,11 @@ export class JsSimulation {
     );
     this.log.info(
       `Params ` +
-      `n_iterations:${parameters.simsettings.n_iterations} ` +
-      `sample_period:${parameters.simsettings.sample_period} ` +
-      `random_seed:${parameters.simsettings.random_seed} ` +
-      `seed_kind:${parameters.simsettings.seed_kind} ` +
-      `simulation_kind:${parameters.simsettings.simulation_kind}`,
+      `n_iterations:${parameters.settings.n_iterations} ` +
+      `sample_period:${parameters.settings.sample_period} ` +
+      `random_seed:${parameters.settings.random_seed} ` +
+      `seed_kind:${parameters.settings.seed_kind} ` +
+      `simulation_kind:${parameters.settings.simulation_kind}`,
     );
 
     this.simulation = new Simulation(this.parameters.as_parameters());
@@ -84,7 +84,7 @@ export class JsSimulation {
    */
   n_results() {
     return (
-      this.parameters.simsettings.n_iterations / this.parameters.simsettings.sample_period
+      this.parameters.settings.n_iterations / this.parameters.settings.sample_period
     );
   }
 
@@ -100,7 +100,7 @@ export class JsSimulation {
    */
   results_are_staggered() {
     if (this.parameters.wasm_simulation_kind() == "staggered_dk") {
-      return this.parameters.simsettings.sample_period == 1;
+      return this.parameters.settings.sample_period == 1;
     }
     return false;
   }

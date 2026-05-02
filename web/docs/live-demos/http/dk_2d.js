@@ -45,14 +45,14 @@ class Main {
         p.probabilities.p_diag = 0.0;
         p.probabilities.u_x = 0.0;
         p.probabilities.p_initial = 0.5;
-        p.simsettings.n_iterations = 500;
-        p.simsettings.sample_period = 1;
-        p.simsettings.random_seed = 6;
+        p.settings.n_iterations = 500;
+        p.settings.sample_period = 1;
+        p.settings.random_seed = 6;
         p.dimensions.n_x = 350;
         p.dimensions.n_y = 200;
         p.dimensions.n_z = 1;
-        p.simsettings.seed_kind = "center";
-        p.simsettings.simulation_kind = "staggered_dk";
+        p.settings.seed_kind = "center";
+        p.settings.simulation_kind = "staggered_dk";
         return p;
     }
     get_presets() {
