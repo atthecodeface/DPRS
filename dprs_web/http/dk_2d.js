@@ -37,7 +37,5 @@ function complete_init() {
     window.main = main;
 }
 window.addEventListener("load", (e) => {
-    init().then(() => {
-        complete_init();
-    });
+    init().then(() => { complete_init(); });
 });

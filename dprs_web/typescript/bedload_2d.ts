@@ -127,7 +127,5 @@ function complete_init() {
 }
 
 window.addEventListener("load", (e) => {
-  init().then(() => {
-    complete_init();
-  });
+  init().then(() => { complete_init(); });
 });

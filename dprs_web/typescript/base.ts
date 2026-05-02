@@ -91,18 +91,3 @@ export class MainBase {
     this.simulation_controls.populate_values();
   }
 }
-
-
-// (window as any).main = null;
-// function complete_init() {
-//   const window_log = new Log("Log");
-//   const main = new MainBase(window_log, window.location.search);
-//   (window as any).log = window_log;
-//   (window as any).main = main;
-// }
-
-// window.addEventListener("load", (e) => {
-//   init().then(() => {
-//     complete_init();
-//   });
-// });
