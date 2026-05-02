@@ -16,6 +16,7 @@ class Parameters:
     p_conj: float = 0
     p_nbr: float = 0.5
     p_diag: float = 0.5
+    u_x: float = 0.0
     n_iterations: int = 100
     sample_period: int  = 100
     initial_condition = sim.InitialCondition.Randomized
@@ -34,5 +35,6 @@ class Parameters:
     processing = sim.Processing.Parallel
     n_threads: int = 16
 parameters = Parameters()
+sim.print(parameters)
 
 _ = sim.dk(parameters)

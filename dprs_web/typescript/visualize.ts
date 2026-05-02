@@ -36,12 +36,12 @@ export class Visualize {
    */
   div: html.HtmlElement;
 
-  /** Width of the required canvs
+  /** Width of the required canvas
    *
    */
   width: number = 0;
 
-  /** Height of the required canvs
+  /** Height of the required canvas
    *
    */
   height: number = 0;
@@ -50,6 +50,7 @@ export class Visualize {
    *
    */
   scale: number = 1;
+  max_zoom: number = 5;
 
   /** Which 'time slice' to use for 2D
    *
@@ -69,6 +70,10 @@ export class Visualize {
 
   /** Slice increment for simple vs staggered */
   t_increment: number = 1;
+
+  /** Random canvas for "rough" background */
+  rough_background: ImageData | null = null;
+  do_rough_background: boolean = true;
 
   /**
    *
@@ -173,10 +178,8 @@ export class Visualize {
 
     const x_scale = this.scale;
     const y_scale = this.scale;
-
     this.width = this.simulation.parameters.dims.n_x * x_scale;
     this.height = this.simulation.parameters.dims.n_y * y_scale;
-
     /*
     this.log.info(
       `Created canvas size ${this.width} x ${this.height} with scale ${x_scale}x${y_scale}`,
@@ -199,43 +202,85 @@ export class Visualize {
       return;
     }
 
-    // Make a blank canvas
-    // Unoccupied cells are colored grey
-    ctx.fillStyle = "lightgrey";
-    ctx.fillRect(0, 0, this.width, this.height);
+    // Get the lattice size
+    const n_x = this.simulation.parameters.dims.n_x;
+    const n_y = this.simulation.parameters.dims.n_y;
+
+    if (this.do_rough_background) {
+      // Make a "rough" looking canvas
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, this.width, this.height);
+      var redo: boolean;
+      if (this.rough_background == null) {
+        redo = true;
+      } else {
+        // Make sure to rebuild the rough bgrd if we've made the lattice bigger
+        // and run a new sim
+        if (this.rough_background.width < n_x * this.max_zoom
+          || this.rough_background.height < n_y * this.max_zoom) {
+          redo = true;
+        } else {
+          redo = false;
+        }
+      }
+      if (redo) {
+        this.rough_background = ctx.createImageData(n_x * this.max_zoom, n_y * this.max_zoom);
+        let rough_canvas_data = this.rough_background.data;
+        for (let i = 0; i < rough_canvas_data.length; i += 4) {
+          let alpha = Math.random() * 30 + 30;
+          rough_canvas_data[i + 3] = alpha;
+        }
+      }
+      ctx.putImageData(this.rough_background!, 0, 0);
+    }
+    else {
+      // Make a blank canvas
+      // Unoccupied cells are colored grey
+      ctx.fillStyle = "lightgrey";
+      ctx.fillRect(0, 0, this.width, this.height);
+    }
 
     // Get this lattice slice (flattened into a 1d array) maybe
     const t_slice = this.slice;
     const lattice_slice = this.simulation.result(t_slice);
-    // console.log("Time slice:", t_slice);
 
-    const n_x = this.simulation.parameters.dims.n_x;
-    const n_y = this.simulation.parameters.dims.n_y;
+    // Print the time slice in the lower-left corner of the canvas
+    const offset = 10;
     ctx.font = "12px Arial";
     ctx.fillStyle = "#505050";
-    ctx.fillText(t_slice.toString(), 10, n_y * y_scale - 10);
+    ctx.fillText(t_slice.toString(), offset, n_y * y_scale - offset);
 
     // Occupied cells are colored purple
     ctx.fillStyle = "purple";
+
+    // Color in the occupied cells with appropriately size pixel rectangles
+    const empty = 0;
     if (!lattice_slice) {
       this.log.info(`No data in slice ${this.slice}`);
     } else {
-      // Plot this lattice slice
-      let i_cell = 0;
       // Loop over the lattice in (x,y) - once scaled we have canvas pixel coordinates
       for (let y = 0; y < n_y; y++) {
-        let previous_cell_value = null;
+        let previous_cell_state = null;
         let x_start = null;
+        // This isn't the correct way to get ux, but...
+        const u_x = this.simulation_controls!.get_float("u_x", -100, 100);
+        // const u_x = this.simulation_controls!.parameters.probabilities.u_x;
+        // const u_x = this.simulation.parameters.probabilities.u_x;
+        const x_sense = Math.sign(u_x);
+        const x_drift = Math.abs(u_x) * t_slice;
+        const x_shift = Math.trunc(x_drift) % n_x;
+        // const x_error = x_drift - x_shift;
         for (let x = 0; x < n_x; x++) {
-          // This is where a velocity v_x shift can be implemented for time slice t
-          // with a shift ~ (v_x * t * (n_x/L)) modulo n_x
-          const cell_value = lattice_slice[i_cell];
-          // At the start of the row, when x=0, previous_cell_value=null, 
+          // This is where a velocity shift can be implemented for time slice t
+          // with a shift ~ (u_x * t * (n_x/L)) modulo n_x
+          let i_cell = y * n_x + (x - x_sense * x_shift + n_x) % n_x;
+          const cell_state = lattice_slice[i_cell];
+          // At the start of the row, when x=0, previous_cell_state=null, 
           // so this is skipped
-          if (previous_cell_value !== null && cell_value != previous_cell_value) {
+          if (previous_cell_state !== null && cell_state != previous_cell_state) {
             // Plot a rectangle that's the RLE width of occupied cells,
             // and height of one cell, with both sizes scaled to canvas pixels
-            if (previous_cell_value != 0) {
+            if (previous_cell_state != empty) {
               ctx.fillRect(
                 x_start! * x_scale,
                 y * y_scale,
@@ -244,14 +289,12 @@ export class Visualize {
               );
             }
           }
-          if (cell_value != previous_cell_value) {
+          if (cell_state != previous_cell_state) {
             x_start = x;
-            previous_cell_value = cell_value;
+            previous_cell_state = cell_state;
           }
-          // Move to next cell in the flattened lattice slice
-          i_cell = i_cell + 1;
         }
-        if (previous_cell_value != 0) {
+        if (previous_cell_state != empty) {
           // At end of each lattice row:
           // plot a rectangle that's the RLE width of occupied cells,
           // and height of one cell, with both sizes scaled to canvas pixels
@@ -264,10 +307,12 @@ export class Visualize {
         }
       }
     }
-    /*
-    this.log.info("Completed canvas");
-    */
     this.log.pop_reason();
+  }
+
+  /** If we're zooming etc, need to reset rough canvas to force redraw */
+  reset_rough_background(): void {
+    this.rough_background = null;
   }
 
   /** Set redraw */
@@ -331,7 +376,7 @@ export class Visualize {
   // Step backward by one iteration, freezing the playback if need be
   decrement_slice(): void {
     this.animation_stop();
-    const next_slice = this.slice - 1;
+    const next_slice = this.slice - this.t_increment;
     if (next_slice >= 0 && next_slice <= this.simulation.n_results()) {
       this.slice = next_slice;
     }
@@ -401,5 +446,4 @@ export class Visualize {
     this.slice = slice;
     this.redraw();
   }
-
 }

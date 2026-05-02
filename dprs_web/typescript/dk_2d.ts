@@ -26,12 +26,17 @@ class Main {
       this.visualize,
       "VisualizationControls",
     );
+    this.visualize.do_rough_background = false;
 
     const params_2d = new JsParameters();
     params_2d.probabilities.p_1 = 0.38;  //0.70548515
     params_2d.probabilities.p_2 = 0.38;
-    params_2d.probabilities.p_initial = 0.5;
     params_2d.probabilities.p_conj = 0.0;
+    params_2d.probabilities.p_nbr = 0.0;
+    params_2d.probabilities.p_diag = 0.0;
+    params_2d.probabilities.u_x = 0.0;
+
+    params_2d.probabilities.p_initial = 0.5;
 
     params_2d.params.n_iterations = 500;
     params_2d.params.sample_period = 1;
