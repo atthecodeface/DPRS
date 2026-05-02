@@ -26,9 +26,6 @@ export class MainBase {
     );
     this.simulation_controls.parameters = this.get_default_parameters();
     this.simulation_controls.populate_webpage_entries();
-    // if (model == "bedload") {
-    //   this.simulation_controls.set_bedload();
-    // }
 
     this.visualize = new Visualize(logger, this.simulation, "Visualize");
     this.visualize_controls = new VisualizeControls(
@@ -37,7 +34,7 @@ export class MainBase {
       this.visualize,
       "VisualizationControls",
     );
-    if (model == "bedload" && dim == 2) {
+    if (model == "DKBedload" && dim == 2) {
       this.visualize.do_rough_background = true;
     } else {
       this.visualize.do_rough_background = false;

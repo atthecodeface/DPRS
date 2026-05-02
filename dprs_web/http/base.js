@@ -13,12 +13,9 @@ export class MainBase {
         this.simulation_controls = new SimulationControls(`${dim}d_sc_`, `${dim}d_sim_controls`, dim, this.get_presets());
         this.simulation_controls.parameters = this.get_default_parameters();
         this.simulation_controls.populate_webpage_entries();
-        // if (model == "bedload") {
-        //   this.simulation_controls.set_bedload();
-        // }
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
-        if (model == "bedload" && dim == 2) {
+        if (model == "DKBedload" && dim == 2) {
             this.visualize.do_rough_background = true;
         }
         else {

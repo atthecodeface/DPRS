@@ -62,8 +62,8 @@ class Settings {
   sample_period: number = 1;
   random_seed: number = 1;
   initial_seeding: string = "center";
-  simulation_growth_model: string = "DomanyKinzel";
-  simulation_growth_scheme: string = "Staggered";
+  growth_model: string = "DomanyKinzel";
+  growth_scheme: string = "Staggered";
   set_parameters(parameters: DprsWasm.Parameters) {
     parameters.n_iterations = this.n_iterations;
     parameters.sample_period = this.sample_period;
@@ -71,12 +71,12 @@ class Settings {
     parameters.initial_condition = this.initial_seeding;
   }
 
-  wasm_simulation_growth_model(): string {
-    return this.simulation_growth_model;
+  wasm_growth_model(): string {
+    return this.growth_model;
   }
 
-  wasm_simulation_growth_scheme(): string {
-    return this.simulation_growth_scheme;
+  wasm_growth_scheme(): string {
+    return this.growth_scheme;
   }
 
   from_json(params_dict: any) {
@@ -84,8 +84,8 @@ class Settings {
     const sample_period = params_dict["sample_period"];
     const random_seed = params_dict["random_seed"];
     const initial_seeding = params_dict["initial_seeding"];
-    const simulation_growth_model = params_dict["simulation_growth_model"];
-    const simulation_growth_scheme = params_dict["simulation_growth_scheme"];
+    const growth_model = params_dict["growth_model"];
+    const growth_scheme = params_dict["growth_scheme"];
     if (typeof n_iterations == "number") {
       this.n_iterations = n_iterations;
     }
@@ -98,11 +98,11 @@ class Settings {
     if (typeof initial_seeding == "string") {
       this.initial_seeding = initial_seeding;
     }
-    if (typeof simulation_growth_model == "string") {
-      this.simulation_growth_model = simulation_growth_model;
+    if (typeof growth_model == "string") {
+      this.growth_model = growth_model;
     }
-    if (typeof simulation_growth_scheme == "string") {
-      this.simulation_growth_scheme = simulation_growth_scheme;
+    if (typeof growth_scheme == "string") {
+      this.growth_scheme = growth_scheme;
     }
   }
 }
@@ -207,12 +207,12 @@ export class JsParameters {
     return this.parameters;
   }
 
-  wasm_simulation_growth_model() {
-    return this.settings.wasm_simulation_growth_model();
+  wasm_growth_model() {
+    return this.settings.wasm_growth_model();
   }
 
-  wasm_simulation_growth_scheme() {
-    return this.settings.wasm_simulation_growth_scheme();
+  wasm_growth_scheme() {
+    return this.settings.wasm_growth_scheme();
   }
 
   dim(): number {

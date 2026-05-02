@@ -23,8 +23,8 @@ class Main extends MainBase {
     p.settings.sample_period = 1;
     p.settings.random_seed = 1;
     p.settings.initial_seeding = "random";
-    p.settings.simulation_growth_model = "DKBedload";
-    p.settings.simulation_growth_scheme = "SchemeC";
+    p.settings.growth_model = "DKBedload";
+    p.settings.growth_scheme = "SchemeC";
 
     p.probabilities.p_1 = 0.64;
     p.probabilities.p_2 = 0.64;

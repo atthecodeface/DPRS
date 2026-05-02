@@ -5,7 +5,8 @@
 use pyo3::FromPyObject;
 
 use crate::enums::{
-    BoundaryCondition, Dimension, DprsError, GrowthModel, GrowthScheme, InitialCondition, Processing, Topology,
+    BoundaryCondition, Dimension, DprsError, GrowthModel, GrowthScheme, InitialCondition,
+    Processing, Topology,
 };
 use dprs_core::Parameters;
 
@@ -46,7 +47,7 @@ pub struct PyParameters {
 impl std::fmt::Display for PyParameters {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         writeln!(fmt, "Growth model:  {:?}", self.growth_model)?;
-        writeln!(fmt, "Growth scheme:  {:?}", self.growth_scheme)?;
+        writeln!(fmt, "Growth scheme: {:?}", self.growth_scheme)?;
         writeln!(fmt, "Dimension:     {:?}", self.dim)?;
         writeln!(fmt, "Grid shape:    {:?}", (self.n_x, self.n_y, self.n_z))?;
         writeln!(fmt, "Prob. p_1:     {}", self.p_1)?;

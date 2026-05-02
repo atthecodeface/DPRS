@@ -50,47 +50,24 @@ export class SimulationControls {
             console.log(`Setting preset in web page`);
             html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
         }
-        if (this.parameters.settings.simulation_growth_scheme == "Simple") {
+        if (this.parameters.settings.growth_scheme == "Simple") {
             html.set_input_checked(this.ele_id + "simple", true);
         }
-        else if (this.parameters.settings.simulation_growth_scheme == "Staggered") {
+        else if (this.parameters.settings.growth_scheme == "Staggered") {
             html.set_input_checked(this.ele_id + "staggered", true);
-            // } else if (this.parameters.settings.simulation_scheme == "bedload") {
-            //   html.set_input_checked(this.ele_id + "sk_bedload", true);
         }
     }
-    set_ic_randomize() {
-        html.set_input_checked(this.ele_id + "seed_random", true);
-    }
-    set_ic_centralcell() {
-        html.set_input_checked(this.ele_id + "seed_center", true);
-    }
-    set_ic_edgecell() {
-        html.set_input_checked(this.ele_id + "seed_edge", true);
-    }
-    set_simple() {
-        html.set_input_checked(this.ele_id + "simple", true);
-    }
-    set_staggered() {
-        html.set_input_checked(this.ele_id + "staggered", true);
-    }
-    // set_bedload() {
-    //   html.set_input_checked(this.ele_id + "sk_bedload", true);
-    // }
-    // set_preset() {
-    //   html.set_input_checked(this.ele_id + "sim_preset1", true);
-    // }
     // Get parameter values from web page
     get_parameters_from_webpage_entries() {
-        const simulation_growth_model = html.get_input_radio_checked(this.ele_id + "sim_growth_model");
-        const simulation_growth_scheme = html.get_input_radio_checked(this.ele_id + "sim_growth_scheme");
+        const growth_model = html.get_input_radio_checked(this.ele_id + "growth_model");
+        const growth_scheme = html.get_input_radio_checked(this.ele_id + "growth_scheme");
         const initial_seeding = html.get_input_radio_checked(this.ele_id + "_seed_kind");
         const preset = html.get_input_radio_checked(this.ele_id + "_preset");
-        if (simulation_growth_model !== null) {
-            this.parameters.settings.simulation_growth_model = simulation_growth_model;
+        if (growth_model !== null) {
+            this.parameters.settings.growth_model = growth_model;
         }
-        if (simulation_growth_scheme !== null) {
-            this.parameters.settings.simulation_growth_scheme = simulation_growth_scheme;
+        if (growth_scheme !== null) {
+            this.parameters.settings.growth_scheme = growth_scheme;
         }
         if (initial_seeding !== null) {
             this.parameters.settings.initial_seeding = initial_seeding;
@@ -260,21 +237,21 @@ export class SimulationControls {
                 window.main.enact_preset(preset);
             }
         }
-        // Simple / staggered / bedload
+        // Simple / staggered
         {
-            let id = ele_id + "sim_growth_scheme";
+            let id = ele_id + "growth_scheme";
             const tr = simple_staggered_table.add_ele("tr", { id: id });
             for (const [name, value] of [
                 ["simple", "Simple"],
                 ["staggered", "Staggered"],
-                // ["bedload", "Bedload"],
             ]) {
                 const td = tr.add_ele("td");
-                td.add_input_radio(id, name, true, {
-                    id: ele_id + "sk_" + name,
+                // Using value not name because we want upper case
+                td.add_input_radio(id, value, true, {
+                    id: ele_id + name,
                     classes: "sim_controls_radio " + name,
                 });
-                td.add_label(ele_id + "sk_" + name, {
+                td.add_label(ele_id + name, {
                     classes: "sim_controls_label " + name,
                 }).set_content(value);
             }

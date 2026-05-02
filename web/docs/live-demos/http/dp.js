@@ -33,8 +33,8 @@ class Main {
         params_1d.dimensions.n_y = 1;
         params_1d.dimensions.n_z = 1;
         params_1d.settings.initial_seeding = "random";
-        params_1d.settings.simulation_growth_model = "DomanyKinzel";
-        params_1d.settings.simulation_growth_scheme = "Staggered";
+        params_1d.settings.growth_model = "DomanyKinzel";
+        params_1d.settings.growth_scheme = "Staggered";
         // 0.62 is good
         const params_2d = new JsParameters();
         params_2d.probabilities.p_1 = 0.59;
@@ -48,8 +48,8 @@ class Main {
         params_2d.dimensions.n_y = 150;
         params_2d.dimensions.n_z = 1;
         params_2d.settings.initial_seeding = "edge";
-        params_2d.settings.simulation_growth_model = "DomanyKinzel";
-        params_2d.settings.simulation_growth_scheme = "Staggered";
+        params_2d.settings.growth_model = "DomanyKinzel";
+        params_2d.settings.growth_scheme = "Staggered";
         this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1);
         this.simulation_controls_1d.parameters = params_1d;
         this.simulation_controls_1d.populate_webpage_entries();
