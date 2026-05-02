@@ -1,11 +1,9 @@
-import init from "../pkg/dprs_wasm.js";
 import { Log, Logger } from "./log.js";
 import { Visualize } from "./visualize.js";
 import { VisualizeControls } from "./visualize_controls.js";
 import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
 import { SimulationControls } from "./simulation_controls.js";
-import { TupleType } from "typescript";
 
 export class MainBase {
   log: Logger;
@@ -14,7 +12,7 @@ export class MainBase {
   visualize_controls: VisualizeControls;
   simulation_controls: SimulationControls;
 
-  constructor(logger: Log, model: string, dim: number, ) {
+  constructor(logger: Log, model: string, dim: number,) {
     this.log = new Logger(logger, `${model}_${dim}d`);
     this.log.push_reason("init");
     this.log.info("Starting");
@@ -27,7 +25,7 @@ export class MainBase {
       this.visualize,
       "VisualizationControls",
     );
-    if (model=="bedload" && dim==2) {
+    if (model == "bedload" && dim == 2) {
       this.visualize.do_rough_background = true;
     }
 
@@ -53,7 +51,12 @@ export class MainBase {
     this.log.info(`Running simulation of dimension ${dim}`);
 
     this.simulation_controls.populate_parameters();
-    this.simulation_controls.parameters.dimensions.n_z = 1;
+    if (dim <= 1) {
+      this.simulation_controls.parameters.dimensions.n_y = 1;
+    }
+    if (dim <= 2) {
+      this.simulation_controls.parameters.dimensions.n_z = 1;
+    }
 
     const sim_parameters = this.simulation_controls.parameters;
     this.simulation.run(sim_parameters);

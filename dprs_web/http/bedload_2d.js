@@ -4,8 +4,10 @@ import { JsParameters } from "./js_parameters.js";
 import { MainBase } from "./base.js";
 class Main extends MainBase {
     constructor(logger) {
-        super(logger, "bedload", 2);
-        console.log("Bedload 2d child class");
+        const model = "bedload";
+        const dim = 2;
+        super(logger, model, dim);
+        console.log(`${model} ${dim}d child class`);
     }
     get_default_parameters() {
         const p = new JsParameters();

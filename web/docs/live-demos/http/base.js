@@ -12,7 +12,6 @@ export class MainBase {
         this.simulation = new JsSimulation(logger);
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
-        // this.visualize.u_x = -0.2;
         if (model == "bedload" && dim == 2) {
             this.visualize.do_rough_background = true;
         }
@@ -29,7 +28,12 @@ export class MainBase {
         this.log.push_reason("sim");
         this.log.info(`Running simulation of dimension ${dim}`);
         this.simulation_controls.populate_parameters();
-        this.simulation_controls.parameters.dimensions.n_z = 1;
+        if (dim <= 1) {
+            this.simulation_controls.parameters.dimensions.n_y = 1;
+        }
+        if (dim <= 2) {
+            this.simulation_controls.parameters.dimensions.n_z = 1;
+        }
         const sim_parameters = this.simulation_controls.parameters;
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation complete with ${this.simulation.n_results()} results`);
