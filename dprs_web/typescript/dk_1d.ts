@@ -13,7 +13,7 @@ class Main {
   visualize_controls: VisualizeControls;
   simulation_controls: SimulationControls;
 
-  constructor(logger: Log, params: string) {
+  constructor(logger: Log, _: string) {
     const dim = 1;
     this.log = new Logger(logger, `dk_${dim}d`);
     this.log.push_reason("init");
@@ -78,16 +78,16 @@ class Main {
 
     p.probabilities.p_initial = 0.5;
 
-    p.params.n_iterations = 500;
-    p.params.sample_period = 1;
-    p.params.random_seed = 1;
+    p.simsettings.n_iterations = 500;
+    p.simsettings.sample_period = 1;
+    p.simsettings.random_seed = 1;
 
     p.dimensions.n_x = 350;
     p.dimensions.n_y = 1;
     p.dimensions.n_z = 1;
 
-    p.params.seed_kind = "random";
-    p.params.simulation_kind = "staggered_dk";
+    p.simsettings.seed_kind = "random";
+    p.simsettings.simulation_kind = "staggered_dk";
 
     return p;
   }

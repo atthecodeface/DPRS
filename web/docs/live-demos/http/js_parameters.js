@@ -55,7 +55,7 @@ class Probabilities {
         }
     }
 }
-class Params {
+class SimSettings {
     constructor() {
         this.n_iterations = 500;
         this.sample_period = 1;
@@ -79,12 +79,12 @@ class Params {
         }
         return simulation_kind;
     }
-    from_json(params) {
-        const n_iterations = params["n_iterations"];
-        const sample_period = params["sample_period"];
-        const random_seed = params["random_seed"];
-        const seed_kind = params["seed_kind"];
-        const simulation_kind = params["simulation_kind"];
+    from_json(params_dict) {
+        const n_iterations = params_dict["n_iterations"];
+        const sample_period = params_dict["sample_period"];
+        const random_seed = params_dict["random_seed"];
+        const seed_kind = params_dict["seed_kind"];
+        const simulation_kind = params_dict["simulation_kind"];
         if (typeof n_iterations == "number") {
             this.n_iterations = n_iterations;
         }
@@ -117,11 +117,11 @@ class Topology {
         topology.fix_value = this.fix_value;
         return topology;
     }
-    from_json(params) {
-        const periodic = params["periodic"];
-        const fix_min = params["fix_min"];
-        const fix_max = params["fix_max"];
-        const fix_value = params["fix_value"];
+    from_json(params_dict) {
+        const periodic = params_dict["periodic"];
+        const fix_min = params_dict["fix_min"];
+        const fix_max = params_dict["fix_max"];
+        const fix_value = params_dict["fix_value"];
         if (typeof periodic == "boolean") {
             this.periodic = periodic;
         }
@@ -169,7 +169,7 @@ export class JsParameters {
     constructor() {
         this.parameters = new DprsWasm.Parameters();
         this.probabilities = new Probabilities();
-        this.params = new Params();
+        this.simsettings = new SimSettings();
         this.topology = [new Topology(), new Topology(), new Topology()];
         this.dimensions = new Dimensions();
         this.preset = 0;
@@ -182,7 +182,7 @@ export class JsParameters {
     }
     as_parameters() {
         this.probabilities.set_parameters(this.parameters);
-        this.params.set_parameters(this.parameters);
+        this.simsettings.set_parameters(this.parameters);
         this.dimensions.set_parameters(this.parameters);
         this.parameters.topology_bc_x = this.topology[0].topology_bc();
         this.parameters.topology_bc_y = this.topology[1].topology_bc();
@@ -190,7 +190,7 @@ export class JsParameters {
         return this.parameters;
     }
     wasm_simulation_kind() {
-        return this.params.wasm_simulation_kind();
+        return this.simsettings.wasm_simulation_kind();
     }
     dim() {
         if (this.dimensions.n_y > 1) {
@@ -201,7 +201,7 @@ export class JsParameters {
     as_json() {
         const parameters = {
             probabilities: this.probabilities,
-            params: this.params,
+            simsettings: this.simsettings,
             dims: this.dimensions,
             topo: this.topology,
         };
@@ -219,7 +219,7 @@ export class JsParameters {
             return;
         }
         this.dimensions.from_json(obj.dims);
-        this.params.from_json(obj.params);
+        this.simsettings.from_json(obj.simsettings);
         this.probabilities.from_json(obj.probabilities);
         this.topology[0].from_json(obj.topo[0]);
         this.topology[1].from_json(obj.topo[1]);

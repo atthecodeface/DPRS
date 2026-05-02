@@ -85,7 +85,7 @@ impl Parameters {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn get_ic(&self) -> String {
+    pub fn initial_condition(&self) -> String {
         match self.0.initial_condition {
             dprs_core::InitialCondition::CentralCell => "center",
             dprs_core::InitialCondition::EdgeCell => "edge",
@@ -95,7 +95,7 @@ impl Parameters {
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_ic(&mut self, value: &str) {
+    pub fn set_initial_condition(&mut self, value: &str) {
         match value {
             "center" => {
                 self.0.initial_condition = dprs_core::InitialCondition::CentralCell;

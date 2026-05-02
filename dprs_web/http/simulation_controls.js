@@ -31,16 +31,16 @@ export class SimulationControls {
         this.populate_value("p_diag", this.parameters.probabilities.p_diag);
         this.populate_value("u_x", this.parameters.probabilities.u_x);
         this.populate_value("p_initial", this.parameters.probabilities.p_initial);
-        this.populate_value("n_iterations", this.parameters.params.n_iterations);
-        this.populate_value("sample_period", this.parameters.params.sample_period);
-        this.populate_value("random_seed", this.parameters.params.random_seed);
+        this.populate_value("n_iterations", this.parameters.simsettings.n_iterations);
+        this.populate_value("sample_period", this.parameters.simsettings.sample_period);
+        this.populate_value("random_seed", this.parameters.simsettings.random_seed);
         this.populate_value("n_x", this.parameters.dimensions.n_x);
         this.populate_value("n_y", this.parameters.dimensions.n_y);
         this.populate_value("n_z", this.parameters.dimensions.n_z);
-        if (this.parameters.params.seed_kind == "center") {
+        if (this.parameters.simsettings.seed_kind == "center") {
             html.set_input_checked(this.ele_id + "seed_center", true);
         }
-        else if (this.parameters.params.seed_kind == "edge") {
+        else if (this.parameters.simsettings.seed_kind == "edge") {
             html.set_input_checked(this.ele_id + "seed_edge", true);
         }
         else {
@@ -50,13 +50,13 @@ export class SimulationControls {
             console.log(`Setting preset in web page`);
             html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
         }
-        if (this.parameters.params.simulation_kind == "simple_dk") {
+        if (this.parameters.simsettings.simulation_kind == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
         }
-        else if (this.parameters.params.simulation_kind == "staggered_dk") {
+        else if (this.parameters.simsettings.simulation_kind == "staggered_dk") {
             html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
         }
-        else if (this.parameters.params.simulation_kind == "bedload") {
+        else if (this.parameters.simsettings.simulation_kind == "bedload") {
             html.set_input_checked(this.ele_id + "sk_bedload", true);
         }
     }
@@ -87,10 +87,10 @@ export class SimulationControls {
         const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
         const preset = html.get_input_radio_checked(this.ele_id + "_preset");
         if (simulation_choice !== null) {
-            this.parameters.params.simulation_kind = simulation_choice;
+            this.parameters.simsettings.simulation_kind = simulation_choice;
         }
         if (seed_kind !== null) {
-            this.parameters.params.seed_kind = seed_kind;
+            this.parameters.simsettings.seed_kind = seed_kind;
         }
         if (preset !== null) {
             this.parameters.preset = Number(preset);
@@ -102,9 +102,9 @@ export class SimulationControls {
         this.parameters.probabilities.p_diag = this.get_float("p_diag", 0, 1);
         this.parameters.probabilities.u_x = this.get_float("u_x", -1e9, +1e9);
         this.parameters.probabilities.p_initial = this.get_float("p_initial", 0, 1);
-        this.parameters.params.n_iterations = this.get_int("n_iterations", 0, 1000000);
-        this.parameters.params.sample_period = this.get_int("sample_period", 1, 100000);
-        this.parameters.params.random_seed = this.get_int("random_seed", 1, 100000);
+        this.parameters.simsettings.n_iterations = this.get_int("n_iterations", 0, 1000000);
+        this.parameters.simsettings.sample_period = this.get_int("sample_period", 1, 100000);
+        this.parameters.simsettings.random_seed = this.get_int("random_seed", 1, 100000);
         this.parameters.dimensions.n_x = this.get_int("n_x", 10, 10000);
         this.parameters.dimensions.n_y = this.get_int("n_y", 10, 10000);
         this.parameters.dimensions.n_z = this.get_int("n_z", 10, 10000);

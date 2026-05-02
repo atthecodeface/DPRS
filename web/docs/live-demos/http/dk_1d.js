@@ -6,7 +6,7 @@ import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
 import { SimulationControls } from "./simulation_controls.js";
 class Main {
-    constructor(logger, params) {
+    constructor(logger, _) {
         const dim = 1;
         this.log = new Logger(logger, `dk_${dim}d`);
         this.log.push_reason("init");
@@ -46,14 +46,14 @@ class Main {
         p.probabilities.p_diag = 0.0;
         p.probabilities.u_x = 0.0;
         p.probabilities.p_initial = 0.5;
-        p.params.n_iterations = 500;
-        p.params.sample_period = 1;
-        p.params.random_seed = 1;
+        p.simsettings.n_iterations = 500;
+        p.simsettings.sample_period = 1;
+        p.simsettings.random_seed = 1;
         p.dimensions.n_x = 350;
         p.dimensions.n_y = 1;
         p.dimensions.n_z = 1;
-        p.params.seed_kind = "random";
-        p.params.simulation_kind = "staggered_dk";
+        p.simsettings.seed_kind = "random";
+        p.simsettings.simulation_kind = "staggered_dk";
         return p;
     }
     get_presets() {
