@@ -50,10 +50,10 @@ class Main {
         params_2d.settings.simulation_kind = "bedload";
         this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1);
         this.simulation_controls_1d.parameters = params_1d;
-        this.simulation_controls_1d.populate_values();
+        this.simulation_controls_1d.populate_webpage_values();
         this.simulation_controls_2d = new SimulationControls("2d_sc_", "2d_sim_controls", 2);
         this.simulation_controls_2d.parameters = params_2d;
-        this.simulation_controls_2d.populate_values();
+        this.simulation_controls_2d.populate_webpage_values();
         this.log.info("HTML built, running initial simulation");
         this.run_simulation(1);
         this.log.info("Initialization complete");
@@ -66,7 +66,7 @@ class Main {
             if (sim_parameters.dimensions.n_y > 1) {
                 this.simulation_controls_2d.parameters = sim_parameters;
                 this.simulation_controls_2d.parameters.dimensions.n_z = 1;
-                this.simulation_controls_2d.populate_values();
+                this.simulation_controls_2d.populate_webpage_values();
                 this.log.info(`Loaded 2d sim ${filename}`);
                 this.tabs.select_hash("#tab-2D");
             }
@@ -74,7 +74,7 @@ class Main {
                 this.simulation_controls_1d.parameters = sim_parameters;
                 this.simulation_controls_1d.parameters.dimensions.n_y = 1;
                 this.simulation_controls_1d.parameters.dimensions.n_z = 1;
-                this.simulation_controls_1d.populate_values();
+                this.simulation_controls_1d.populate_webpage_values();
                 this.log.info(`Loaded 1d sim ${filename}`);
                 this.tabs.select_hash("#tab-1D");
             }
@@ -83,8 +83,8 @@ class Main {
     }
     save_simulation(dims) {
         this.log.push_reason("save");
-        this.simulation_controls_1d.populate_parameters();
-        this.simulation_controls_2d.populate_parameters();
+        this.simulation_controls_1d.get_parameters_from_webpage_values();
+        this.simulation_controls_2d.get_parameters_from_webpage_values();
         this.simulation_controls_1d.parameters.dimensions.n_y = 1;
         this.simulation_controls_1d.parameters.dimensions.n_z = 1;
         this.simulation_controls_2d.parameters.dimensions.n_z = 1;
@@ -100,8 +100,8 @@ class Main {
         this.log.push_reason("sim");
         this.log.info(`Running simulation of dimension ${dim}`);
         this.visualize.animation_stop();
-        this.simulation_controls_1d.populate_parameters();
-        this.simulation_controls_2d.populate_parameters();
+        this.simulation_controls_1d.get_parameters_from_webpage_values();
+        this.simulation_controls_2d.get_parameters_from_webpage_values();
         this.simulation_controls_1d.parameters.dimensions.n_y = 1;
         this.simulation_controls_1d.parameters.dimensions.n_z = 1;
         this.simulation_controls_2d.parameters.dimensions.n_z = 1;

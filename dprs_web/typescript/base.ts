@@ -25,7 +25,7 @@ export class MainBase {
       this.get_presets(),
     );
     this.simulation_controls.parameters = this.get_default_parameters();
-    this.simulation_controls.populate_values();
+    this.simulation_controls.populate_webpage_entries();
     if (model == "bedload") {
       this.simulation_controls.set_bedload();
     }
@@ -54,7 +54,7 @@ export class MainBase {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
-    this.simulation_controls.populate_parameters();
+    this.simulation_controls.get_parameters_from_webpage_entries();
     if (dim <= 1) {
       this.simulation_controls.parameters.dimensions.n_y = 1;
     }
@@ -88,6 +88,6 @@ export class MainBase {
   enact_preset(preset: number): void {
     var p = this.get_default_parameters();
     this.simulation_controls.parameters = p;
-    this.simulation_controls.populate_values();
+    this.simulation_controls.populate_webpage_entries();
   }
 }

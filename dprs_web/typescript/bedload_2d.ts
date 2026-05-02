@@ -113,7 +113,7 @@ class Main extends MainBase {
         break;
     }
     this.simulation_controls.parameters = p;
-    this.simulation_controls.populate_values();
+    this.simulation_controls.populate_webpage_entries();
   }
 }
 

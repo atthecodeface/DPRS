@@ -12,7 +12,7 @@ export class MainBase {
         this.simulation = new JsSimulation(logger);
         this.simulation_controls = new SimulationControls(`${dim}d_sc_`, `${dim}d_sim_controls`, dim, this.get_presets());
         this.simulation_controls.parameters = this.get_default_parameters();
-        this.simulation_controls.populate_values();
+        this.simulation_controls.populate_webpage_values();
         if (model == "bedload") {
             this.simulation_controls.set_bedload();
         }
@@ -32,7 +32,7 @@ export class MainBase {
     run_simulation(dim, zoom = 1) {
         this.log.push_reason("sim");
         this.log.info(`Running simulation of dimension ${dim}`);
-        this.simulation_controls.populate_parameters();
+        this.simulation_controls.get_parameters_from_webpage_values();
         if (dim <= 1) {
             this.simulation_controls.parameters.dimensions.n_y = 1;
         }
@@ -57,6 +57,6 @@ export class MainBase {
     enact_preset(preset) {
         var p = this.get_default_parameters();
         this.simulation_controls.parameters = p;
-        this.simulation_controls.populate_values();
+        this.simulation_controls.populate_webpage_values();
     }
 }

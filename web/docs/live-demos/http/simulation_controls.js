@@ -19,24 +19,24 @@ export class SimulationControls {
     get_int(id, min, max) {
         return html.get_input_int(this.ele_id + id, min, max);
     }
-    populate_value(id, value) {
+    set_webpage_value(id, value) {
         html.set_input_value(this.ele_id + id, value);
     }
     // Set parameter values in web page
-    populate_values() {
-        this.populate_value("p_1", this.parameters.probabilities.p_1);
-        this.populate_value("p_2", this.parameters.probabilities.p_2);
-        this.populate_value("p_conj", this.parameters.probabilities.p_conj);
-        this.populate_value("p_nbr", this.parameters.probabilities.p_nbr);
-        this.populate_value("p_diag", this.parameters.probabilities.p_diag);
-        this.populate_value("u_x", this.parameters.probabilities.u_x);
-        this.populate_value("p_initial", this.parameters.probabilities.p_initial);
-        this.populate_value("n_iterations", this.parameters.settings.n_iterations);
-        this.populate_value("sample_period", this.parameters.settings.sample_period);
-        this.populate_value("random_seed", this.parameters.settings.random_seed);
-        this.populate_value("n_x", this.parameters.dimensions.n_x);
-        this.populate_value("n_y", this.parameters.dimensions.n_y);
-        this.populate_value("n_z", this.parameters.dimensions.n_z);
+    populate_webpage_values() {
+        this.set_webpage_value("p_1", this.parameters.probabilities.p_1);
+        this.set_webpage_value("p_2", this.parameters.probabilities.p_2);
+        this.set_webpage_value("p_conj", this.parameters.probabilities.p_conj);
+        this.set_webpage_value("p_nbr", this.parameters.probabilities.p_nbr);
+        this.set_webpage_value("p_diag", this.parameters.probabilities.p_diag);
+        this.set_webpage_value("u_x", this.parameters.probabilities.u_x);
+        this.set_webpage_value("p_initial", this.parameters.probabilities.p_initial);
+        this.set_webpage_value("n_iterations", this.parameters.settings.n_iterations);
+        this.set_webpage_value("sample_period", this.parameters.settings.sample_period);
+        this.set_webpage_value("random_seed", this.parameters.settings.random_seed);
+        this.set_webpage_value("n_x", this.parameters.dimensions.n_x);
+        this.set_webpage_value("n_y", this.parameters.dimensions.n_y);
+        this.set_webpage_value("n_z", this.parameters.dimensions.n_z);
         if (this.parameters.settings.seed_kind == "center") {
             html.set_input_checked(this.ele_id + "seed_center", true);
         }
@@ -82,7 +82,7 @@ export class SimulationControls {
     //   html.set_input_checked(this.ele_id + "sim_preset1", true);
     // }
     // Get parameter values from web page
-    populate_parameters() {
+    get_parameters_from_webpage_values() {
         const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
         const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
         const preset = html.get_input_radio_checked(this.ele_id + "_preset");
