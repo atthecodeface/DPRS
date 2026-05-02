@@ -18,6 +18,18 @@ export class MainBase {
     this.log.info("Starting");
 
     this.simulation = new JsSimulation(logger);
+    this.simulation_controls = new SimulationControls(
+      `${dim}d_sc_`,
+      `${dim}d_sim_controls`,
+      dim,
+      this.get_presets(),
+    );
+    this.simulation_controls.parameters = this.get_default_parameters();
+    this.simulation_controls.populate_values();
+    if (model == "bedload") {
+      this.simulation_controls.set_bedload();
+    }
+
     this.visualize = new Visualize(logger, this.simulation, "Visualize");
     this.visualize_controls = new VisualizeControls(
       logger,
@@ -29,18 +41,6 @@ export class MainBase {
       this.visualize.do_rough_background = true;
     } else {
       this.visualize.do_rough_background = false;
-    }
-
-    this.simulation_controls = new SimulationControls(
-      `${dim}d_sc_`,
-      `${dim}d_sim_controls`,
-      dim,
-      this.get_presets(),
-    );
-    this.simulation_controls.parameters = this.get_default_parameters();
-    this.simulation_controls.populate_values();
-    if (model == "bedload") {
-      this.simulation_controls.set_bedload();
     }
 
     this.log.info("HTML built, running initial simulation");

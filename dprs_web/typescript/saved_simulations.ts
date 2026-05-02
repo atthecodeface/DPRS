@@ -10,7 +10,7 @@ import { LocalStorage } from "./storage.js";
  */
 export class SavedSimulations {
   /**
-   * Parent of this widget
+   * Child of this widget
    */
   parent: any;
 

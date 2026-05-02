@@ -25,7 +25,7 @@ export interface VisualizationControlClient {
 
 export class VisualizeControls {
   /**
-   * Parent of this widget
+   * Child of this widget
    */
   parent: VisualizationControlClient;
 
