@@ -23,7 +23,8 @@ class Main extends MainBase {
     p.settings.sample_period = 1;
     p.settings.random_seed = 6;
     p.settings.initial_seeding = "center";
-    p.settings.simulation_scheme = "staggered_dk";
+    p.settings.simulation_growth_model = "DomanyKinzel";
+    p.settings.simulation_growth_scheme = "Staggered";
 
     p.probabilities.p_1 = 0.38;  //0.70548515
     p.probabilities.p_2 = 0.38;

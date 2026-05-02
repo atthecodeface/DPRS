@@ -73,12 +73,16 @@ export class JsSimulation {
       `sample_period:${parameters.settings.sample_period} ` +
       `random_seed:${parameters.settings.random_seed} ` +
       `initial_seeding:${parameters.settings.initial_seeding} ` +
-      `simulation_scheme:${parameters.settings.simulation_scheme}`,
+      `simulation_growth_model:${parameters.settings.simulation_growth_model}`,
+      `simulation_growth_scheme:${parameters.settings.simulation_growth_scheme}`,
     );
 
     this.simulation = new Simulation(this.parameters.as_parameters());
 
-    this.simulation.simulate(this.parameters.wasm_simulation_kind());
+    this.simulation.simulate(
+      this.parameters.wasm_simulation_growth_model(),
+      this.parameters.wasm_simulation_growth_scheme(),
+    );
     this.dim = this.parameters.dim();
 
     this.log.info("Completed simulation");
@@ -105,7 +109,7 @@ export class JsSimulation {
    * Return true if the results are staggered
    */
   results_are_staggered() {
-    if (this.parameters.wasm_simulation_kind() == "staggered_dk") {
+    if (this.parameters.wasm_simulation_growth_model() == "staggered_dk") {
       return this.parameters.settings.sample_period == 1;
     }
     return false;

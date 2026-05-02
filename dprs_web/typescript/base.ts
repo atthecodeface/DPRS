@@ -26,9 +26,9 @@ export class MainBase {
     );
     this.simulation_controls.parameters = this.get_default_parameters();
     this.simulation_controls.populate_webpage_entries();
-    if (model == "bedload") {
-      this.simulation_controls.set_bedload();
-    }
+    // if (model == "bedload") {
+    //   this.simulation_controls.set_bedload();
+    // }
 
     this.visualize = new Visualize(logger, this.simulation, "Visualize");
     this.visualize_controls = new VisualizeControls(

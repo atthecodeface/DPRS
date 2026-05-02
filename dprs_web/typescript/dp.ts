@@ -63,7 +63,8 @@ class Main {
     params_1d.dimensions.n_z = 1;
 
     params_1d.settings.initial_seeding = "random";
-    params_1d.settings.simulation_scheme = "staggered_dk";
+    params_1d.settings.simulation_growth_model = "DomanyKinzel";
+    params_1d.settings.simulation_growth_scheme = "Staggered";
 
     // 0.62 is good
     const params_2d = new JsParameters();
@@ -81,7 +82,8 @@ class Main {
     params_2d.dimensions.n_z = 1;
 
     params_2d.settings.initial_seeding = "edge";
-    params_2d.settings.simulation_scheme = "bedload";
+    params_2d.settings.simulation_growth_model = "DomanyKinzel";
+    params_2d.settings.simulation_growth_scheme = "Staggered";
 
     this.simulation_controls_1d = new SimulationControls(
       "1d_sc_",

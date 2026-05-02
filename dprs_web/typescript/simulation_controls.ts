@@ -67,12 +67,12 @@ export class SimulationControls {
       html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
     }
 
-    if (this.parameters.settings.simulation_scheme == "simple_dk") {
-      html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-    } else if (this.parameters.settings.simulation_scheme == "staggered_dk") {
-      html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
-    } else if (this.parameters.settings.simulation_scheme == "bedload") {
-      html.set_input_checked(this.ele_id + "sk_bedload", true);
+    if (this.parameters.settings.simulation_growth_scheme == "Simple") {
+      html.set_input_checked(this.ele_id + "simple", true);
+    } else if (this.parameters.settings.simulation_growth_scheme == "Staggered") {
+      html.set_input_checked(this.ele_id + "staggered", true);
+      // } else if (this.parameters.settings.simulation_scheme == "bedload") {
+      //   html.set_input_checked(this.ele_id + "sk_bedload", true);
     }
   }
 
@@ -88,17 +88,17 @@ export class SimulationControls {
     html.set_input_checked(this.ele_id + "seed_edge", true);
   }
 
-  set_simple_dk() {
-    html.set_input_checked(this.ele_id + "sk_simple_dk", true);
+  set_simple() {
+    html.set_input_checked(this.ele_id + "simple", true);
   }
 
-  set_staggered_dk() {
-    html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
+  set_staggered() {
+    html.set_input_checked(this.ele_id + "staggered", true);
   }
 
-  set_bedload() {
-    html.set_input_checked(this.ele_id + "sk_bedload", true);
-  }
+  // set_bedload() {
+  //   html.set_input_checked(this.ele_id + "sk_bedload", true);
+  // }
 
   // set_preset() {
   //   html.set_input_checked(this.ele_id + "sim_preset1", true);
@@ -106,12 +106,16 @@ export class SimulationControls {
 
   // Get parameter values from web page
   get_parameters_from_webpage_entries() {
-    const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
+    const simulation_growth_model = html.get_input_radio_checked(this.ele_id + "sim_growth_model");
+    const simulation_growth_scheme = html.get_input_radio_checked(this.ele_id + "sim_growth_scheme");
     const initial_seeding = html.get_input_radio_checked(this.ele_id + "_seed_kind");
     const preset = html.get_input_radio_checked(this.ele_id + "_preset");
 
-    if (simulation_choice !== null) {
-      this.parameters.settings.simulation_scheme = simulation_choice;
+    if (simulation_growth_model !== null) {
+      this.parameters.settings.simulation_growth_model = simulation_growth_model;
+    }
+    if (simulation_growth_scheme !== null) {
+      this.parameters.settings.simulation_growth_scheme = simulation_growth_scheme;
     }
     if (initial_seeding !== null) {
       this.parameters.settings.initial_seeding = initial_seeding;
@@ -152,10 +156,10 @@ export class SimulationControls {
       .add_ele("tr")
       .add_ele("td")
       .add_ele("table", { classes: "edge_center_randomized" });
-    const simple_staggered_bedload_table = table
+    const simple_staggered_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "simple_staggered_bedload" });
+      .add_ele("table", { classes: "simple_staggered" });
     const presets_table = table
       .add_ele("tr")
       .add_ele("td")
@@ -311,12 +315,12 @@ export class SimulationControls {
 
     // Simple / staggered / bedload
     {
-      let id = ele_id + "sim_kind";
-      const tr = simple_staggered_bedload_table.add_ele("tr", { id: id });
+      let id = ele_id + "sim_growth_scheme";
+      const tr = simple_staggered_table.add_ele("tr", { id: id });
       for (const [name, value] of [
-        ["simple_dk", "Simple"],
-        ["staggered_dk", "Staggered"],
-        ["bedload", "Bedload"],
+        ["simple", "Simple"],
+        ["staggered", "Staggered"],
+        // ["bedload", "Bedload"],
       ]) {
         const td = tr.add_ele("td");
         td.add_input_radio(id, name!, true, {

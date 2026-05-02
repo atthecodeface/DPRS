@@ -61,7 +61,8 @@ class Settings {
         this.sample_period = 1;
         this.random_seed = 1;
         this.initial_seeding = "center";
-        this.simulation_scheme = "staggered_dk";
+        this.simulation_growth_model = "DomanyKinzel";
+        this.simulation_growth_scheme = "Staggered";
     }
     set_parameters(parameters) {
         parameters.n_iterations = this.n_iterations;
@@ -69,22 +70,19 @@ class Settings {
         parameters.random_seed = this.random_seed;
         parameters.initial_condition = this.initial_seeding;
     }
-    wasm_simulation_kind() {
-        var simulation_scheme = "simplified_dk";
-        if (this.simulation_scheme == "staggered_dk") {
-            simulation_scheme = "staggered_dk";
-        }
-        if (this.simulation_scheme == "bedload") {
-            simulation_scheme = "bedload";
-        }
-        return simulation_scheme;
+    wasm_simulation_growth_model() {
+        return this.simulation_growth_model;
+    }
+    wasm_simulation_growth_scheme() {
+        return this.simulation_growth_scheme;
     }
     from_json(params_dict) {
         const n_iterations = params_dict["n_iterations"];
         const sample_period = params_dict["sample_period"];
         const random_seed = params_dict["random_seed"];
         const initial_seeding = params_dict["initial_seeding"];
-        const simulation_scheme = params_dict["simulation_scheme"];
+        const simulation_growth_model = params_dict["simulation_growth_model"];
+        const simulation_growth_scheme = params_dict["simulation_growth_scheme"];
         if (typeof n_iterations == "number") {
             this.n_iterations = n_iterations;
         }
@@ -97,8 +95,11 @@ class Settings {
         if (typeof initial_seeding == "string") {
             this.initial_seeding = initial_seeding;
         }
-        if (typeof simulation_scheme == "string") {
-            this.simulation_scheme = simulation_scheme;
+        if (typeof simulation_growth_model == "string") {
+            this.simulation_growth_model = simulation_growth_model;
+        }
+        if (typeof simulation_growth_scheme == "string") {
+            this.simulation_growth_scheme = simulation_growth_scheme;
         }
     }
 }
@@ -189,8 +190,11 @@ export class JsParameters {
         this.parameters.topology_bc_z = this.topology[2].topology_bc();
         return this.parameters;
     }
-    wasm_simulation_kind() {
-        return this.settings.wasm_simulation_kind();
+    wasm_simulation_growth_model() {
+        return this.settings.wasm_simulation_growth_model();
+    }
+    wasm_simulation_growth_scheme() {
+        return this.settings.wasm_simulation_growth_scheme();
     }
     dim() {
         if (this.dimensions.n_y > 1) {
