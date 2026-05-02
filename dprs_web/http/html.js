@@ -220,9 +220,6 @@ export class HtmlElement {
             input.setAttribute("required", "true");
         }
         HtmlElement.set_id_classes(input, id_classes);
-        // function preset_change(event: Event) {
-        //   console.log("Preset change");
-        // }
         input.addEventListener("change", callback);
         this.ele.appendChild(input);
         return new HtmlElement(input);

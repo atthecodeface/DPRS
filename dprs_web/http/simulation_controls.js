@@ -1,10 +1,11 @@
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 export class SimulationControls {
-    constructor(ele_id, div_id, dims) {
+    constructor(ele_id, div_id, dims, presets = null) {
         this.parameters = new JsParameters();
         this.ele_id = ele_id;
         this.dims = dims;
+        this.presets = presets;
         const div = document.getElementById(div_id);
         if (!div) {
             throw new Error(`Failed to find ${div_id} to build SimulationControls`);
@@ -45,30 +46,10 @@ export class SimulationControls {
         else {
             html.set_input_checked(this.ele_id + "seed_random", true);
         }
-        if (this.parameters.preset == 0) {
-            html.set_input_checked(this.ele_id + "sk_no_preset", true);
+        if (this.presets != null) {
+            console.log(`Setting preset in web page`);
+            html.set_input_checked(this.ele_id + "sk_preset" + this.parameters.preset.toString(), true);
         }
-        else if (this.parameters.preset == 1) {
-            html.set_input_checked(this.ele_id + "sk_preset1", true);
-            // TODO: much more here
-            this.populate_value("p_1", 0.5);
-            this.populate_value("p_2", 0.5);
-        }
-        else if (this.parameters.preset == 2) {
-            html.set_input_checked(this.ele_id + "sk_preset2", true);
-        }
-        else if (this.parameters.preset == 3) {
-            html.set_input_checked(this.ele_id + "sk_preset3", true);
-        }
-        else if (this.parameters.preset == 4) {
-            html.set_input_checked(this.ele_id + "sk_preset4", true);
-        }
-        else if (this.parameters.preset == 5) {
-            html.set_input_checked(this.ele_id + "sk_preset5", true);
-        }
-        //  else if (this.parameters.preset == 6) {
-        //   html.set_input_checked(this.ele_id + "sk_preset6", true);
-        // }
         if (this.parameters.params.simulation_kind == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
         }
@@ -97,6 +78,9 @@ export class SimulationControls {
     set_bedload() {
         html.set_input_checked(this.ele_id + "sk_bedload", true);
     }
+    // set_preset() {
+    //   html.set_input_checked(this.ele_id + "sk_preset1", true);
+    // }
     // Get parameter values from web page
     populate_parameters() {
         const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
@@ -249,33 +233,28 @@ export class SimulationControls {
         }
         // Presets
         {
-            let id = ele_id + "sim_preset";
+            let id = ele_id + "sk_preset";
             const tr = presets_table.add_ele("tr", { id: id });
-            const td = tr.add_ele("td");
-            const name = "label";
-            const value = "Presets:";
-            td.add_label(ele_id + "sk_" + name, {
-                classes: "sim_preset_label " + name,
-            }).set_content(value);
-            function preset_change(event) {
-                console.log("Preset change");
+            // Presets row label
+            // const td = tr.add_ele("td");
+            // const name = "label";
+            // const value = "Presets:"
+            // td.add_label(ele_id + "sk_" + name, { classes: "sk_preset_label " + name, }).set_content(value);
+            console.log(`Creating radio button for bedload_2d preset ${this.presets}`);
+            if (this.presets != null) {
+                for (const [name, value] of this.presets) {
+                    const td = tr.add_ele("td");
+                    td.add_label(ele_id + "sk_" + name, { classes: "sk_preset_label " + name, }).set_content(value);
+                    td.add_input_radio_with_callback(id, name, true, preset_select, {
+                        id: ele_id + "sk_preset" + name,
+                        classes: "sk_preset_radio " + name,
+                    });
+                }
             }
-            for (const [name, value] of [
-                ["no_preset", "none"],
-                ["preset1", "A"],
-                ["preset2", "B"],
-                ["preset3", "C"],
-                ["preset4", "D"],
-                ["preset5", "E"],
-            ]) {
-                const td = tr.add_ele("td");
-                td.add_label(ele_id + "sk_" + name, {
-                    classes: "sim_preset_label " + name,
-                }).set_content(value);
-                td.add_input_radio_with_callback(id, name, true, preset_change, {
-                    id: ele_id + "sk_" + name,
-                    classes: "sim_preset_radio " + name,
-                });
+            function preset_select(event) {
+                const target = event.target;
+                const preset = Number(target.value);
+                window.main.enact_preset(preset);
             }
         }
         // Simple / staggered / bedload
