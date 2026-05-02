@@ -57,9 +57,9 @@ export class JsSimulation {
     );
     this.log.info(
       `Dims ` +
-      `n_x:${parameters.dims.n_x} ` +
-      `n_y:${parameters.dims.n_y} ` +
-      `n_z:${parameters.dims.n_z}`,
+      `n_x:${parameters.dimensions.n_x} ` +
+      `n_y:${parameters.dimensions.n_y} ` +
+      `n_z:${parameters.dimensions.n_z}`,
     );
     this.log.info(
       `Params ` +

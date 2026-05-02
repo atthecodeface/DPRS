@@ -105,18 +105,18 @@ class Params {
   }
 }
 
-class Topo {
+class Topology {
   periodic: boolean = true;
   fix_min: boolean = false;
   fix_max: boolean = false;
   fix_value: boolean = false;
-  topo_bc() {
-    const topo = new DprsWasm.TopoBc();
-    topo.periodic = this.periodic;
-    topo.fix_min = this.fix_min;
-    topo.fix_max = this.fix_max;
-    topo.fix_value = this.fix_value;
-    return topo;
+  topology_bc() {
+    const topology = new DprsWasm.TopologyBc();
+    topology.periodic = this.periodic;
+    topology.fix_min = this.fix_min;
+    topology.fix_max = this.fix_max;
+    topology.fix_value = this.fix_value;
+    return topology;
   }
   from_json(params: any) {
     const periodic = params["periodic"];
@@ -138,7 +138,7 @@ class Topo {
   }
 }
 
-class Dims {
+class Dimensions {
   n_x: number = 350;
   n_y: number = 0;
   n_z: number = 0;
@@ -173,34 +173,34 @@ export class JsParameters {
   parameters: DprsWasm.Parameters;
   probabilities: Probabilities;
   params: Params;
-  topo: Array<Topo>;
-  dims: Dims;
+  topology: Array<Topology>;
+  dimensions: Dimensions;
   preset: number;
 
   constructor() {
     this.parameters = new DprsWasm.Parameters();
     this.probabilities = new Probabilities();
     this.params = new Params();
-    this.topo = [new Topo(), new Topo(), new Topo()];
-    this.dims = new Dims();
+    this.topology = [new Topology(), new Topology(), new Topology()];
+    this.dimensions = new Dimensions();
     this.preset = 0;
 
-    this.topo[0]!.periodic = true;
-    this.topo[1]!.periodic = true;
-    this.topo[2]!.periodic = true;
+    this.topology[0]!.periodic = true;
+    this.topology[1]!.periodic = true;
+    this.topology[2]!.periodic = true;
 
-    this.dims.n_x = 350;
-    this.dims.n_y = 0;
-    this.dims.n_z = 0;
+    this.dimensions.n_x = 350;
+    this.dimensions.n_y = 0;
+    this.dimensions.n_z = 0;
   }
 
   as_parameters() {
     this.probabilities.set_parameters(this.parameters);
     this.params.set_parameters(this.parameters);
-    this.dims.set_parameters(this.parameters);
-    this.parameters.topo_bc_x = this.topo[0]!.topo_bc();
-    this.parameters.topo_bc_y = this.topo[1]!.topo_bc();
-    this.parameters.topo_bc_z = this.topo[2]!.topo_bc();
+    this.dimensions.set_parameters(this.parameters);
+    this.parameters.topology_bc_x = this.topology[0]!.topology_bc();
+    this.parameters.topology_bc_y = this.topology[1]!.topology_bc();
+    this.parameters.topology_bc_z = this.topology[2]!.topology_bc();
 
     return this.parameters;
   }
@@ -210,7 +210,7 @@ export class JsParameters {
   }
 
   dim(): number {
-    if (this.dims.n_y > 1) {
+    if (this.dimensions.n_y > 1) {
       return 2;
     }
     return 1;
@@ -220,8 +220,8 @@ export class JsParameters {
     const parameters = {
       probabilities: this.probabilities,
       params: this.params,
-      dims: this.dims,
-      topo: this.topo,
+      dims: this.dimensions,
+      topo: this.topology,
     };
     const json = JSON.stringify(parameters);
     console.log(json);
@@ -236,12 +236,12 @@ export class JsParameters {
       console.log("Failed to parse json");
       return;
     }
-    this.dims.from_json(obj.dims);
+    this.dimensions.from_json(obj.dims);
     this.params.from_json(obj.params);
     this.probabilities.from_json(obj.probabilities);
-    this.topo[0]!.from_json(obj.topo[0]);
-    this.topo[1]!.from_json(obj.topo[1]);
-    this.topo[2]!.from_json(obj.topo[2]);
+    this.topology[0]!.from_json(obj.topo[0]);
+    this.topology[1]!.from_json(obj.topo[1]);
+    this.topology[2]!.from_json(obj.topo[2]);
 
     return;
   }

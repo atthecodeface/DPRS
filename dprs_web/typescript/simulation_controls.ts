@@ -4,17 +4,17 @@ import { JsParameters } from "./js_parameters.js";
 export class SimulationControls {
   ele_id: string;
   div: html.HtmlElement;
-  dims: number;
+  dim: number;
   parameters: JsParameters;
   presets: any | null;
 
   constructor(
-    ele_id: string, div_id: string, dims: number, presets: any | null = null
+    ele_id: string, div_id: string, dim: number, presets: any | null = null
   ) {
     this.parameters = new JsParameters();
 
     this.ele_id = ele_id;
-    this.dims = dims;
+    this.dim = dim;
     this.presets = presets;
 
     const div = document.getElementById(div_id);
@@ -50,9 +50,9 @@ export class SimulationControls {
     this.populate_value("n_iterations", this.parameters.params.n_iterations);
     this.populate_value("sample_period", this.parameters.params.sample_period);
     this.populate_value("random_seed", this.parameters.params.random_seed);
-    this.populate_value("n_x", this.parameters.dims.n_x);
-    this.populate_value("n_y", this.parameters.dims.n_y);
-    this.populate_value("n_z", this.parameters.dims.n_z);
+    this.populate_value("n_x", this.parameters.dimensions.n_x);
+    this.populate_value("n_y", this.parameters.dimensions.n_y);
+    this.populate_value("n_z", this.parameters.dimensions.n_z);
 
     if (this.parameters.params.seed_kind == "center") {
       html.set_input_checked(this.ele_id + "seed_center", true);
@@ -129,14 +129,14 @@ export class SimulationControls {
     this.parameters.params.n_iterations = this.get_int("n_iterations", 0, 1000000);
     this.parameters.params.sample_period = this.get_int("sample_period", 1, 100000);
     this.parameters.params.random_seed = this.get_int("random_seed", 1, 100000);
-    this.parameters.dims.n_x = this.get_int("n_x", 10, 10000);
-    this.parameters.dims.n_y = this.get_int("n_y", 10, 10000);
-    this.parameters.dims.n_z = this.get_int("n_z", 10, 10000);
+    this.parameters.dimensions.n_x = this.get_int("n_x", 10, 10000);
+    this.parameters.dimensions.n_y = this.get_int("n_y", 10, 10000);
+    this.parameters.dimensions.n_z = this.get_int("n_z", 10, 10000);
   }
 
   build_html() {
     const ele_id = this.ele_id;
-    const dims = this.dims;
+    const dims = this.dim;
     this.div.clear();
 
     const table = this.div.add_ele("table", { classes: "sim_ctrl" });

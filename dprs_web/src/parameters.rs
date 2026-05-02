@@ -4,7 +4,7 @@ use dprs_core::{BoundaryCondition, Topology};
 use wasm_bindgen::prelude::wasm_bindgen;
 // use web_sys::console::dir;
 
-use crate::TopoBc;
+use crate::TopologyBc;
 
 #[wasm_bindgen]
 #[derive(Default, Clone)]
@@ -30,9 +30,9 @@ impl Parameters {
         &self.0
     }
 
-    fn get_topo_bc(
+    fn get_topology_bc(
         &self,
-        value: &TopoBc,
+        value: &TopologyBc,
     ) -> (Topology, BoundaryCondition, BoundaryCondition, bool, bool) {
         let topology = if value.periodic {
             Topology::Periodic
@@ -53,39 +53,39 @@ impl Parameters {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn topo_bc_x(&mut self) -> TopoBc {
-        TopoBc {
+    pub fn topology_bc_x(&mut self) -> TopologyBc {
+        TopologyBc {
             periodic: self.0.topology_x.is_periodic(),
             ..Default::default()
         }
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_topo_bc_x(&mut self, value: &TopoBc) {
-        let (topology, bc0, bc1, bc_v_0, bc_v_1) = self.get_topo_bc(value);
+    pub fn set_topology_bc_x(&mut self, value: &TopologyBc) {
+        let (topology, bc0, bc1, bc_v_0, bc_v_1) = self.get_topology_bc(value);
         self.0.topology_x = topology;
         self.0.bcs_x = (bc0, bc1);
         self.0.bc_values_x = (bc_v_0.into(), bc_v_1.into());
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_topo_bc_y(&mut self, value: &TopoBc) {
-        let (topology, bc0, bc1, bc_v_0, bc_v_1) = self.get_topo_bc(value);
+    pub fn set_topology_bc_y(&mut self, value: &TopologyBc) {
+        let (topology, bc0, bc1, bc_v_0, bc_v_1) = self.get_topology_bc(value);
         self.0.topology_y = topology;
         self.0.bcs_y = (bc0, bc1);
         self.0.bc_values_y = (bc_v_0.into(), bc_v_1.into());
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_topo_bc_z(&mut self, value: &TopoBc) {
-        let (topology, bc0, bc1, bc_v_0, bc_v_1) = self.get_topo_bc(value);
+    pub fn set_topology_bc_z(&mut self, value: &TopologyBc) {
+        let (topology, bc0, bc1, bc_v_0, bc_v_1) = self.get_topology_bc(value);
         self.0.topology_z = topology;
         self.0.bcs_z = (bc0, bc1);
         self.0.bc_values_z = (bc_v_0.into(), bc_v_1.into());
     }
 
     #[wasm_bindgen(getter)]
-    pub fn initial_condition(&self) -> String {
+    pub fn get_ic(&self) -> String {
         match self.0.initial_condition {
             dprs_core::InitialCondition::CentralCell => "center",
             dprs_core::InitialCondition::EdgeCell => "edge",
@@ -95,7 +95,7 @@ impl Parameters {
     }
 
     #[wasm_bindgen(setter)]
-    pub fn set_initial_condition(&mut self, value: &str) {
+    pub fn set_ic(&mut self, value: &str) {
         match value {
             "center" => {
                 self.0.initial_condition = dprs_core::InitialCondition::CentralCell;
@@ -116,11 +116,11 @@ field_getter_setter! {Parameters, u32, n_z, {|a| a as u32}, set_n_z, {|a| a as u
 
 field_getter_setter! {Parameters, f64, p_1, {|a| a}, set_p_1, {|a| a}}
 field_getter_setter! {Parameters, f64, p_2, {|a| a}, set_p_2, {|a| a}}
-field_getter_setter! {Parameters, f64, p_conj, {|a| a}, set_p_conj, {|a|a}}
-field_getter_setter! {Parameters, f64, p_nbr, {|a| a}, set_p_nbr, {|a|a}}
-field_getter_setter! {Parameters, f64, p_diag, {|a| a}, set_p_diag, {|a|a}}
-field_getter_setter! {Parameters, f64, u_x, {|a| a}, set_u_x, {|a|a}}
-field_getter_setter! {Parameters, f64, p_initial, {|a| a}, set_p_initial, {|a|a}}
+field_getter_setter! {Parameters, f64, p_conj, {|a| a}, set_p_conj, {|a| a}}
+field_getter_setter! {Parameters, f64, p_nbr, {|a| a}, set_p_nbr, {|a| a}}
+field_getter_setter! {Parameters, f64, p_diag, {|a| a}, set_p_diag, {|a| a}}
+field_getter_setter! {Parameters, f64, u_x, {|a| a}, set_u_x, {|a| a}}
+field_getter_setter! {Parameters, f64, p_initial, {|a| a}, set_p_initial, {|a| a}}
 
 field_getter_setter! {Parameters, u32, n_iterations, {|a| a as u32}, set_n_iterations, {|a| a as usize}}
 field_getter_setter! {Parameters, u32, sample_period, {|a| a as u32}, set_sample_period, {|a| a as usize}}

@@ -51,8 +51,8 @@ class Main {
     this.log.info(`Running simulation of dimension ${dim}`);
 
     this.simulation_controls.populate_parameters();
-    this.simulation_controls.parameters.dims.n_y = 1;
-    this.simulation_controls.parameters.dims.n_z = 1;
+    this.simulation_controls.parameters.dimensions.n_y = 1;
+    this.simulation_controls.parameters.dimensions.n_z = 1;
 
     const sim_parameters = this.simulation_controls.parameters;
     this.simulation.run(sim_parameters);
@@ -83,9 +83,9 @@ class Main {
     p.params.sample_period = 1;
     p.params.random_seed = 1;
 
-    p.dims.n_x = 350;
-    p.dims.n_y = 1;
-    p.dims.n_z = 1;
+    p.dimensions.n_x = 350;
+    p.dimensions.n_y = 1;
+    p.dimensions.n_z = 1;
 
     p.params.seed_kind = "random";
     p.params.simulation_kind = "bedload";

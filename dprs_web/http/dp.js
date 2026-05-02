@@ -29,9 +29,9 @@ class Main {
         params_1d.params.n_iterations = 500;
         params_1d.params.sample_period = 1;
         params_1d.params.random_seed = 1;
-        params_1d.dims.n_x = 350;
-        params_1d.dims.n_y = 1;
-        params_1d.dims.n_z = 1;
+        params_1d.dimensions.n_x = 350;
+        params_1d.dimensions.n_y = 1;
+        params_1d.dimensions.n_z = 1;
         params_1d.params.seed_kind = "random";
         params_1d.params.simulation_kind = "staggered_dk";
         // 0.62 is good
@@ -43,9 +43,9 @@ class Main {
         params_2d.params.n_iterations = 500;
         params_2d.params.sample_period = 1;
         params_2d.params.random_seed = 6;
-        params_2d.dims.n_x = 350;
-        params_2d.dims.n_y = 150;
-        params_2d.dims.n_z = 1;
+        params_2d.dimensions.n_x = 350;
+        params_2d.dimensions.n_y = 150;
+        params_2d.dimensions.n_z = 1;
         params_2d.params.seed_kind = "edge";
         params_2d.params.simulation_kind = "bedload";
         this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1);
@@ -63,17 +63,17 @@ class Main {
         this.log.push_reason("load");
         const sim_parameters = this.saved_sims.load(filename);
         if (sim_parameters) {
-            if (sim_parameters.dims.n_y > 1) {
+            if (sim_parameters.dimensions.n_y > 1) {
                 this.simulation_controls_2d.parameters = sim_parameters;
-                this.simulation_controls_2d.parameters.dims.n_z = 1;
+                this.simulation_controls_2d.parameters.dimensions.n_z = 1;
                 this.simulation_controls_2d.populate_values();
                 this.log.info(`Loaded 2d sim ${filename}`);
                 this.tabs.select_hash("#tab-2D");
             }
             else {
                 this.simulation_controls_1d.parameters = sim_parameters;
-                this.simulation_controls_1d.parameters.dims.n_y = 1;
-                this.simulation_controls_1d.parameters.dims.n_z = 1;
+                this.simulation_controls_1d.parameters.dimensions.n_y = 1;
+                this.simulation_controls_1d.parameters.dimensions.n_z = 1;
                 this.simulation_controls_1d.populate_values();
                 this.log.info(`Loaded 1d sim ${filename}`);
                 this.tabs.select_hash("#tab-1D");
@@ -85,9 +85,9 @@ class Main {
         this.log.push_reason("save");
         this.simulation_controls_1d.populate_parameters();
         this.simulation_controls_2d.populate_parameters();
-        this.simulation_controls_1d.parameters.dims.n_y = 1;
-        this.simulation_controls_1d.parameters.dims.n_z = 1;
-        this.simulation_controls_2d.parameters.dims.n_z = 1;
+        this.simulation_controls_1d.parameters.dimensions.n_y = 1;
+        this.simulation_controls_1d.parameters.dimensions.n_z = 1;
+        this.simulation_controls_2d.parameters.dimensions.n_z = 1;
         var sim_parameters = this.simulation_controls_1d.parameters;
         if (dims > 1) {
             sim_parameters = this.simulation_controls_2d.parameters;
@@ -102,9 +102,9 @@ class Main {
         this.visualize.animation_stop();
         this.simulation_controls_1d.populate_parameters();
         this.simulation_controls_2d.populate_parameters();
-        this.simulation_controls_1d.parameters.dims.n_y = 1;
-        this.simulation_controls_1d.parameters.dims.n_z = 1;
-        this.simulation_controls_2d.parameters.dims.n_z = 1;
+        this.simulation_controls_1d.parameters.dimensions.n_y = 1;
+        this.simulation_controls_1d.parameters.dimensions.n_z = 1;
+        this.simulation_controls_2d.parameters.dimensions.n_z = 1;
         var sim_parameters = this.simulation_controls_1d.parameters;
         if (dim > 1) {
             sim_parameters = this.simulation_controls_2d.parameters;
