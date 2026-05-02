@@ -4,10 +4,10 @@ import { JsParameters } from "./js_parameters.js";
 import { MainBase } from "./base.js";
 class Main extends MainBase {
     constructor(logger) {
-        const model = "bedload";
+        const model = "DKBedload";
         const dim = 2;
         super(logger, model, dim);
-        console.log(`${model} ${dim}d child class`);
+        // console.log(`${model} ${dim}d child class`);
     }
     get_default_parameters() {
         const p = new JsParameters();
@@ -38,6 +38,7 @@ class Main extends MainBase {
         p.probabilities.p_diag = 0.1;
         p.probabilities.u_x = 1;
         p.probabilities.p_initial = 0.001;
+        p.preset = 2;
         return p;
     }
     run_simulation(dim, _ = 1) {
@@ -46,7 +47,7 @@ class Main extends MainBase {
     }
     get_presets() {
         return [
-            ["0", "User"],
+            // ["0", "User"],
             ["1", "A"],
             ["2", "B"],
             ["3", "C"],
@@ -66,7 +67,7 @@ class Main extends MainBase {
                 p.probabilities.p_2 = 0.9;
                 p.probabilities.p_conj = 1e-5;
                 p.settings.random_seed = 5;
-                p.settings.n_iterations = 2000;
+                p.settings.n_iterations = 1000;
                 break;
             case 2:
                 p.preset = 2;
@@ -74,7 +75,7 @@ class Main extends MainBase {
                 p.probabilities.p_2 = 0.5;
                 p.probabilities.p_conj = 1e-5;
                 p.settings.random_seed = 31;
-                p.settings.n_iterations = 2000;
+                p.settings.n_iterations = 1000;
                 break;
             case 3:
                 p.preset = 3;
@@ -82,7 +83,7 @@ class Main extends MainBase {
                 p.probabilities.p_2 = 0.3;
                 p.probabilities.p_conj = 1e-5;
                 p.settings.random_seed = 6;
-                p.settings.n_iterations = 2000;
+                p.settings.n_iterations = 1000;
                 break;
             case 4:
                 p.preset = 4;
@@ -90,7 +91,7 @@ class Main extends MainBase {
                 p.probabilities.p_2 = 0.1;
                 p.probabilities.p_conj = 1e-5;
                 p.settings.random_seed = 4;
-                p.settings.n_iterations = 2000;
+                p.settings.n_iterations = 1000;
                 break;
             case 5:
                 p.preset = 5;
@@ -98,7 +99,7 @@ class Main extends MainBase {
                 p.probabilities.p_2 = 0.01;
                 p.probabilities.p_conj = 1e-5;
                 p.settings.random_seed = 1;
-                p.settings.n_iterations = 2000;
+                p.settings.n_iterations = 1000;
                 break;
             default:
                 break;

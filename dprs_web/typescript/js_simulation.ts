@@ -38,7 +38,6 @@ export class JsSimulation {
     this.log = new log.Logger(logger, "sim");
     this.parameters = new JsParameters();
     this.simulation = new Simulation(this.parameters.as_parameters());
-    // this.model = "dk";
     this.dim = 1;
   }
 
@@ -78,12 +77,12 @@ export class JsSimulation {
     );
 
     this.simulation = new Simulation(this.parameters.as_parameters());
-    // TODO: remove
     this.dim = this.parameters.dim();
 
+    const dim = this.parameters.dim();
     const growth_model = this.parameters.wasm_growth_model();
     const growth_scheme = this.parameters.wasm_growth_scheme();
-    console.log(`Calling DPRS simulation with ${growth_model} ${growth_scheme}`);
+    console.log(`Calling DPRS simulation with ${dim}d ${growth_model} ${growth_scheme}`);
     this.simulation.simulate(growth_model, growth_scheme);
     this.log.info("Completed simulation");
     this.log.pop_reason();

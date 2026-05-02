@@ -84,11 +84,11 @@ export class SimulationControls {
         const ele_id = this.ele_id;
         const dims = this.dim;
         this.div.clear();
-        const table = this.div.add_ele("table", { classes: "sim_ctrl" });
+        const table = this.div.add_ele("table", { classes: "sim_controls" });
         const dims_probabilities_table = table
             .add_ele("tr")
             .add_ele("td")
-            .add_ele("table", { classes: "dims_probabilities_table" });
+            .add_ele("table", { classes: "dims_probabilities" });
         const steps_slicing_seed_table = table
             .add_ele("tr")
             .add_ele("td")
@@ -207,10 +207,10 @@ export class SimulationControls {
             let id = ele_id + "sim_preset";
             const tr = presets_table.add_ele("tr", { id: id });
             // Presets row label
-            // const td = tr.add_ele("td");
-            // const name = "label";
-            // const value = "Presets:"
-            // td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
+            const td = tr.add_ele("td");
+            const name = "label";
+            const value = "Presets:";
+            td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
             // console.log(`Creating radio button for bedload_2d preset ${this.presets}`,)
             if (this.presets != null) {
                 for (const [name, value] of this.presets) {

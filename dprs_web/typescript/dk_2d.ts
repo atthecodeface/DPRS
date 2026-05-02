@@ -6,10 +6,10 @@ import { MainBase } from "./base.js";
 class Main extends MainBase {
 
   constructor(logger: Log,) {
-    const model = "dk";
+    const model = "DomanyKinzel";
     const dim = 2;
     super(logger, model, dim);
-    console.log(`${model} ${dim}d child class`);
+    // console.log(`${model} ${dim}d child class`);
   }
 
   get_default_parameters(): JsParameters {
@@ -33,6 +33,8 @@ class Main extends MainBase {
     p.probabilities.p_diag = 0.0;
     p.probabilities.u_x = 0.0;
     p.probabilities.p_initial = 0.5;
+
+    p.preset = 0;
 
     return p;
   }
