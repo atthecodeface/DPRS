@@ -14,9 +14,8 @@ export class MainBase {
   visualize_controls: VisualizeControls;
   simulation_controls: SimulationControls;
 
-  constructor(logger: Log, _: string) {
-    const dim = 2;
-    this.log = new Logger(logger, `bedload_${dim}d`);
+  constructor(logger: Log, model: string, dim: number, ) {
+    this.log = new Logger(logger, `${model}_${dim}d`);
     this.log.push_reason("init");
     this.log.info("Starting");
 
@@ -28,8 +27,9 @@ export class MainBase {
       this.visualize,
       "VisualizationControls",
     );
-    // this.visualize.u_x = -0.2;
-    this.visualize.do_rough_background = true;
+    if (model=="bedload" && dim==2) {
+      this.visualize.do_rough_background = true;
+    }
 
     this.simulation_controls = new SimulationControls(
       `${dim}d_sc_`,
@@ -48,7 +48,7 @@ export class MainBase {
     this.log.pop_reason();
   }
 
-  run_simulation(dim: number) {
+  run_simulation(dim: number, zoom: number = 1) {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
@@ -61,8 +61,7 @@ export class MainBase {
       `Simulation complete with ${this.simulation.n_results()} results`,
     );
 
-    const initial_zoom = 2.2;
-    this.visualize_controls.populate_values(this.simulation, initial_zoom);
+    this.visualize_controls.populate_values(this.simulation, zoom);
     this.visualize.set_redraw(this.simulation_controls);
     this.visualize.redraw();
 

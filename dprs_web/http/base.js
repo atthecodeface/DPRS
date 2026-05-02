@@ -5,16 +5,17 @@ import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
 import { SimulationControls } from "./simulation_controls.js";
 export class MainBase {
-    constructor(logger, _) {
-        const dim = 2;
-        this.log = new Logger(logger, `bedload_${dim}d`);
+    constructor(logger, model, dim) {
+        this.log = new Logger(logger, `${model}_${dim}d`);
         this.log.push_reason("init");
         this.log.info("Starting");
         this.simulation = new JsSimulation(logger);
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
         this.visualize_controls = new VisualizeControls(logger, this.visualize, this.visualize, "VisualizationControls");
         // this.visualize.u_x = -0.2;
-        this.visualize.do_rough_background = true;
+        if (model == "bedload" && dim == 2) {
+            this.visualize.do_rough_background = true;
+        }
         this.simulation_controls = new SimulationControls(`${dim}d_sc_`, `${dim}d_sim_controls`, dim, this.get_presets());
         this.simulation_controls.parameters = this.get_default_parameters();
         this.simulation_controls.populate_values();
@@ -24,7 +25,7 @@ export class MainBase {
         this.log.info("Initialization complete");
         this.log.pop_reason();
     }
-    run_simulation(dim) {
+    run_simulation(dim, zoom = 1) {
         this.log.push_reason("sim");
         this.log.info(`Running simulation of dimension ${dim}`);
         this.simulation_controls.populate_parameters();
@@ -32,8 +33,7 @@ export class MainBase {
         const sim_parameters = this.simulation_controls.parameters;
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation complete with ${this.simulation.n_results()} results`);
-        const initial_zoom = 2.2;
-        this.visualize_controls.populate_values(this.simulation, initial_zoom);
+        this.visualize_controls.populate_values(this.simulation, zoom);
         this.visualize.set_redraw(this.simulation_controls);
         this.visualize.redraw();
         this.log.pop_reason();
