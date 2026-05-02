@@ -27,6 +27,8 @@ export class MainBase {
     );
     if (model == "bedload" && dim == 2) {
       this.visualize.do_rough_background = true;
+    } else {
+      this.visualize.do_rough_background = false;
     }
 
     this.simulation_controls = new SimulationControls(
@@ -37,7 +39,9 @@ export class MainBase {
     );
     this.simulation_controls.parameters = this.get_default_parameters();
     this.simulation_controls.populate_values();
-    this.simulation_controls.set_bedload();
+    if (model == "bedload") {
+      this.simulation_controls.set_bedload();
+    }
 
     this.log.info("HTML built, running initial simulation");
     this.run_simulation(dim);
