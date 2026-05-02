@@ -48,7 +48,7 @@ export class SimulationControls {
         }
         if (this.presets != null) {
             console.log(`Setting preset in web page`);
-            html.set_input_checked(this.ele_id + "sk_preset" + this.parameters.preset.toString(), true);
+            html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
         }
         if (this.parameters.params.simulation_kind == "simple_dk") {
             html.set_input_checked(this.ele_id + "sk_simple_dk", true);
@@ -79,7 +79,7 @@ export class SimulationControls {
         html.set_input_checked(this.ele_id + "sk_bedload", true);
     }
     // set_preset() {
-    //   html.set_input_checked(this.ele_id + "sk_preset1", true);
+    //   html.set_input_checked(this.ele_id + "sim_preset1", true);
     // }
     // Get parameter values from web page
     populate_parameters() {
@@ -233,21 +233,21 @@ export class SimulationControls {
         }
         // Presets
         {
-            let id = ele_id + "sk_preset";
+            let id = ele_id + "sim_preset";
             const tr = presets_table.add_ele("tr", { id: id });
             // Presets row label
             // const td = tr.add_ele("td");
             // const name = "label";
             // const value = "Presets:"
-            // td.add_label(ele_id + "sk_" + name, { classes: "sk_preset_label " + name, }).set_content(value);
-            console.log(`Creating radio button for bedload_2d preset ${this.presets}`);
+            // td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
+            // console.log(`Creating radio button for bedload_2d preset ${this.presets}`,)
             if (this.presets != null) {
                 for (const [name, value] of this.presets) {
                     const td = tr.add_ele("td");
-                    td.add_label(ele_id + "sk_" + name, { classes: "sk_preset_label " + name, }).set_content(value);
+                    td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
                     td.add_input_radio_with_callback(id, name, true, preset_select, {
-                        id: ele_id + "sk_preset" + name,
-                        classes: "sk_preset_radio " + name,
+                        id: ele_id + "sim_preset" + name,
+                        classes: "sim_preset_radio " + name,
                     });
                 }
             }

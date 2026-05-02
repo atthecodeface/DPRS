@@ -119,14 +119,14 @@ class Main {
   }
 
   enact_preset(preset: number): void {
-    console.log(
-      `Enacting bedload preset ${preset}`,
-    )
+    // console.log(
+    //   `Enacting bedload preset ${preset}`,
+    // )
     var p = this.get_default_parameters();
     switch (preset) {
       case 0:
         p.preset = 0;
-        break;
+        return;
       case 1:
         p.preset = 1;
         p.probabilities.p_1 = 0.61487;
