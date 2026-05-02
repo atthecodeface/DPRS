@@ -2,6 +2,7 @@ import init from "../pkg/dprs_wasm.js";
 import { Log } from "./log.js";
 import { JsParameters } from "./js_parameters.js";
 import { MainBase } from "./base.js";
+
 class Main extends MainBase {
 
   constructor(logger: Log,) {
