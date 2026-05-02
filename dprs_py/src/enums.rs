@@ -43,9 +43,9 @@ pub enum GrowthScheme {
     #[default]
     Simple,
     Staggered,
-    SchemeA,
-    SchemeB,
-    SchemeC,
+    BedloadA,
+    BedloadB,
+    BedloadC,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]

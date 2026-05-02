@@ -10,7 +10,7 @@ pp = PrettyPrinter(indent=4).pprint
 import dprs
 from dprs import sim
 from dprs.sim import (
-    GrowthModel, Dimension,
+    GrowthModel, GrowthScheme, Dimension,
     Topology, InitialCondition, BoundaryCondition, Processing
 )
 from dprs.viz import Viz

@@ -53,22 +53,22 @@ mod sim {
             (Dimension::D1, GrowthModel::DomanyKinzel, GrowthScheme::Staggered) => {
                 run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelStaggeredDK1D>>(&sim_parameters)
             }
-            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::SchemeA) => {
+            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::BedloadA) => {
                 run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadA1D>>(&sim_parameters)
             }
-            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::SchemeB) => {
+            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::BedloadB) => {
                 run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadB1D>>(&sim_parameters)
             }
-            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::SchemeC) => {
+            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::BedloadC) => {
                 run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadC1D>>(&sim_parameters)
             }
-            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::SchemeA) => {
+            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::BedloadA) => {
                 run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadA2D>>(&sim_parameters)
             }
-            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::SchemeB) => {
+            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::BedloadB) => {
                 run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadB2D>>(&sim_parameters)
             }
-            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::SchemeC) => {
+            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::BedloadC) => {
                 run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadC2D>>(&sim_parameters)
             }
             (Dimension::D2, GrowthModel::DomanyKinzel, GrowthScheme::Simple) => {

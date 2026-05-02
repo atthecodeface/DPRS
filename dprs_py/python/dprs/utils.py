@@ -9,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 from dprs import sim
 from dprs.sim import (
-    GrowthModel, Dimension,
+    GrowthModel, GrowthScheme, Dimension,
 )
 warnings.filterwarnings("ignore")
 
@@ -72,7 +72,7 @@ def postprocessing(parameters, n_raw_lattices, raw_lattices, raw_tracking,):
     raw_tracking: Sequence[list]
     lattices: NDArray
     skip: int = (
-        2 if parameters.growth_model==GrowthModel.StaggeredDomanyKinzel 
+        2 if parameters.growth_model==GrowthScheme.Staggered
         else 1
     )
     lattices: NDArray
@@ -119,16 +119,21 @@ def postprocessing(parameters, n_raw_lattices, raw_lattices, raw_tracking,):
 def make_title(parameters: Parameters, i_slice: int|None = None, z_slice: int|None = None): 
     """Generate a string summarizing the sim for entitling plots."""
     model: str
+    scheme: str
     match parameters.growth_model:
-        case GrowthModel.SimplifiedDomanyKinzel: model="Simplified D-K:"
-        case GrowthModel.StaggeredDomanyKinzel: model="Staggered D-K:"
-        case GrowthModel.SchemeA: model="SchemeA:"
-        case GrowthModel.SchemeB: model="SchemeB:"
-        case GrowthModel.SchemeC: model="SchemeC:"
+        case GrowthModel.DomanyKinzel: model="D-K"
+        case GrowthModel.DKBedload: model="D-K bedload"
         case _: model="Unspecified model"
+    match parameters.growth_scheme:
+        case GrowthScheme.Simple: scheme="simple"
+        case GrowthScheme.Staggered: scheme="staggered"
+        case GrowthScheme.BedloadA: scheme="A"
+        case GrowthScheme.BedloadB: scheme="B"
+        case GrowthScheme.BedloadC: scheme="C"
+        case _: model="Unspecified scheme"
     return (
         (
-            model
+            f"{model} ({scheme}):"
         )
         + rf"   " +
         (
