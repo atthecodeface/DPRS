@@ -25,7 +25,8 @@ __all__ = [
 @dataclass
 class Parameters(): 
     """Dummy declaration: shadows definition in Rust."""
-    growth_model: sim.GrowthModel.SimplifiedDomanyKinzel
+    growth_model: sim.GrowthModel.DomanyKinzel
+    growth_scheme: sim.GrowthScheme.Simple
     dim: sim.Dimension.D1
     n_x: int
     n_y: int

@@ -21,6 +21,8 @@ mod sim {
     #[pymodule_export]
     use crate::enums::GrowthModel;
     #[pymodule_export]
+    use crate::enums::GrowthScheme;
+    #[pymodule_export]
     use crate::enums::InitialCondition;
     #[pymodule_export]
     use crate::enums::Processing;
@@ -38,67 +40,54 @@ mod sim {
             .fill()
             .map_err(|error| pyo3::exceptions::PyValueError::new_err(format!("{error:?}")))?;
 
-        let (t_run_time, n_lattices, lattices, tracking) =
-            match (py_parameters.dim, py_parameters.growth_model) {
-                (Dimension::D1, GrowthModel::SimplifiedDomanyKinzel) => {
-                    run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelDKSimplified1D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D1, GrowthModel::StaggeredDomanyKinzel) => {
-                    run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelStaggeredDK1D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D1, GrowthModel::BedloadA) => {
-                    run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadA1D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D1, GrowthModel::BedloadB) => {
-                    run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadB1D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D1, GrowthModel::BedloadC) => {
-                    run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadC1D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D2, GrowthModel::BedloadA) => {
-                    run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadA2D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D2, GrowthModel::BedloadB) => {
-                    run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadB2D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D2, GrowthModel::BedloadC) => {
-                    run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadC2D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D2, GrowthModel::SimplifiedDomanyKinzel) => {
-                    run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelDKSimplified2D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D2, GrowthModel::StaggeredDomanyKinzel) => {
-                    run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelStaggeredDK2D>>(
-                        &sim_parameters,
-                    )
-                }
-                (Dimension::D3, GrowthModel::SimplifiedDomanyKinzel) => {
-                    run_nd::<StdRng, dk::Cell3D, dk::Lattice3D<dk::ModelDKSimplified3D>>(
-                        &sim_parameters,
-                    )
-                }
-                // TODO: The error this gives ("PanicException: not yet implemented") is not sufficient
-                _ => todo!(),
+        let (t_run_time, n_lattices, lattices, tracking) = match (
+            py_parameters.dim,
+            py_parameters.growth_model,
+            py_parameters.growth_scheme,
+        ) {
+            (Dimension::D1, GrowthModel::DomanyKinzel, GrowthScheme::Simple) => {
+                run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelDKSimplified1D>>(
+                    &sim_parameters,
+                )
             }
-            .map_err(|error| pyo3::exceptions::PyValueError::new_err(format!("{error:?}")))?;
+            (Dimension::D1, GrowthModel::DomanyKinzel, GrowthScheme::Staggered) => {
+                run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelStaggeredDK1D>>(&sim_parameters)
+            }
+            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::BedloadA) => {
+                run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadA1D>>(&sim_parameters)
+            }
+            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::BedloadB) => {
+                run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadB1D>>(&sim_parameters)
+            }
+            (Dimension::D1, GrowthModel::DKBedload, GrowthScheme::BedloadC) => {
+                run_nd::<StdRng, dk::Cell1D, dk::Lattice1D<dk::ModelBedloadC1D>>(&sim_parameters)
+            }
+            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::BedloadA) => {
+                run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadA2D>>(&sim_parameters)
+            }
+            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::BedloadB) => {
+                run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadB2D>>(&sim_parameters)
+            }
+            (Dimension::D2, GrowthModel::DKBedload, GrowthScheme::BedloadC) => {
+                run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelBedloadC2D>>(&sim_parameters)
+            }
+            (Dimension::D2, GrowthModel::DomanyKinzel, GrowthScheme::Simple) => {
+                run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelDKSimplified2D>>(
+                    &sim_parameters,
+                )
+            }
+            (Dimension::D2, GrowthModel::DomanyKinzel, GrowthScheme::Staggered) => {
+                run_nd::<StdRng, dk::Cell2D, dk::Lattice2D<dk::ModelStaggeredDK2D>>(&sim_parameters)
+            }
+            (Dimension::D3, GrowthModel::DomanyKinzel, GrowthScheme::Simple) => {
+                run_nd::<StdRng, dk::Cell3D, dk::Lattice3D<dk::ModelDKSimplified3D>>(
+                    &sim_parameters,
+                )
+            }
+            // TODO: The error this gives ("PanicException: not yet implemented") is not sufficient
+            _ => todo!(),
+        }
+        .map_err(|error| pyo3::exceptions::PyValueError::new_err(format!("{error:?}")))?;
 
         // Translation layer between DualState and bool lattice cell types.
         let mut bool_lattices: Vec<Vec<bool>> = Vec::new();

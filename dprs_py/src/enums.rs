@@ -30,14 +30,22 @@ macro_rules! py_of_enum {
 #[pyclass(from_py_object, eq, eq_int)]
 pub enum GrowthModel {
     #[default]
-    SimplifiedDomanyKinzel,
-    StaggeredDomanyKinzel,
-    BedloadA,
-    BedloadB,
-    BedloadC,
+    DomanyKinzel,
+    DKBedload,
     ContactProcess,
     PairContactProcess,
     TwoSpeciesContactProcess,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+#[pyclass(from_py_object, eq, eq_int)]
+pub enum GrowthScheme {
+    #[default]
+    Simple,
+    Staggered,
+    BedloadA,
+    BedloadB,
+    BedloadC,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
