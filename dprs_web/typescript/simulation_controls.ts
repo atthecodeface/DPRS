@@ -238,7 +238,7 @@ export class SimulationControls {
 
     // Presets
     {
-      let id = ele_id + "sim_preset";
+      let id = ele_id + "sim_presets";
       const tr = presets_table.add_ele("tr", { id: id });
       console.log(`Creating dropdown menu for bedload_2d preset ${this.presets}`,)
       function preset_select_dropdown(event: Event) {
@@ -251,7 +251,7 @@ export class SimulationControls {
         // const value = "Example choices: "
         const value = "Parameter sets: "
         td.add_label(
-          ele_id + "sim_preset_dropdown", { classes: "sim_controls_presets_menu_label" }
+          ele_id + "sim_presets_dropdown", { classes: "sim_controls_presets_menu_label" }
         ).set_content(value);
         td.add_input_dropdown_with_callback(
           this.presets!, preset_select_dropdown, { classes: "sim_controls_presets_menu" }
