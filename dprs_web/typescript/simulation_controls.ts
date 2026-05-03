@@ -248,7 +248,7 @@ export class SimulationControls {
       }
       if (this.presets != null) {
         const td = tr.add_ele("td");
-        const value = "Example parameter choices:          "
+        const value = "Example choices: "
         const name = "label";
         td.add_label(
           ele_id + "sim_preset_dropdown", { classes: "sim_preset_label " + "sim_preset_dropdown" }
