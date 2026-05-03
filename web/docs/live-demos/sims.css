@@ -68,7 +68,13 @@ div.md-container div div.md-content article.md-content__inner {
 
         .sim_controls_ic_radio_buttons {
             padding-left: 0px;
-            padding-right: 5px;
+            padding-right: 8px;
+        }
+
+        .sim_controls_presets_menu {
+            padding: 6px;
+            border: 1px solid rgb(83, 83, 83);
+            font-size: 0.8rem;
         }
     }
 

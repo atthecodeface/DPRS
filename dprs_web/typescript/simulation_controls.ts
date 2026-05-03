@@ -252,7 +252,9 @@ export class SimulationControls {
         td.add_label(
           ele_id + "sim_preset_dropdown", { classes: "sim_preset_label" }
         ).set_content(value);
-        td.add_input_dropdown_with_callback(this.presets!, preset_select_dropdown);
+        td.add_input_dropdown_with_callback(
+          this.presets!, preset_select_dropdown, { classes: "sim_controls_presets_menu" }
+        );
       }
 
     }
