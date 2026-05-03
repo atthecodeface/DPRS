@@ -39,7 +39,7 @@ export class MainBase {
         const sim_parameters = this.simulation_controls.parameters;
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation complete with ${this.simulation.n_results()} results`);
-        this.visualize_controls.get_parameters_from_webpage_entries(this.simulation);
+        this.visualize_controls.set_parameters_from_webpage_entries(this.simulation);
         this.visualize.set_redraw(this.simulation_controls);
         this.visualize.redraw();
         this.log.pop_reason();

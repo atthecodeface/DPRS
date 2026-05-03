@@ -58,16 +58,16 @@ class Main extends MainBase {
 
   get_presets(): any | null {
     return [
-      // ["0", "User"],
-      ["1", "A"],
-      ["2", "B"],
-      ["3", "C"],
-      ["4", "D"],
-      ["5", "E"],
+      ["1", "Critical p1~0.62"],
+      ["2", "Critical p1~0.81"],
+      ["3", "Critical p1~0.89"],
+      ["4", "Critical p1~0.97"],
+      ["5", "Critical p1~0.99"],
     ];
   }
 
   enact_preset(preset: number): void {
+    console.log(`Enacting preset ${preset}`);
     var p = this.get_default_parameters();
     switch (preset) {
       case 0:

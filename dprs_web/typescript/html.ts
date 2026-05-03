@@ -282,6 +282,29 @@ export class HtmlElement {
     return new HtmlElement(input);
   }
 
+  add_input_dropdown_with_callback(
+    values_labels: any,
+    // required: boolean,
+    callback: (event: Event) => void,
+  ) {
+    const select = document.createElement("select");
+    select.addEventListener("change", callback);
+    for (const [value, label] of values_labels) {
+      const option = document.createElement("option") as HTMLOptionElement;
+      option.text = label;
+      option.value = value;
+      select.appendChild(option);
+    }
+    this.ele.appendChild(select);
+    // select.addEventListener("change", (event: Event) => {
+    //   const target = event.target as HTMLSelectElement;
+    //   console.log("Preset choice:", target.value);
+    //   const preset = Number(target.value);
+    //   (window as any).main.enact_preset(preset);
+    // });
+    return new HtmlElement(select);
+  }
+
   add_input_range(
     name: string,
     range: Range,
