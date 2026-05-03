@@ -1,12 +1,11 @@
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 export class SimulationControls {
-    constructor(ele_id, div_id, dim, presettable = null) {
-        this.presettable = null;
+    constructor(ele_id, div_id, dim, controllable) {
         this.parameters = new JsParameters();
         this.ele_id = ele_id;
         this.dim = dim;
-        this.presettable = presettable;
+        this.controllable = controllable;
         const div = document.getElementById(div_id);
         if (!div) {
             throw new Error(`Failed to find ${div_id} to build SimulationControls`);
@@ -216,14 +215,14 @@ export class SimulationControls {
         {
             let id = ele_id + "presets";
             const tr = presets_table.add_ele("tr", { id: id });
-            if (this.presettable !== null && this.presettable.presets.length != 0) {
-                console.log(`Creating dropdown menu for bedload_2d preset ${this.presettable.presets}`);
+            if (this.controllable !== null && this.controllable.presets.length != 0) {
+                console.log(`Creating dropdown menu for bedload_2d preset ${this.controllable.presets}`);
                 const td = tr.add_ele("td");
                 const value = "Parameter sets: ";
                 td.add_label(ele_id + "presets_dropdown", {
                     classes: "presets_menu_label",
                 }).set_content(value);
-                td.add_input_dropdown(this.presettable.presets, null, (_e, value) => this.presettable.select_preset(value), {
+                td.add_input_dropdown(this.controllable.presets, null, (_e, value) => this.controllable.select_preset(value), {
                     classes: "presets_menu",
                 });
             }
@@ -256,14 +255,14 @@ export class SimulationControls {
             const tr = run_save_table.add_ele("tr", { id: id });
             const td_run = tr.add_ele("td");
             td_run.add_input_button("Run simulation", () => {
-                window.main.run_simulation(dims);
+                this.controllable.run_simulation(dims);
             }, {
                 id: ele_id + "run_simulation",
                 classes: "controls simulation run_simulation",
             });
             const td_save = tr.add_ele("td");
             td_save.add_input_button("Save simulation", () => {
-                window.main.save_simulation(dims);
+                this.controllable.save_simulation(dims);
             }, {
                 id: ele_id + "save_simulation",
                 classes: "controls simulation save_simulation",
