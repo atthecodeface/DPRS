@@ -3,9 +3,25 @@ import { Visualize } from "./visualize.js";
 import { VisualizeControls } from "./visualize_controls.js";
 import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
-import { Presettable, SimulationControls } from "./simulation_controls.js";
+import {
+  ControlableSimulation,
+  SimulationControls,
+} from "./simulation_controls.js";
 
-export class MainBase implements Presettable {
+export interface MainSim {
+  model_name: string;
+  dim: number;
+  zoom: number | null;
+  do_rough_background: boolean | null;
+
+  get_default_parameters: () => JsParameters;
+  preset_labels: string[];
+  default_preset: number;
+  select_preset: null | ((value: number) => JsParameters);
+}
+
+export class MainBase implements ControlableSimulation {
+  main_sim: MainSim;
   log: Logger;
   simulation: JsSimulation;
   visualize: Visualize;
@@ -14,16 +30,21 @@ export class MainBase implements Presettable {
   presets: [string, string][] = [];
   default_preset_value = null;
 
-  constructor(
-    logger: Log,
-    model: string,
-    dim: number,
-    zoom: number | null = null,
-    do_rough_background: boolean | null = null,
-  ) {
+  constructor(main_sim: MainSim, logger: Log) {
+    const model = main_sim.model_name;
+    const dim = main_sim.dim;
+    this.main_sim = main_sim;
+
     this.log = new Logger(logger, `${model}_${dim}d`);
     this.log.push_reason("init");
     this.log.info("Starting");
+
+    this.presets = [];
+    if (this.main_sim.preset_labels.length != 0) {
+      for (let x = 0; x < this.main_sim.preset_labels.length; x++) {
+        this.presets.push([x.toString(), this.main_sim.preset_labels[x]!]);
+      }
+    }
 
     this.simulation = new JsSimulation(logger);
     this.simulation_controls = new SimulationControls(
@@ -32,7 +53,8 @@ export class MainBase implements Presettable {
       dim,
       this,
     );
-    this.simulation_controls.parameters = this.get_default_parameters();
+    this.simulation_controls.parameters =
+      this.main_sim.get_default_parameters();
     this.simulation_controls.populate_webpage_entries();
 
     this.visualize = new Visualize(logger, this.simulation, "Visualize");
@@ -42,11 +64,11 @@ export class MainBase implements Presettable {
       this.visualize,
       "VisualizationControls",
     );
-    if (do_rough_background != null) {
-      this.visualize.do_rough_background = do_rough_background!;
+    if (this.main_sim.do_rough_background != null) {
+      this.visualize.do_rough_background = this.main_sim.do_rough_background!;
     }
-    if (zoom != null) {
-      this.visualize.set_zoom(zoom!);
+    if (this.main_sim.zoom != null) {
+      this.visualize.set_zoom(this.main_sim.zoom!);
     }
 
     this.log.info("HTML built, running initial simulation");
@@ -56,7 +78,9 @@ export class MainBase implements Presettable {
     this.log.pop_reason();
   }
 
-  run_simulation(dim: number) {
+  save_simulation(dim: number): void {}
+
+  run_simulation(dim: number): void {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
@@ -83,14 +107,14 @@ export class MainBase implements Presettable {
     this.log.pop_reason();
   }
 
-  get_default_parameters(): JsParameters {
-    const p = new JsParameters();
-    return p;
-  }
-
-  select_preset(preset: string): void {
-    var p = this.get_default_parameters();
-    this.simulation_controls.parameters = p;
+  select_preset(preset_string: string): void {
+    if (this.main_sim.select_preset !== null) {
+      const preset = Number(preset_string);
+      this.simulation_controls.parameters = this.main_sim.select_preset(preset);
+    } else {
+      this.simulation_controls.parameters =
+        this.main_sim.get_default_parameters();
+    }
     this.simulation_controls.populate_webpage_entries();
   }
 }

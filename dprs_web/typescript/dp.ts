@@ -24,6 +24,9 @@ class Main {
 
   autoplay: boolean = true;
 
+  presets: [string, string][] = [];
+  default_preset_value = null;
+
   constructor(logger: Log, params: string) {
     this.log = new Logger(logger, "dk_main");
     this.log.push_reason("init");
@@ -89,6 +92,7 @@ class Main {
       "1d_sc_",
       "1d_sim_controls",
       1,
+      this,
     );
     this.simulation_controls_1d.parameters = params_1d;
     this.simulation_controls_1d.populate_webpage_entries();
@@ -97,6 +101,7 @@ class Main {
       "2d_sc_",
       "2d_sim_controls",
       2,
+      this,
     );
     this.simulation_controls_2d.parameters = params_2d;
     this.simulation_controls_2d.populate_webpage_entries();
@@ -108,6 +113,8 @@ class Main {
     this.log.info("Initialization complete");
     this.log.pop_reason();
   }
+
+  select_preset(preset: string): void {}
 
   load_simulation(filename: string) {
     this.log.push_reason("load");
@@ -173,7 +180,9 @@ class Main {
       `Simulation (dim ${dim}) complete with ${this.simulation.n_results()} results`,
     );
 
-    this.visualize_controls.set_parameters_from_webpage_entries(this.simulation);
+    this.visualize_controls.set_parameters_from_webpage_entries(
+      this.simulation,
+    );
     if (this.simulation.dim > 1) {
       this.visualize.set_redraw(this.simulation_controls_2d);
       this.visualize.redraw();

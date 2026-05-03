@@ -1,14 +1,20 @@
 import init from "../pkg/dprs_wasm.js";
 import { Log } from "./log.js";
 import { JsParameters } from "./js_parameters.js";
-import { MainBase } from "./base.js";
+import { MainSim, MainBase } from "./base.js";
 
-class Main extends MainBase {
+class Main implements MainSim {
+  preset_labels = [];
+  model_name = "DomanyKinzel";
+  dim = 2;
+  zoom = null;
+  do_rough_background = null;
+  default_preset = 0;
+  select_preset = null;
 
-  constructor(logger: Log,) {
-    const model = "DomanyKinzel";
-    const dim = 2;
-    super(logger, model, dim);
+  main: MainBase;
+  constructor(logger: Log) {
+    this.main = new MainBase(this, logger);
     // console.log(`${model} ${dim}d child class`);
   }
 
@@ -26,7 +32,7 @@ class Main extends MainBase {
     p.settings.growth_model = "DomanyKinzel";
     p.settings.growth_scheme = "Staggered";
 
-    p.probabilities.p_1 = 0.38;  //0.70548515
+    p.probabilities.p_1 = 0.38; //0.70548515
     p.probabilities.p_2 = 0.38;
     p.probabilities.p_conj = 0.0;
     p.probabilities.p_nbr = 0.0;
@@ -49,5 +55,7 @@ function complete_init() {
 }
 
 window.addEventListener("load", (e) => {
-  init().then(() => { complete_init(); });
+  init().then(() => {
+    complete_init();
+  });
 });
