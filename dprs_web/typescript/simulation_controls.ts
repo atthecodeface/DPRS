@@ -1,21 +1,33 @@
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 
+export interface ControlableSimulation {
+  select_preset: (value: string) => void;
+  /** Array of label, value for the presets */
+  presets: [string, string][];
+  default_preset_value: string | null;
+  run_simulation(dim: number): void;
+  save_simulation(dim: number): void;
+}
+
 export class SimulationControls {
   ele_id: string;
   div: html.HtmlElement;
   dim: number;
   parameters: JsParameters;
-  presets: any | null;
+  controllable: ControlableSimulation;
 
   constructor(
-    ele_id: string, div_id: string, dim: number, presets: any | null = null
+    ele_id: string,
+    div_id: string,
+    dim: number,
+    controllable: ControlableSimulation,
   ) {
     this.parameters = new JsParameters();
 
     this.ele_id = ele_id;
     this.dim = dim;
-    this.presets = presets;
+    this.controllable = controllable;
 
     const div = document.getElementById(div_id);
     if (!div) {
@@ -26,112 +38,118 @@ export class SimulationControls {
     this.build_html();
   }
 
-  get_float(id: string, min: number, max: number): number {
-    return html.get_input_float(this.ele_id + id, min, max);
-  }
-
-  get_int(id: string, min: number, max: number): number {
-    return html.get_input_int(this.ele_id + id, min, max);
-  }
-
-  populate_value(id: string, value: any) {
-    html.set_input_value(this.ele_id + id, value);
-  }
-
   // Set parameter values in web page
-  populate_values() {
-    this.populate_value("p_1", this.parameters.probabilities.p_1);
-    this.populate_value("p_2", this.parameters.probabilities.p_2);
-    this.populate_value("p_conj", this.parameters.probabilities.p_conj);
-    this.populate_value("p_nbr", this.parameters.probabilities.p_nbr);
-    this.populate_value("p_diag", this.parameters.probabilities.p_diag);
-    this.populate_value("u_x", this.parameters.probabilities.u_x);
-    this.populate_value("p_initial", this.parameters.probabilities.p_initial);
-    this.populate_value("n_iterations", this.parameters.settings.n_iterations);
-    this.populate_value("sample_period", this.parameters.settings.sample_period);
-    this.populate_value("random_seed", this.parameters.settings.random_seed);
-    this.populate_value("n_x", this.parameters.dimensions.n_x);
-    this.populate_value("n_y", this.parameters.dimensions.n_y);
-    this.populate_value("n_z", this.parameters.dimensions.n_z);
+  populate_webpage_entries() {
+    this.set_webpage_entry("p_1", this.parameters.probabilities.p_1);
+    this.set_webpage_entry("p_2", this.parameters.probabilities.p_2);
+    this.set_webpage_entry("p_conj", this.parameters.probabilities.p_conj);
+    this.set_webpage_entry("p_nbr", this.parameters.probabilities.p_nbr);
+    this.set_webpage_entry("p_diag", this.parameters.probabilities.p_diag);
+    this.set_webpage_entry("u_x", this.parameters.probabilities.u_x);
+    this.set_webpage_entry(
+      "p_initial",
+      this.parameters.probabilities.p_initial,
+    );
+    this.set_webpage_entry(
+      "n_iterations",
+      this.parameters.settings.n_iterations,
+    );
+    this.set_webpage_entry(
+      "sample_period",
+      this.parameters.settings.sample_period,
+    );
+    this.set_webpage_entry("random_seed", this.parameters.settings.random_seed);
+    this.set_webpage_entry("n_x", this.parameters.dimensions.n_x);
+    this.set_webpage_entry("n_y", this.parameters.dimensions.n_y);
+    this.set_webpage_entry("n_z", this.parameters.dimensions.n_z);
 
-    if (this.parameters.settings.seed_kind == "center") {
-      html.set_input_checked(this.ele_id + "seed_center", true);
-    } else if (this.parameters.settings.seed_kind == "edge") {
-      html.set_input_checked(this.ele_id + "seed_edge", true);
+    if (this.parameters.settings.initial_seeding == "center") {
+      this.set_webpage_radio_button("seed_center", true);
+    } else if (this.parameters.settings.initial_seeding == "edge") {
+      this.set_webpage_radio_button("seed_edge", true);
     } else {
-      html.set_input_checked(this.ele_id + "seed_random", true);
+      this.set_webpage_radio_button("seed_random", true);
     }
-
-    if (this.presets != null) {
-      console.log(`Setting preset in web page`,)
-      html.set_input_checked(this.ele_id + "sim_preset" + this.parameters.preset.toString(), true);
+    // if (this.presets != null) {
+    //   console.log(`Setting preset in web page`,)
+    //   this.set_webpage_radio_button("sim_preset" + this.parameters.preset.toString(), true);
+    // }
+    // if (this.presets != null) {
+    //   console.log(`Setting preset in web page ${this.ele_id + "sim_presets"}`)
+    // }
+    if (this.parameters.settings.growth_scheme == "Simple") {
+      this.set_webpage_radio_button("simple", true);
+    } else if (this.parameters.settings.growth_scheme == "Staggered") {
+      this.set_webpage_radio_button("staggered", true);
     }
-
-    if (this.parameters.settings.simulation_kind == "simple_dk") {
-      html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-    } else if (this.parameters.settings.simulation_kind == "staggered_dk") {
-      html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
-    } else if (this.parameters.settings.simulation_kind == "bedload") {
-      html.set_input_checked(this.ele_id + "sk_bedload", true);
-    }
   }
-
-  set_ic_randomize() {
-    html.set_input_checked(this.ele_id + "seed_random", true);
-  }
-
-  set_ic_centralcell() {
-    html.set_input_checked(this.ele_id + "seed_center", true);
-  }
-
-  set_ic_edgecell() {
-    html.set_input_checked(this.ele_id + "seed_edge", true);
-  }
-
-  set_simple_dk() {
-    html.set_input_checked(this.ele_id + "sk_simple_dk", true);
-  }
-
-  set_staggered_dk() {
-    html.set_input_checked(this.ele_id + "sk_staggered_dk", true);
-  }
-
-  set_bedload() {
-    html.set_input_checked(this.ele_id + "sk_bedload", true);
-  }
-
-  // set_preset() {
-  //   html.set_input_checked(this.ele_id + "sim_preset1", true);
-  // }
 
   // Get parameter values from web page
-  populate_parameters() {
-    const simulation_choice = html.get_input_radio_checked(this.ele_id + "sim_kind");
-    const seed_kind = html.get_input_radio_checked(this.ele_id + "_seed_kind");
+  set_parameters_from_webpage_entries() {
+    const growth_model = html.get_input_radio_checked(
+      this.ele_id + "growth_model",
+    );
+    const growth_scheme = html.get_input_radio_checked(
+      this.ele_id + "growth_scheme",
+    );
+    const initial_seeding = html.get_input_radio_checked(
+      this.ele_id + "_seed_kind",
+    );
     const preset = html.get_input_radio_checked(this.ele_id + "_preset");
 
-    if (simulation_choice !== null) {
-      this.parameters.settings.simulation_kind = simulation_choice;
+    if (growth_model !== null) {
+      this.parameters.settings.growth_model = growth_model;
     }
-    if (seed_kind !== null) {
-      this.parameters.settings.seed_kind = seed_kind;
+    if (growth_scheme !== null) {
+      this.parameters.settings.growth_scheme = growth_scheme;
+    }
+    if (initial_seeding !== null) {
+      this.parameters.settings.initial_seeding = initial_seeding;
     }
     if (preset !== null) {
       this.parameters.preset = Number(preset);
     }
-    this.parameters.probabilities.p_1 = this.get_float("p_1", 0, 1);
-    this.parameters.probabilities.p_2 = this.get_float("p_2", 0, 1);
-    this.parameters.probabilities.p_conj = this.get_float("p_conj", 0, 1);
-    this.parameters.probabilities.p_nbr = this.get_float("p_nbr", 0, 1);
-    this.parameters.probabilities.p_diag = this.get_float("p_diag", 0, 1);
-    this.parameters.probabilities.u_x = this.get_float("u_x", -1e9, +1e9);
-    this.parameters.probabilities.p_initial = this.get_float("p_initial", 0, 1);
-    this.parameters.settings.n_iterations = this.get_int("n_iterations", 0, 1000000);
-    this.parameters.settings.sample_period = this.get_int("sample_period", 1, 100000);
-    this.parameters.settings.random_seed = this.get_int("random_seed", 1, 100000);
-    this.parameters.dimensions.n_x = this.get_int("n_x", 10, 10000);
-    this.parameters.dimensions.n_y = this.get_int("n_y", 10, 10000);
-    this.parameters.dimensions.n_z = this.get_int("n_z", 10, 10000);
+    this.parameters.probabilities.p_1 = this.get_webpage_float("p_1", 0, 1);
+    this.parameters.probabilities.p_2 = this.get_webpage_float("p_2", 0, 1);
+    this.parameters.probabilities.p_conj = this.get_webpage_float(
+      "p_conj",
+      0,
+      1,
+    );
+    this.parameters.probabilities.p_nbr = this.get_webpage_float("p_nbr", 0, 1);
+    this.parameters.probabilities.p_diag = this.get_webpage_float(
+      "p_diag",
+      0,
+      1,
+    );
+    this.parameters.probabilities.u_x = this.get_webpage_float(
+      "u_x",
+      -1e9,
+      +1e9,
+    );
+    this.parameters.probabilities.p_initial = this.get_webpage_float(
+      "p_initial",
+      0,
+      1,
+    );
+    this.parameters.settings.n_iterations = this.get_webpage_int(
+      "n_iterations",
+      0,
+      1000000,
+    );
+    this.parameters.settings.sample_period = this.get_webpage_int(
+      "sample_period",
+      1,
+      100000,
+    );
+    this.parameters.settings.random_seed = this.get_webpage_int(
+      "random_seed",
+      1,
+      100000,
+    );
+    this.parameters.dimensions.n_x = this.get_webpage_int("n_x", 10, 10000);
+    this.parameters.dimensions.n_y = this.get_webpage_int("n_y", 10, 10000);
+    this.parameters.dimensions.n_z = this.get_webpage_int("n_z", 10, 10000);
   }
 
   build_html() {
@@ -139,11 +157,11 @@ export class SimulationControls {
     const dims = this.dim;
     this.div.clear();
 
-    const table = this.div.add_ele("table", { classes: "sim_ctrl" });
+    const table = this.div.add_ele("table", { classes: "sim_controls" });
     const dims_probabilities_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "dims_probabilities_table" });
+      .add_ele("table", { classes: "dims_probabilities" });
     const steps_slicing_seed_table = table
       .add_ele("tr")
       .add_ele("td")
@@ -152,10 +170,10 @@ export class SimulationControls {
       .add_ele("tr")
       .add_ele("td")
       .add_ele("table", { classes: "edge_center_randomized" });
-    const simple_staggered_bedload_table = table
+    const simple_staggered_table = table
       .add_ele("tr")
       .add_ele("td")
-      .add_ele("table", { classes: "simple_staggered_bedload" });
+      .add_ele("table", { classes: "simple_staggered" });
     const presets_table = table
       .add_ele("tr")
       .add_ele("td")
@@ -165,16 +183,13 @@ export class SimulationControls {
       .add_ele("td")
       .add_ele("table", { classes: "run_save" });
 
-
     // Dims
     {
       let id = ele_id + "dims";
       const tr = dims_probabilities_table.add_ele("tr", { id: id });
       const td = tr.add_ele("td");
       // const label_nx = "<div><mjx-container class='MathJax CtxtMenu_Attached_0' jax='CHTML' style='font-size: 119.5%; position: relative;' tabindex='0' ctxtmenu_counter='1'><mjx-math class='MJX-TEX' aria-hidden='true'><mjx-msub><mjx-mi class='mjx-i'><mjx-c class='mjx-c1D45B TEX-I'></mjx-c></mjx-mi><mjx-script style='vertical-align: -0.15em;'><mjx-mi class='mjx-i' size='s'><mjx-c class='mjx-c1D465 TEX-I'></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable='on' display='inline'><mjx-container class='MathJax CtxtMenu_Attached_0' jax='CHTML' style='font-size: 119.5%; position: relative;' tabindex='0' ctxtmenu_counter='4'><mjx-math class='MJX-TEX' aria-hidden='true'><mjx-msub><mjx-mi class='mjx-i'><mjx-c class='mjx-c1D45B TEX-I'></mjx-c></mjx-mi><mjx-script style='vertical-align: -0.15em;'><mjx-mi class='mjx-i' size='s'><mjx-c class='mjx-c1D465 TEX-I'></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable='on' display='inline'><math xmlns='http://www.w3.org/1998/Math/MathML'><msub><mi>n</mi><mi>x</mi></msub></math></mjx-assistive-mml></mjx-container></mjx-assistive-mml></mjx-container></div>";
-      td.add_label("n_x", { classes: "sim_controls_label" }).set_content(
-        "x:"
-      );
+      td.add_label("n_x", { classes: "sim_controls_label" }).set_content("x:");
       td.add_input_text("n_x", "20", {
         id: this.ele_id + "n_x",
         classes: "sim_controls_text dims_n_text",
@@ -182,18 +197,17 @@ export class SimulationControls {
       if (dims >= 2) {
         const td = tr.add_ele("td");
         td.add_label("n_y", { classes: "sim_controls_label" }).set_content(
-          "y:"
+          "y:",
         );
         td.add_input_text("n_y", "20", {
           id: this.ele_id + "n_y",
           classes: "sim_controls_text dims_n_text",
         });
-
       }
       if (dims >= 3) {
         const td = tr.add_ele("td");
         td.add_label("n_z", { classes: "sim_controls_label" }).set_content(
-          "z:"
+          "z:",
         );
         const x = td.add_input_text("n_z", "20", {
           id: this.ele_id + "n_z",
@@ -207,7 +221,9 @@ export class SimulationControls {
       let id = ele_id + "probability";
       const tr = dims_probabilities_table.add_ele("tr", { id: id });
       for (const [label, thing] of [
-        ["p_1", "p_1"], ["p_2", "p_2"], ["p_d", "p_diag"],
+        ["p_1", "p_1"],
+        ["p_2", "p_2"],
+        ["p_d", "p_diag"],
       ]) {
         const td = tr.add_ele("td");
         td.add_label(thing!, { classes: "sim_controls_label" }).set_content(
@@ -223,7 +239,9 @@ export class SimulationControls {
       let id = ele_id + "probability";
       const tr = dims_probabilities_table.add_ele("tr", { id: id });
       for (const [label, thing] of [
-        ["p_0", "p_initial"], ["u_x", "u_x"], ["p_ext", "p_conj"],
+        ["p_0", "p_initial"],
+        ["u_x", "u_x"],
+        ["p_ext", "p_conj"],
       ]) {
         const td = tr.add_ele("td");
         td.add_label(thing!, { classes: "sim_controls_label" }).set_content(
@@ -259,7 +277,9 @@ export class SimulationControls {
     // Edge / center / randomized
     {
       let id = ele_id + "_seed_kind";
-      const tr = edge_center_randomized_table.add_ele("tr", { id: ele_id + "_seed_kind" });
+      const tr = edge_center_randomized_table.add_ele("tr", {
+        id: ele_id + "_seed_kind",
+      });
       for (const [name, value] of [
         ["edge", "Edge cell:"],
         ["center", "Center cell:"],
@@ -267,65 +287,58 @@ export class SimulationControls {
       ]) {
         const td = tr.add_ele("td");
         td.add_label(ele_id + "seed_" + name, {
-          classes: "sim_controls_label",
-        }).set_content(value);
-        td.add_input_radio(id, name!, true, {
+          classes: "ic_radio_labels ic_radio_label_" + name,
+        }).set_content(value!);
+        td.add_input_radio(id, name!, true, null, {
           id: ele_id + "seed_" + name,
-          classes: "sim_controls_radio " + name,
+          classes: "ic_radio_buttons ic_radio_button_" + name,
         });
       }
     }
 
     // Presets
     {
-      let id = ele_id + "sim_preset";
+      let id = ele_id + "presets";
       const tr = presets_table.add_ele("tr", { id: id });
-
-      // Presets row label
-      // const td = tr.add_ele("td");
-      // const name = "label";
-      // const value = "Presets:"
-      // td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
-
-      // console.log(`Creating radio button for bedload_2d preset ${this.presets}`,)
-      if (this.presets != null) {
-        for (const [name, value] of this.presets) {
-          const td = tr.add_ele("td");
-          td.add_label(ele_id + "sim_" + name, { classes: "sim_preset_label " + name, }).set_content(value);
-          td.add_input_radio_with_callback(
-            id, name!, true,
-            preset_select,
-            {
-              id: ele_id + "sim_preset" + name,
-              classes: "sim_preset_radio " + name,
-            });
-        }
+      if (this.controllable !== null && this.controllable.presets.length != 0) {
+        console.log(
+          `Creating dropdown menu for bedload_2d preset ${this.controllable.presets}`,
+        );
+        const td = tr.add_ele("td");
+        const value = "Parameter sets: ";
+        td.add_label(ele_id + "presets_dropdown", {
+          classes: "presets_menu_label",
+        }).set_content(value);
+        td.add_input_dropdown(
+          this.controllable.presets,
+          null,
+          (_e, value) => this.controllable!.select_preset(value),
+          {
+            classes: "presets_menu",
+          },
+        );
+      } else {
+        console.log(`NOT creating dropdown menu for empty presets`);
       }
-      function preset_select(event: Event) {
-        const target = event.target as HTMLInputElement;
-        const preset = Number(target.value);
-        (window as any).main.enact_preset(preset);
-      }
-
     }
 
-    // Simple / staggered / bedload
+    // Simple / staggered
     {
-      let id = ele_id + "sim_kind";
-      const tr = simple_staggered_bedload_table.add_ele("tr", { id: id });
+      let id = ele_id + "growth_scheme";
+      const tr = simple_staggered_table.add_ele("tr", { id: id });
       for (const [name, value] of [
-        ["simple_dk", "Simple"],
-        ["staggered_dk", "Staggered"],
-        ["bedload", "Bedload"],
+        ["simple", "Simple"],
+        ["staggered", "Staggered"],
       ]) {
         const td = tr.add_ele("td");
-        td.add_input_radio(id, name!, true, {
-          id: ele_id + "sk_" + name,
+        // Using value not name because we want upper case
+        td.add_input_radio(id, value!, true, null, {
+          id: ele_id + name,
           classes: "sim_controls_radio " + name,
         });
-        td.add_label(ele_id + "sk_" + name, {
+        td.add_label(ele_id + name, {
           classes: "sim_controls_label " + name,
-        }).set_content(value);
+        }).set_content(value!);
       }
     }
 
@@ -337,7 +350,7 @@ export class SimulationControls {
       td_run.add_input_button(
         "Run simulation",
         () => {
-          (window as any).main.run_simulation(dims);
+          this.controllable.run_simulation(dims);
         },
         {
           id: ele_id + "run_simulation",
@@ -348,7 +361,7 @@ export class SimulationControls {
       td_save.add_input_button(
         "Save simulation",
         () => {
-          (window as any).main.save_simulation(dims);
+          this.controllable.save_simulation(dims);
         },
         {
           id: ele_id + "save_simulation",
@@ -356,5 +369,21 @@ export class SimulationControls {
         },
       );
     }
+  }
+
+  set_webpage_entry(id: string, value: any) {
+    html.set_input_value(this.ele_id + id, value);
+  }
+
+  set_webpage_radio_button(id: string, value: any) {
+    html.set_input_checked(this.ele_id + id, value);
+  }
+
+  get_webpage_float(id: string, min: number, max: number): number {
+    return html.get_input_float(this.ele_id + id, min, max);
+  }
+
+  get_webpage_int(id: string, min: number, max: number): number {
+    return html.get_input_int(this.ele_id + id, min, max);
   }
 }

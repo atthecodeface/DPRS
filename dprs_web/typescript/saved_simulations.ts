@@ -10,7 +10,7 @@ import { LocalStorage } from "./storage.js";
  */
 export class SavedSimulations {
   /**
-   * Parent of this widget
+   * Child of this widget
    */
   parent: any;
 
@@ -79,7 +79,7 @@ export class SavedSimulations {
       this.descriptions.set(
         f,
         `${params.dimensions.n_x}x${params.dimensions.n_y}x${params.dimensions.n_z}` +
-        `:${params.probabilities.p_1}/${params.probabilities.p_2}`,
+          `:${params.probabilities.p_1}/${params.probabilities.p_2}`,
       );
     }
   }
@@ -102,7 +102,7 @@ export class SavedSimulations {
     filenames.sort();
 
     for (const f of filenames) {
-      const desc = this.descriptions.get(f);
+      const desc = this.descriptions.get(f)!;
       const tr = table.add_ele("tr");
       const td_delete = tr.add_ele("td");
       td_delete.add_input_button(

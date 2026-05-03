@@ -25,7 +25,7 @@ export interface VisualizationControlClient {
 
 export class VisualizeControls {
   /**
-   * Parent of this widget
+   * Child of this widget
    */
   parent: VisualizationControlClient;
 
@@ -174,7 +174,7 @@ export class VisualizeControls {
     );
   }
 
-  populate_values(simulation: JsSimulation, initial_zoom: number | null = null,) {
+  set_parameters_from_webpage_entries(simulation: JsSimulation) {
     if (simulation.dim < 2) {
       this.td_slice!.set_style("display", "none");
       this.td_playback!.set_style("display", "none");
@@ -182,12 +182,9 @@ export class VisualizeControls {
       this.td_slice!.set_style("display");
       this.td_playback!.set_style("display");
     }
-    if (initial_zoom != null) {
-      html.set_input_value("zoom", initial_zoom!);
-    }
-    this.visualize.scale = html.get_input_float("zoom", 1, 5);
+    this.visualize.zoom = html.get_input_float("zoom", 1, 5);
     html.set_input_range("slice", 0, simulation.n_results());
-    html.set_input_value("slice", simulation.n_results() / 2);
+    // html.set_input_value("slice", simulation.n_results() / 2);
     this.visualize.slice = html.get_input_int(
       "slice",
       simulation.n_results() * 0,

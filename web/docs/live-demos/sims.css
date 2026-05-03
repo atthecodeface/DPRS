@@ -18,7 +18,7 @@ div.md-container div div.md-content article.md-content__inner {
     }
 
     /* nx/ny/probability/steps etc text input */
-    table.sim_ctrl {
+    table.sim_controls {
         table {
             width: 100%;
         }
@@ -61,6 +61,25 @@ div.md-container div div.md-content article.md-content__inner {
         .params_text {
             width: 6ch;
         }
+
+        .ic_radio_labels {
+            padding-right: 1px;
+        }
+
+        .ic_radio_buttons {
+            padding-left: 0px;
+            padding-right: 10px;
+        }
+
+        .presets_menu_label {
+            padding-right: 6px;
+        }
+
+        .presets_menu {
+            padding: 6px;
+            border: 1px solid rgb(83, 83, 83);
+            font-size: 0.75rem;
+        }
     }
 
     /* For the 'Run Simulation', 'Save Simulation' and the media control buttons */
@@ -72,7 +91,12 @@ div.md-container div div.md-content article.md-content__inner {
 
     /* For the 'Run Simulation', 'Save Simulation' */
     input.controls.simulation {
-        width: 50%;
+        /* display: flex; */
+        /* justify-content: center; */
+        width: 40%;
+        text-align: center;
+        /* vertical-align: middle; */
+        margin-left: 60px;
         margin-top: 10px;
         padding-top: 8px;
         padding-bottom: 8px;
@@ -125,6 +149,7 @@ div.md-container div div.md-content article.md-content__inner {
             margin-left: 0px;
             margin-right: 0px;
         }
+
         input.controls.playback.increment {
             margin-left: 0px;
             margin-right: 0px;
@@ -134,9 +159,11 @@ div.md-container div div.md-content article.md-content__inner {
         input.controls.playback.reverse {
             display: none;
         }
+
         input.controls.playback.pause {
             display: none;
         }
+
         input.controls.playback.play {
             display: none;
         }

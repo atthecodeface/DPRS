@@ -11,6 +11,8 @@ import { Tabs } from "./tabbed.js";
 class Main {
     constructor(logger, params) {
         this.autoplay = true;
+        this.presets = [];
+        this.default_preset_value = null;
         this.log = new Logger(logger, "dk_main");
         this.log.push_reason("init");
         this.log.info("Starting dk");
@@ -32,8 +34,9 @@ class Main {
         params_1d.dimensions.n_x = 350;
         params_1d.dimensions.n_y = 1;
         params_1d.dimensions.n_z = 1;
-        params_1d.settings.seed_kind = "random";
-        params_1d.settings.simulation_kind = "staggered_dk";
+        params_1d.settings.initial_seeding = "random";
+        params_1d.settings.growth_model = "DomanyKinzel";
+        params_1d.settings.growth_scheme = "Staggered";
         // 0.62 is good
         const params_2d = new JsParameters();
         params_2d.probabilities.p_1 = 0.59;
@@ -46,19 +49,21 @@ class Main {
         params_2d.dimensions.n_x = 350;
         params_2d.dimensions.n_y = 150;
         params_2d.dimensions.n_z = 1;
-        params_2d.settings.seed_kind = "edge";
-        params_2d.settings.simulation_kind = "bedload";
-        this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1);
+        params_2d.settings.initial_seeding = "edge";
+        params_2d.settings.growth_model = "DomanyKinzel";
+        params_2d.settings.growth_scheme = "Staggered";
+        this.simulation_controls_1d = new SimulationControls("1d_sc_", "1d_sim_controls", 1, this);
         this.simulation_controls_1d.parameters = params_1d;
-        this.simulation_controls_1d.populate_values();
-        this.simulation_controls_2d = new SimulationControls("2d_sc_", "2d_sim_controls", 2);
+        this.simulation_controls_1d.populate_webpage_entries();
+        this.simulation_controls_2d = new SimulationControls("2d_sc_", "2d_sim_controls", 2, this);
         this.simulation_controls_2d.parameters = params_2d;
-        this.simulation_controls_2d.populate_values();
+        this.simulation_controls_2d.populate_webpage_entries();
         this.log.info("HTML built, running initial simulation");
         this.run_simulation(1);
         this.log.info("Initialization complete");
         this.log.pop_reason();
     }
+    select_preset(preset) { }
     load_simulation(filename) {
         this.log.push_reason("load");
         const sim_parameters = this.saved_sims.load(filename);
@@ -66,7 +71,7 @@ class Main {
             if (sim_parameters.dimensions.n_y > 1) {
                 this.simulation_controls_2d.parameters = sim_parameters;
                 this.simulation_controls_2d.parameters.dimensions.n_z = 1;
-                this.simulation_controls_2d.populate_values();
+                this.simulation_controls_2d.populate_webpage_entries();
                 this.log.info(`Loaded 2d sim ${filename}`);
                 this.tabs.select_hash("#tab-2D");
             }
@@ -74,7 +79,7 @@ class Main {
                 this.simulation_controls_1d.parameters = sim_parameters;
                 this.simulation_controls_1d.parameters.dimensions.n_y = 1;
                 this.simulation_controls_1d.parameters.dimensions.n_z = 1;
-                this.simulation_controls_1d.populate_values();
+                this.simulation_controls_1d.populate_webpage_entries();
                 this.log.info(`Loaded 1d sim ${filename}`);
                 this.tabs.select_hash("#tab-1D");
             }
@@ -83,8 +88,8 @@ class Main {
     }
     save_simulation(dims) {
         this.log.push_reason("save");
-        this.simulation_controls_1d.populate_parameters();
-        this.simulation_controls_2d.populate_parameters();
+        this.simulation_controls_1d.set_parameters_from_webpage_entries();
+        this.simulation_controls_2d.set_parameters_from_webpage_entries();
         this.simulation_controls_1d.parameters.dimensions.n_y = 1;
         this.simulation_controls_1d.parameters.dimensions.n_z = 1;
         this.simulation_controls_2d.parameters.dimensions.n_z = 1;
@@ -100,8 +105,8 @@ class Main {
         this.log.push_reason("sim");
         this.log.info(`Running simulation of dimension ${dim}`);
         this.visualize.animation_stop();
-        this.simulation_controls_1d.populate_parameters();
-        this.simulation_controls_2d.populate_parameters();
+        this.simulation_controls_1d.set_parameters_from_webpage_entries();
+        this.simulation_controls_2d.set_parameters_from_webpage_entries();
         this.simulation_controls_1d.parameters.dimensions.n_y = 1;
         this.simulation_controls_1d.parameters.dimensions.n_z = 1;
         this.simulation_controls_2d.parameters.dimensions.n_z = 1;
@@ -111,7 +116,7 @@ class Main {
         }
         this.simulation.run(sim_parameters);
         this.log.info(`Simulation (dim ${dim}) complete with ${this.simulation.n_results()} results`);
-        this.visualize_controls.populate_values(this.simulation);
+        this.visualize_controls.set_parameters_from_webpage_entries(this.simulation);
         if (this.simulation.dim > 1) {
             this.visualize.set_redraw(this.simulation_controls_2d);
             this.visualize.redraw();

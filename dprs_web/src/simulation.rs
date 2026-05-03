@@ -59,42 +59,34 @@ impl Simulation {
         self.parameters.clone()
     }
 
-    pub fn simulate(&mut self, kind: &str) -> Result<(), String> {
+    pub fn simulate(&mut self, model: &str, scheme: &str) -> Result<(), String> {
         // No doubt there is a better way of doing this
-        let dims = self.parameters.sim_dimension();
+        let dim = self.parameters.sim_dimension();
 
         let simulation_results = {
-            match (dims, kind) {
-                (1, "simplified_dk") => {
+            match (dim, model, scheme) {
+                (1, "DomanyKinzel", "Simple") => {
                     sim_1d::<ModelDKSimplified1D>(self.parameters.sim_parameters())
                 }
-                (1, "staggered_dk") => {
+                (1, "DomanyKinzel", "Staggered") => {
                     sim_1d::<ModelStaggeredDK1D>(self.parameters.sim_parameters())
                 }
-                // (1, "bedload_a") => {
-                //     sim_1d::<ModelBedloadA1D>(self.parameters.sim_parameters())
-                // },
-                // (1, "bedload_b") => {
-                //     sim_1d::<ModelBedloadB1D>(self.parameters.sim_parameters())
-                // },
-                (1, "bedload") => sim_1d::<ModelBedloadC1D>(self.parameters.sim_parameters()),
-                (2, "simplified_dk") => {
+                (1, "DKBedload", "BedloadC") => {
+                    sim_1d::<ModelBedloadC1D>(self.parameters.sim_parameters())
+                }
+                (2, "DomanyKinzel", "Simple") => {
                     sim_2d::<ModelDKSimplified2D>(self.parameters.sim_parameters())
                 }
-                (2, "staggered_dk") => {
+                (2, "DomanyKinzel", "Staggered") => {
                     sim_2d::<ModelStaggeredDK2D>(self.parameters.sim_parameters())
                 }
-                // (2, "bedload_a") => {
-                //     sim_2d::<ModelBedloadA2D>(self.parameters.sim_parameters())
-                // },
-                // (2, "bedload_b") => {
-                //     sim_2d::<ModelBedloadB2D>(self.parameters.sim_parameters())
-                // },
-                (2, "bedload") => sim_2d::<ModelBedloadC2D>(self.parameters.sim_parameters()),
+                (2, "DKBedload", "BedloadC") => {
+                    sim_2d::<ModelBedloadC2D>(self.parameters.sim_parameters())
+                }
                 _ => {
                     return Err(format!(
-                        "Unable to perform {dims}D simulation with {:?} simulation kind at present",
-                        kind,
+                        "Unable to perform {dim}D simulation with {:?} simulation kind at present",
+                        model,
                     ));
                 }
             }
@@ -107,7 +99,7 @@ impl Simulation {
             .map(|lattice| {
                 self.parameters
                     .sim_parameters()
-                    .pruned_lattice(lattice, dims)
+                    .pruned_lattice(lattice, dim)
             })
             .map(|array| {
                 array
