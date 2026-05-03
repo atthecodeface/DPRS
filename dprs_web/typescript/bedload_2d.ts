@@ -4,8 +4,15 @@ import { JsParameters } from "./js_parameters.js";
 import { MainBase } from "./base.js";
 
 class Main extends MainBase {
+  presets: [string, string][] = [
+    ["1", "Critical  p1~0.62  p2~0.90"],
+    ["2", "Critical  p1~0.81  p2~0.50"],
+    ["3", "Critical  p1~0.89  p2~0.30"],
+    ["4", "Critical  p1~0.97  p2~0.10"],
+    ["5", "Critical  p1~0.997 p2~0.01"],
+  ];
 
-  constructor(logger: Log,) {
+  constructor(logger: Log) {
     const model = "DKBedload";
     const dim = 2;
     const zoom = 2.2;
@@ -33,14 +40,14 @@ class Main extends MainBase {
     // p.probabilities.p_2 = 0.9;
     // p.probabilities.p_1 = 0.72082;   // random_seed: 2
     // p.probabilities.p_2 = 0.7;
-    p.probabilities.p_1 = 0.8135;   // random_seed: 13  // 31
+    p.probabilities.p_1 = 0.8135; // random_seed: 13  // 31
     p.probabilities.p_2 = 0.5;
     // p.probabilities.p_1 = 0.8945;   // random_seed: 6
     // p.probabilities.p_2 = 0.3;
     // p.probabilities.p_1 = 0.96693;  // random_seed: 4
     // p.probabilities.p_2 = 0.1;
     // p.probabilities.p_1 = 0.99677;  // random_seed: ?
-    // p.probabilities.p_2 = 0.01; 
+    // p.probabilities.p_2 = 0.01;
     p.probabilities.p_conj = 1e-6;
     p.probabilities.p_nbr = 0.5;
     p.probabilities.p_diag = 0.1;
@@ -56,18 +63,8 @@ class Main extends MainBase {
     super.run_simulation(dim);
   }
 
-  get_presets(): any | null {
-    return [
-      // ["0", ""],
-      ["1", "Critical  p1~0.62  p2~0.90"],
-      ["2", "Critical  p1~0.81  p2~0.50"],
-      ["3", "Critical  p1~0.89  p2~0.30"],
-      ["4", "Critical  p1~0.97  p2~0.10"],
-      ["5", "Critical  p1~0.997 p2~0.01"],
-    ];
-  }
-
-  enact_preset(preset: number): void {
+  select_preset(preset_string: string): void {
+    const preset = Number(preset_string);
     console.log(`Enacting preset ${preset}`);
     var p = this.get_default_parameters();
     switch (preset) {
@@ -131,5 +128,7 @@ function complete_init() {
 }
 
 window.addEventListener("load", (e) => {
-  init().then(() => { complete_init(); });
+  init().then(() => {
+    complete_init();
+  });
 });

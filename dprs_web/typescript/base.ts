@@ -3,21 +3,23 @@ import { Visualize } from "./visualize.js";
 import { VisualizeControls } from "./visualize_controls.js";
 import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
-import { SimulationControls } from "./simulation_controls.js";
+import { Presettable, SimulationControls } from "./simulation_controls.js";
 
-export class MainBase {
+export class MainBase implements Presettable {
   log: Logger;
   simulation: JsSimulation;
   visualize: Visualize;
   visualize_controls: VisualizeControls;
   simulation_controls: SimulationControls;
+  presets: [string, string][] = [];
+  default_preset_value = null;
 
   constructor(
     logger: Log,
     model: string,
     dim: number,
     zoom: number | null = null,
-    do_rough_background: boolean | null = null
+    do_rough_background: boolean | null = null,
   ) {
     this.log = new Logger(logger, `${model}_${dim}d`);
     this.log.push_reason("init");
@@ -28,7 +30,7 @@ export class MainBase {
       `${dim}d_sc_`,
       `${dim}d_sim_controls`,
       dim,
-      this.get_presets(),
+      this,
     );
     this.simulation_controls.parameters = this.get_default_parameters();
     this.simulation_controls.populate_webpage_entries();
@@ -72,24 +74,21 @@ export class MainBase {
       `Simulation complete with ${this.simulation.n_results()} results`,
     );
 
-    this.visualize_controls.set_parameters_from_webpage_entries(this.simulation);
+    this.visualize_controls.set_parameters_from_webpage_entries(
+      this.simulation,
+    );
     this.visualize.set_redraw(this.simulation_controls);
     this.visualize.redraw();
 
     this.log.pop_reason();
   }
 
-
   get_default_parameters(): JsParameters {
     const p = new JsParameters();
     return p;
   }
 
-  get_presets(): any | null {
-    return null;
-  }
-
-  enact_preset(preset: number): void {
+  select_preset(preset: string): void {
     var p = this.get_default_parameters();
     this.simulation_controls.parameters = p;
     this.simulation_controls.populate_webpage_entries();
