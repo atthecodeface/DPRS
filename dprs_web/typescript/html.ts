@@ -191,20 +191,38 @@ export class HtmlElement {
     }
   }
 
-  static new_ele(ele_type: string, id_classes: IdClasses = {}) {
+  static new_ele(
+    ele_type: string,
+    id_classes: IdClasses = {},
+    map: null | ((e: HTMLElement) => void) = null,
+  ) {
     const ele = document.createElement(ele_type);
     HtmlElement.set_id_classes(ele, id_classes);
+    if (map !== null) {
+      map(ele);
+    }
     return new HtmlElement(ele);
+  }
+
+  static all_of(selector: string): HtmlElement[] {
+    const result = [];
+    for (const e of document.querySelectorAll(selector)) {
+      if (e instanceof HTMLElement) {
+        result.push(new HtmlElement(e));
+      }
+    }
+    return result;
   }
 
   constructor(ele: HTMLElement) {
     this.ele = ele;
   }
 
-  clear() {
+  clear(): HtmlElement {
     while (this.ele.firstChild) {
       this.ele.removeChild(this.ele.firstChild);
     }
+    return this;
   }
 
   add_ele(ele_type: string, id_classes: IdClasses = {}) {
@@ -214,7 +232,7 @@ export class HtmlElement {
     return new HtmlElement(ele);
   }
 
-  add_tags(tag_values: Array<[string, string]>) {
+  add_tags(tag_values: Array<[string, string]>): HtmlElement {
     for (const [tag, value] of tag_values) {
       this.ele.setAttribute(tag, value);
     }
@@ -248,6 +266,7 @@ export class HtmlElement {
     name: string,
     value: string,
     required: boolean,
+    callback: null | ((event: Event) => void) = null,
     id_classes: IdClasses = {},
   ) {
     const input = document.createElement("input");
@@ -258,83 +277,17 @@ export class HtmlElement {
       input.setAttribute("required", "true");
     }
     HtmlElement.set_id_classes(input, id_classes);
+    if (callback !== null) {
+      input.addEventListener("change", callback);
+    }
     this.ele.appendChild(input);
     return new HtmlElement(input);
   }
-
-  add_input_radio_with_callback(
-    name: string,
-    value: string,
-    required: boolean,
-    callback: (event: Event) => void,
-    id_classes: IdClasses = {},
-  ) {
-    const input = document.createElement("input");
-    input.setAttribute("type", "radio");
-    input.setAttribute("name", name);
-    input.setAttribute("value", value);
-    if (required) {
-      input.setAttribute("required", "true");
-    }
-    HtmlElement.set_id_classes(input, id_classes);
-    input.addEventListener("change", callback);
-    this.ele.appendChild(input);
-    return new HtmlElement(input);
-  }
-
-  add_input_dropdown_with_callback(
-    values_labels: any,
-    callback: (event: Event) => void,
-    id_classes: IdClasses = {},
-    default_value: string = "0"
-  ) {
-    const select = document.createElement("select");
-    for (const [value, label] of values_labels) {
-      const option = document.createElement("option") as HTMLOptionElement;
-      option.text = label;
-      option.value = value;
-      select.appendChild(option);
-    }
-    select.addEventListener("change", callback);
-    this.ele.appendChild(select);
-    HtmlElement.set_id_classes(select, id_classes);
-    select.value = default_value;
-    return new HtmlElement(select);
-
-    // this.ele.appendChild(select);
-    // select.addEventListener("change", (event: Event) => {
-    //   const target = event.target as HTMLSelectElement;
-    //   const preset = Number(target.value);
-    //   (window as any).main.enact_preset(preset);
-    // });
-    // HtmlElement.set_id_classes(select, id_classes);
-    // return new HtmlElement(select);
-  }
-
-  // add_input_dropdown_with_callback(
-  //   values_labels: any, callback: (event: Event) => void,
-  // ) {
-  //   const select = document.createElement("select");
-  //   select.addEventListener("change", callback);
-  //   for (const [value, label] of values_labels) {
-  //     const option = document.createElement("option") as HTMLOptionElement;
-  //     option.text = label;
-  //     option.value = value;
-  //     select.appendChild(option);
-  //   }
-  //   this.ele.appendChild(select);
-  //   select.addEventListener("change", (event: Event) => {
-  //     const target = event.target as HTMLSelectElement;
-  //     const preset = Number(target.value);
-  //     (window as any).main.enact_preset(preset);
-  //   });
-  //   return new HtmlElement(select);
-  // }
 
   add_input_range(
     name: string,
     range: Range,
-    callback: (event: Event, value: number) => void,
+    callback: null | ((event: Event, value: number) => void) = null,
     id_classes: IdClasses = {},
   ) {
     var value = range.min;
@@ -352,20 +305,46 @@ export class HtmlElement {
     input.setAttribute("min", range.min.toString());
     input.setAttribute("max", range.max.toString());
     input.setAttribute("step", step.toString());
-    // const x: HTMLInputElement = new HTMLInputElement();
-    // x.on
-    input.oninput = (e) => {
-      var value;
-      if (step == 1) {
-        value = Number.parseFloat(input.value);
-      } else {
-        value = Number.parseFloat(input.value);
-      }
-      callback(e, value);
-    };
+    if (callback !== null) {
+      input.oninput = (e) => {
+        var value;
+        if (step == 1) {
+          value = Number.parseFloat(input.value);
+        } else {
+          value = Number.parseFloat(input.value);
+        }
+        callback(e, value);
+      };
+    }
     HtmlElement.set_id_classes(input, id_classes);
     this.ele.appendChild(input);
     return new HtmlElement(input);
+  }
+
+  add_input_dropdown(
+    values_labels: [string, string][],
+    default_value: string | null = null,
+    callback: null | ((event: Event, value: string) => void) = null,
+    id_classes: IdClasses = {},
+  ) {
+    const select = document.createElement("select");
+    for (const [value, label] of values_labels) {
+      const option = document.createElement("option") as HTMLOptionElement;
+      option.text = label;
+      option.value = value;
+      select.appendChild(option);
+    }
+    if (callback !== null) {
+      select.addEventListener("change", (e) => {
+        callback(e, select.value);
+      });
+    }
+    this.ele.appendChild(select);
+    HtmlElement.set_id_classes(select, id_classes);
+    if (default_value !== null) {
+      select.value = default_value;
+    }
+    return new HtmlElement(select);
   }
 
   add_input_text(name: string, value: string, id_classes: IdClasses = {}) {
@@ -388,7 +367,15 @@ export class HtmlElement {
     return new HtmlElement(label);
   }
 
-  set_content(content: any) {
+  input_checked(): boolean {
+    if (this.ele instanceof HTMLInputElement) {
+      return this.ele.checked;
+    } else {
+      return false;
+    }
+  }
+
+  set_content(content: Node | HtmlElement | string): HtmlElement {
     //console.log(this.ele);
     if (content instanceof Node) {
       this.ele.appendChild(content);
@@ -397,6 +384,7 @@ export class HtmlElement {
     } else {
       this.ele.insertAdjacentText("afterbegin", content);
     }
+    return this;
   }
 
   set_style(style: string, value?: string) {
@@ -417,9 +405,9 @@ export class HtmlElement {
 
 export class Table {
   classes: string;
-  headings: Array<HtmlElement>;
+  headings: Array<HtmlElement | string>;
   heading_classes: string;
-  body: Array<Array<HtmlElement>>;
+  body: Array<Array<HtmlElement | string>>;
 
   constructor(classes: string) {
     this.classes = classes;
@@ -428,24 +416,24 @@ export class Table {
     this.body = [];
   }
 
-  add_headings(headings: Array<HtmlElement>) {
+  add_headings(headings: Array<HtmlElement | string>) {
     for (const h of headings) {
       this.headings.push(h);
     }
   }
 
-  add_body(body_elements: Array<HtmlElement>) {
+  add_body(body_elements: Array<HtmlElement | string>) {
     this.body.push(body_elements);
   }
 
-  as_html() {
+  as_html(): HtmlElement {
     const table = HtmlElement.new_ele("table", { classes: this.classes });
 
     if (this.headings.length > 0) {
       const tr = table.add_ele("tr", { classes: this.heading_classes });
       let i = 0;
       for (const h of this.headings) {
-        const th = tr.add_ele("th", { id: "th" + i });
+        const th = tr.add_ele("th");
         th.set_content(h);
         i += 1;
       }
@@ -456,6 +444,23 @@ export class Table {
       for (const d of c) {
         const td = tr.add_ele("td");
         td.set_content(d);
+      }
+    }
+    return table;
+  }
+
+  as_vertical_html(): HtmlElement {
+    const table = HtmlElement.new_ele("table", { classes: this.classes });
+
+    for (let i = 0; i < this.body.length; i++) {
+      const tr = table.add_ele("tr");
+      const th = tr.add_ele("th", { classes: this.heading_classes });
+      if (i < this.headings.length) {
+        th.set_content(this.headings[i]!);
+      }
+      const c = this.body[i]!;
+      for (const d of c) {
+        tr.add_ele("td").set_content(d);
       }
     }
     return table;
