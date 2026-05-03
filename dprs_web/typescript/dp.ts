@@ -173,7 +173,7 @@ class Main {
       `Simulation (dim ${dim}) complete with ${this.simulation.n_results()} results`,
     );
 
-    this.visualize_controls.get_parameters_from_webpage_entries(this.simulation);
+    this.visualize_controls.set_parameters_from_webpage_entries(this.simulation);
     if (this.simulation.dim > 1) {
       this.visualize.set_redraw(this.simulation_controls_2d);
       this.visualize.redraw();
