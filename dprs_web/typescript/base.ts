@@ -12,7 +12,13 @@ export class MainBase {
   visualize_controls: VisualizeControls;
   simulation_controls: SimulationControls;
 
-  constructor(logger: Log, model: string, dim: number,) {
+  constructor(
+    logger: Log,
+    model: string,
+    dim: number,
+    zoom: number | null = null,
+    do_rough_background: boolean | null = null
+  ) {
     this.log = new Logger(logger, `${model}_${dim}d`);
     this.log.push_reason("init");
     this.log.info("Starting");
@@ -34,12 +40,11 @@ export class MainBase {
       this.visualize,
       "VisualizationControls",
     );
-    if (model == "DKBedload" && dim == 2) {
-      this.visualize.do_rough_background = true;
-      // TODO: this is a hack!!
-      this.visualize_controls.get_parameters_from_webpage_entries(this.simulation, 2.2);
-    } else {
-      this.visualize.do_rough_background = false;
+    if (do_rough_background != null) {
+      this.visualize.do_rough_background = do_rough_background!;
+    }
+    if (zoom != null) {
+      this.visualize.set_zoom(zoom!);
     }
 
     this.log.info("HTML built, running initial simulation");
@@ -49,7 +54,7 @@ export class MainBase {
     this.log.pop_reason();
   }
 
-  run_simulation(dim: number, zoom: number = 1) {
+  run_simulation(dim: number) {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
@@ -67,9 +72,7 @@ export class MainBase {
       `Simulation complete with ${this.simulation.n_results()} results`,
     );
 
-    // Turn off setting of zoom here
-    // NB: this.visualize.scale records this zoom value
-    this.visualize_controls.get_parameters_from_webpage_entries(this.simulation, null);
+    this.visualize_controls.get_parameters_from_webpage_entries(this.simulation);
     this.visualize.set_redraw(this.simulation_controls);
     this.visualize.redraw();
 

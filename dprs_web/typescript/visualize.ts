@@ -437,6 +437,7 @@ export class Visualize {
   }
 
   set_zoom(zoom: number): void {
+    html.set_input_value("zoom", zoom);
     this.scale = zoom;
     this.redraw();
   }

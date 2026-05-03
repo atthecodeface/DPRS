@@ -89,7 +89,7 @@ export class VisualizeControls {
             this.parent.increment_slice();
         }, { classes: "controls playback increment" });
     }
-    get_parameters_from_webpage_entries(simulation, initial_zoom = null) {
+    get_parameters_from_webpage_entries(simulation) {
         if (simulation.dim < 2) {
             this.td_slice.set_style("display", "none");
             this.td_playback.set_style("display", "none");
@@ -97,9 +97,6 @@ export class VisualizeControls {
         else {
             this.td_slice.set_style("display");
             this.td_playback.set_style("display");
-        }
-        if (initial_zoom != null) {
-            html.set_input_value("zoom", initial_zoom);
         }
         this.visualize.scale = html.get_input_float("zoom", 1, 5);
         html.set_input_range("slice", 0, simulation.n_results());

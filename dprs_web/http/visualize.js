@@ -351,6 +351,7 @@ export class Visualize {
         }
     }
     set_zoom(zoom) {
+        html.set_input_value("zoom", zoom);
         this.scale = zoom;
         this.redraw();
     }
