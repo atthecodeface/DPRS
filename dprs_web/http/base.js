@@ -6,11 +6,13 @@ import { JsParameters } from "./js_parameters.js";
 import { SimulationControls } from "./simulation_controls.js";
 export class MainBase {
     constructor(logger, model, dim, zoom = null, do_rough_background = null) {
+        this.presets = [];
+        this.default_preset_value = null;
         this.log = new Logger(logger, `${model}_${dim}d`);
         this.log.push_reason("init");
         this.log.info("Starting");
         this.simulation = new JsSimulation(logger);
-        this.simulation_controls = new SimulationControls(`${dim}d_sc_`, `${dim}d_sim_controls`, dim, this.get_presets());
+        this.simulation_controls = new SimulationControls(`${dim}d_sc_`, `${dim}d_sim_controls`, dim, this);
         this.simulation_controls.parameters = this.get_default_parameters();
         this.simulation_controls.populate_webpage_entries();
         this.visualize = new Visualize(logger, this.simulation, "Visualize");
@@ -48,10 +50,7 @@ export class MainBase {
         const p = new JsParameters();
         return p;
     }
-    get_presets() {
-        return null;
-    }
-    enact_preset(preset) {
+    select_preset(preset) {
         var p = this.get_default_parameters();
         this.simulation_controls.parameters = p;
         this.simulation_controls.populate_webpage_entries();

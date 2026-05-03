@@ -1,11 +1,12 @@
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 export class SimulationControls {
-    constructor(ele_id, div_id, dim, presets = null) {
+    constructor(ele_id, div_id, dim, presettable = null) {
+        this.presettable = null;
         this.parameters = new JsParameters();
         this.ele_id = ele_id;
         this.dim = dim;
-        this.presets = presets;
+        this.presettable = presettable;
         const div = document.getElementById(div_id);
         if (!div) {
             throw new Error(`Failed to find ${div_id} to build SimulationControls`);
@@ -215,22 +216,19 @@ export class SimulationControls {
         {
             let id = ele_id + "presets";
             const tr = presets_table.add_ele("tr", { id: id });
-            console.log(`Creating dropdown menu for bedload_2d preset ${this.presets}`);
-            function preset_select_dropdown(event) {
-                const target = event.target;
-                const preset = Number(target.value);
-                window.main.enact_preset(preset);
-            }
-            if (this.presets != null) {
+            if (this.presettable !== null && this.presettable.presets.length != 0) {
+                console.log(`Creating dropdown menu for bedload_2d preset ${this.presettable.presets}`);
                 const td = tr.add_ele("td");
-                // const value = "Example choices: "
                 const value = "Parameter sets: ";
                 td.add_label(ele_id + "presets_dropdown", {
                     classes: "presets_menu_label",
                 }).set_content(value);
-                td.add_input_dropdown(this.presets, null, preset_select_dropdown, {
+                td.add_input_dropdown(this.presettable.presets, null, (_e, value) => this.presettable.select_preset(value), {
                     classes: "presets_menu",
                 });
+            }
+            else {
+                console.log(`NOT creating dropdown menu for empty presets`);
             }
         }
         // Simple / staggered

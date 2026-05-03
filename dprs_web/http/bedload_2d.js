@@ -9,6 +9,13 @@ class Main extends MainBase {
         const zoom = 2.2;
         const do_rough_background = true;
         super(logger, model, dim, zoom, do_rough_background);
+        this.presets = [
+            ["1", "Critical  p1~0.62  p2~0.90"],
+            ["2", "Critical  p1~0.81  p2~0.50"],
+            ["3", "Critical  p1~0.89  p2~0.30"],
+            ["4", "Critical  p1~0.97  p2~0.10"],
+            ["5", "Critical  p1~0.997 p2~0.01"],
+        ];
         // console.log(`${model} ${dim}d child class`);
     }
     get_default_parameters() {
@@ -34,7 +41,7 @@ class Main extends MainBase {
         // p.probabilities.p_1 = 0.96693;  // random_seed: 4
         // p.probabilities.p_2 = 0.1;
         // p.probabilities.p_1 = 0.99677;  // random_seed: ?
-        // p.probabilities.p_2 = 0.01; 
+        // p.probabilities.p_2 = 0.01;
         p.probabilities.p_conj = 1e-6;
         p.probabilities.p_nbr = 0.5;
         p.probabilities.p_diag = 0.1;
@@ -46,17 +53,8 @@ class Main extends MainBase {
     run_simulation(dim) {
         super.run_simulation(dim);
     }
-    get_presets() {
-        return [
-            // ["0", ""],
-            ["1", "Critical  p1~0.62  p2~0.90"],
-            ["2", "Critical  p1~0.81  p2~0.50"],
-            ["3", "Critical  p1~0.89  p2~0.30"],
-            ["4", "Critical  p1~0.97  p2~0.10"],
-            ["5", "Critical  p1~0.997 p2~0.01"],
-        ];
-    }
-    enact_preset(preset) {
+    select_preset(preset_string) {
+        const preset = Number(preset_string);
         console.log(`Enacting preset ${preset}`);
         var p = this.get_default_parameters();
         switch (preset) {
@@ -118,5 +116,7 @@ function complete_init() {
     window.main = main;
 }
 window.addEventListener("load", (e) => {
-    init().then(() => { complete_init(); });
+    init().then(() => {
+        complete_init();
+    });
 });
