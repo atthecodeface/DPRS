@@ -36,6 +36,8 @@ export class MainBase {
     );
     if (model == "DKBedload" && dim == 2) {
       this.visualize.do_rough_background = true;
+      // TODO: this is a hack!!
+      this.visualize_controls.get_parameters_from_webpage_entries(this.simulation, 2.2);
     } else {
       this.visualize.do_rough_background = false;
     }
@@ -65,7 +67,9 @@ export class MainBase {
       `Simulation complete with ${this.simulation.n_results()} results`,
     );
 
-    this.visualize_controls.populate_values(this.simulation, zoom);
+    // Turn off setting of zoom here
+    // NB: this.visualize.scale records this zoom value
+    this.visualize_controls.get_parameters_from_webpage_entries(this.simulation, null);
     this.visualize.set_redraw(this.simulation_controls);
     this.visualize.redraw();
 
