@@ -58,7 +58,7 @@ export class MainBase {
     this.log.push_reason("sim");
     this.log.info(`Running simulation of dimension ${dim}`);
 
-    this.simulation_controls.get_parameters_from_webpage_entries();
+    this.simulation_controls.set_parameters_from_webpage_entries();
     if (dim <= 1) {
       this.simulation_controls.parameters.dimensions.n_y = 1;
     }

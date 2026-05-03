@@ -61,7 +61,7 @@ export class SimulationControls {
   }
 
   // Get parameter values from web page
-  get_parameters_from_webpage_entries() {
+  set_parameters_from_webpage_entries() {
     const growth_model = html.get_input_radio_checked(this.ele_id + "growth_model");
     const growth_scheme = html.get_input_radio_checked(this.ele_id + "growth_scheme");
     const initial_seeding = html.get_input_radio_checked(this.ele_id + "_seed_kind");
@@ -79,19 +79,19 @@ export class SimulationControls {
     if (preset !== null) {
       this.parameters.preset = Number(preset);
     }
-    this.parameters.probabilities.p_1 = this.get_float("p_1", 0, 1);
-    this.parameters.probabilities.p_2 = this.get_float("p_2", 0, 1);
-    this.parameters.probabilities.p_conj = this.get_float("p_conj", 0, 1);
-    this.parameters.probabilities.p_nbr = this.get_float("p_nbr", 0, 1);
-    this.parameters.probabilities.p_diag = this.get_float("p_diag", 0, 1);
-    this.parameters.probabilities.u_x = this.get_float("u_x", -1e9, +1e9);
-    this.parameters.probabilities.p_initial = this.get_float("p_initial", 0, 1);
-    this.parameters.settings.n_iterations = this.get_int("n_iterations", 0, 1000000);
-    this.parameters.settings.sample_period = this.get_int("sample_period", 1, 100000);
-    this.parameters.settings.random_seed = this.get_int("random_seed", 1, 100000);
-    this.parameters.dimensions.n_x = this.get_int("n_x", 10, 10000);
-    this.parameters.dimensions.n_y = this.get_int("n_y", 10, 10000);
-    this.parameters.dimensions.n_z = this.get_int("n_z", 10, 10000);
+    this.parameters.probabilities.p_1 = this.get_webpage_float("p_1", 0, 1);
+    this.parameters.probabilities.p_2 = this.get_webpage_float("p_2", 0, 1);
+    this.parameters.probabilities.p_conj = this.get_webpage_float("p_conj", 0, 1);
+    this.parameters.probabilities.p_nbr = this.get_webpage_float("p_nbr", 0, 1);
+    this.parameters.probabilities.p_diag = this.get_webpage_float("p_diag", 0, 1);
+    this.parameters.probabilities.u_x = this.get_webpage_float("u_x", -1e9, +1e9);
+    this.parameters.probabilities.p_initial = this.get_webpage_float("p_initial", 0, 1);
+    this.parameters.settings.n_iterations = this.get_webpage_int("n_iterations", 0, 1000000);
+    this.parameters.settings.sample_period = this.get_webpage_int("sample_period", 1, 100000);
+    this.parameters.settings.random_seed = this.get_webpage_int("random_seed", 1, 100000);
+    this.parameters.dimensions.n_x = this.get_webpage_int("n_x", 10, 10000);
+    this.parameters.dimensions.n_y = this.get_webpage_int("n_y", 10, 10000);
+    this.parameters.dimensions.n_z = this.get_webpage_int("n_z", 10, 10000);
   }
 
   build_html() {
@@ -325,11 +325,11 @@ export class SimulationControls {
     html.set_input_checked(this.ele_id + id, value);
   }
 
-  get_float(id: string, min: number, max: number): number {
+  get_webpage_float(id: string, min: number, max: number): number {
     return html.get_input_float(this.ele_id + id, min, max);
   }
 
-  get_int(id: string, min: number, max: number): number {
+  get_webpage_int(id: string, min: number, max: number): number {
     return html.get_input_int(this.ele_id + id, min, max);
   }
 }

@@ -134,8 +134,8 @@ class Main {
 
   save_simulation(dims: number) {
     this.log.push_reason("save");
-    this.simulation_controls_1d.get_parameters_from_webpage_entries();
-    this.simulation_controls_2d.get_parameters_from_webpage_entries();
+    this.simulation_controls_1d.set_parameters_from_webpage_entries();
+    this.simulation_controls_2d.set_parameters_from_webpage_entries();
 
     this.simulation_controls_1d.parameters.dimensions.n_y = 1;
     this.simulation_controls_1d.parameters.dimensions.n_z = 1;
@@ -157,8 +157,8 @@ class Main {
 
     this.visualize.animation_stop();
 
-    this.simulation_controls_1d.get_parameters_from_webpage_entries();
-    this.simulation_controls_2d.get_parameters_from_webpage_entries();
+    this.simulation_controls_1d.set_parameters_from_webpage_entries();
+    this.simulation_controls_2d.set_parameters_from_webpage_entries();
     this.simulation_controls_1d.parameters.dimensions.n_y = 1;
     this.simulation_controls_1d.parameters.dimensions.n_z = 1;
     this.simulation_controls_2d.parameters.dimensions.n_z = 1;

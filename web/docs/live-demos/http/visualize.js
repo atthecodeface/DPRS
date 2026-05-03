@@ -207,7 +207,7 @@ export class Visualize {
                 let previous_cell_state = null;
                 let x_start = null;
                 // This isn't the correct way to get ux, but...
-                const u_x = this.simulation_controls.get_float("u_x", -100, 100);
+                const u_x = this.simulation_controls.get_webpage_float("u_x", -100, 100);
                 // const u_x = this.simulation_controls!.parameters.probabilities.u_x;
                 // const u_x = this.simulation.parameters.probabilities.u_x;
                 const x_sense = Math.sign(u_x);
