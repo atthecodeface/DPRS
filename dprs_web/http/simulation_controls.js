@@ -145,7 +145,9 @@ export class SimulationControls {
             let id = ele_id + "probability";
             const tr = dims_probabilities_table.add_ele("tr", { id: id });
             for (const [label, thing] of [
-                ["p_1", "p_1"], ["p_2", "p_2"], ["p_d", "p_diag"],
+                ["p_1", "p_1"],
+                ["p_2", "p_2"],
+                ["p_d", "p_diag"],
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(thing, { classes: "sim_controls_label" }).set_content(label + ":");
@@ -159,7 +161,9 @@ export class SimulationControls {
             let id = ele_id + "probability";
             const tr = dims_probabilities_table.add_ele("tr", { id: id });
             for (const [label, thing] of [
-                ["p_0", "p_initial"], ["u_x", "u_x"], ["p_ext", "p_conj"],
+                ["p_0", "p_initial"],
+                ["u_x", "u_x"],
+                ["p_ext", "p_conj"],
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(thing, { classes: "sim_controls_label" }).set_content(label + ":");
@@ -189,7 +193,9 @@ export class SimulationControls {
         // Edge / center / randomized
         {
             let id = ele_id + "_seed_kind";
-            const tr = edge_center_randomized_table.add_ele("tr", { id: ele_id + "_seed_kind" });
+            const tr = edge_center_randomized_table.add_ele("tr", {
+                id: ele_id + "_seed_kind",
+            });
             for (const [name, value] of [
                 ["edge", "Edge cell:"],
                 ["center", "Center cell:"],
@@ -199,7 +205,7 @@ export class SimulationControls {
                 td.add_label(ele_id + "seed_" + name, {
                     classes: "ic_radio_labels ic_radio_label_" + name,
                 }).set_content(value);
-                td.add_input_radio(id, name, true, {
+                td.add_input_radio(id, name, true, null, {
                     id: ele_id + "seed_" + name,
                     classes: "ic_radio_buttons ic_radio_button_" + name,
                 });
@@ -219,8 +225,12 @@ export class SimulationControls {
                 const td = tr.add_ele("td");
                 // const value = "Example choices: "
                 const value = "Parameter sets: ";
-                td.add_label(ele_id + "presets_dropdown", { classes: "presets_menu_label" }).set_content(value);
-                td.add_input_dropdown_with_callback(this.presets, preset_select_dropdown, { classes: "presets_menu" });
+                td.add_label(ele_id + "presets_dropdown", {
+                    classes: "presets_menu_label",
+                }).set_content(value);
+                td.add_input_dropdown(this.presets, null, preset_select_dropdown, {
+                    classes: "presets_menu",
+                });
             }
         }
         // Simple / staggered
@@ -233,7 +243,7 @@ export class SimulationControls {
             ]) {
                 const td = tr.add_ele("td");
                 // Using value not name because we want upper case
-                td.add_input_radio(id, value, true, {
+                td.add_input_radio(id, value, true, null, {
                     id: ele_id + name,
                     classes: "sim_controls_radio " + name,
                 });
