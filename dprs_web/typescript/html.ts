@@ -283,9 +283,7 @@ export class HtmlElement {
   }
 
   add_input_dropdown_with_callback(
-    values_labels: any,
-    // required: boolean,
-    callback: (event: Event) => void,
+    values_labels: any, callback: (event: Event) => void,
   ) {
     const select = document.createElement("select");
     select.addEventListener("change", callback);
@@ -296,6 +294,7 @@ export class HtmlElement {
       select.appendChild(option);
     }
     this.ele.appendChild(select);
+    // Callback attachment is done "by hand".
     // select.addEventListener("change", (event: Event) => {
     //   const target = event.target as HTMLSelectElement;
     //   console.log("Preset choice:", target.value);
