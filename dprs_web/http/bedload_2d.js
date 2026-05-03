@@ -43,7 +43,7 @@ class Main extends MainBase {
         p.preset = 2;
         return p;
     }
-    run_simulation(dim, _ = 1) {
+    run_simulation(dim) {
         super.run_simulation(dim);
     }
     get_presets() {

@@ -182,7 +182,7 @@ export class VisualizeControls {
       this.td_slice!.set_style("display");
       this.td_playback!.set_style("display");
     }
-    this.visualize.scale = html.get_input_float("zoom", 1, 5);
+    this.visualize.zoom = html.get_input_float("zoom", 1, 5);
     html.set_input_range("slice", 0, simulation.n_results());
     // html.set_input_value("slice", simulation.n_results() / 2);
     this.visualize.slice = html.get_input_int(
