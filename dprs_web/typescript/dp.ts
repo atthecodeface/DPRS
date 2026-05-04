@@ -25,7 +25,7 @@ class Main {
   autoplay: boolean = true;
 
   presets: [string, string][] = [];
-  default_preset_value = null;
+  // default_preset_value = null;
 
   constructor(logger: Log, params: string) {
     this.log = new Logger(logger, "dk_main");

@@ -4,7 +4,7 @@ import { VisualizeControls } from "./visualize_controls.js";
 import { JsSimulation } from "./js_simulation.js";
 import { JsParameters } from "./js_parameters.js";
 import {
-  ControlableSimulation,
+  ControllableSimulation as ControllableSimulation,
   SimulationControls,
 } from "./simulation_controls.js";
 
@@ -20,7 +20,7 @@ export interface MainSim {
   select_preset: null | ((value: number) => JsParameters);
 }
 
-export class MainBase implements ControlableSimulation {
+export class MainBase implements ControllableSimulation {
   main_sim: MainSim;
   log: Logger;
   simulation: JsSimulation;
@@ -28,7 +28,7 @@ export class MainBase implements ControlableSimulation {
   visualize_controls: VisualizeControls;
   simulation_controls: SimulationControls;
   presets: [string, string][] = [];
-  default_preset_value = null;
+  // default_preset_value = null;
 
   constructor(main_sim: MainSim, logger: Log) {
     const model = main_sim.model_name;
