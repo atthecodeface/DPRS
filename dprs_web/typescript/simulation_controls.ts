@@ -1,11 +1,11 @@
 import * as html from "./html.js";
 import { JsParameters } from "./js_parameters.js";
 
-export interface ControlableSimulation {
+export interface ControllableSimulation {
   select_preset: (value: string) => void;
   /** Array of label, value for the presets */
   presets: [string, string][];
-  default_preset_value: string | null;
+  // default_preset_value: string | null;
   run_simulation(dim: number): void;
   save_simulation(dim: number): void;
 }
@@ -15,13 +15,13 @@ export class SimulationControls {
   div: html.HtmlElement;
   dim: number;
   parameters: JsParameters;
-  controllable: ControlableSimulation;
+  controllable: ControllableSimulation;
 
   constructor(
     ele_id: string,
     div_id: string,
     dim: number,
-    controllable: ControlableSimulation,
+    controllable: ControllableSimulation,
   ) {
     this.parameters = new JsParameters();
 
@@ -70,13 +70,6 @@ export class SimulationControls {
     } else {
       this.set_webpage_radio_button("seed_random", true);
     }
-    // if (this.presets != null) {
-    //   console.log(`Setting preset in web page`,)
-    //   this.set_webpage_radio_button("sim_preset" + this.parameters.preset.toString(), true);
-    // }
-    // if (this.presets != null) {
-    //   console.log(`Setting preset in web page ${this.ele_id + "sim_presets"}`)
-    // }
     if (this.parameters.settings.growth_scheme == "Simple") {
       this.set_webpage_radio_button("simple", true);
     } else if (this.parameters.settings.growth_scheme == "Staggered") {

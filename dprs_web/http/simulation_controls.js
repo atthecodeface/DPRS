@@ -37,13 +37,6 @@ export class SimulationControls {
         else {
             this.set_webpage_radio_button("seed_random", true);
         }
-        // if (this.presets != null) {
-        //   console.log(`Setting preset in web page`,)
-        //   this.set_webpage_radio_button("sim_preset" + this.parameters.preset.toString(), true);
-        // }
-        // if (this.presets != null) {
-        //   console.log(`Setting preset in web page ${this.ele_id + "sim_presets"}`)
-        // }
         if (this.parameters.settings.growth_scheme == "Simple") {
             this.set_webpage_radio_button("simple", true);
         }
