@@ -36,14 +36,26 @@ div.md-container div div.md-content article.md-content__inner {
       border: 1px solid rgb(142, 142, 207);
       margin-left: 5px;
       margin-right: 20px;
-      padding: 5px;
+      padding: 4px;
+      /* padding-left: 5px;
+      padding-right: 5px;
+      padding-top: 5px;
+      padding-bottom: 5px; */
       width: 6ch;
       font-size: 0.75rem;
     }
 
     /* probability text input */
     .probabilities_inputs {
-      width: 8ch;
+      width: 7ch;
+    }
+
+    .probabilities_input_u_x {
+      width: 4ch;
+    }
+
+    .probabilities_input_p_ext {
+      width: 9ch;
     }
 
     .radio_labels {
@@ -55,9 +67,19 @@ div.md-container div div.md-content article.md-content__inner {
       padding-right: 10px;
     }
 
+    .ic {
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+
+    .growth_scheme {
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+
     .presets {
       margin-top: 0px;
-      margin-bottom: 5px;
+      margin-bottom: 15px;
     }
 
     .presets_menu {
@@ -70,6 +92,14 @@ div.md-container div div.md-content article.md-content__inner {
       padding-right: 6px;
     }
 
+    .steps_etc_input_sample_period {
+      width: 3ch;
+    }
+
+    .steps_etc_input_random_seed {
+      width: 4ch;
+    }
+
     /* For the 'Run Simulation', 'Save Simulation' */
     .simulation {
       border-radius: 5px;
@@ -78,7 +108,7 @@ div.md-container div div.md-content article.md-content__inner {
       width: 40%;
       text-align: center;
       margin-left: 60px;
-      margin-top: 10px;
+      margin-top: 0px;
       padding-top: 8px;
       padding-bottom: 8px;
       font-size: 105%;

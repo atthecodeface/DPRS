@@ -85,6 +85,10 @@ export class SimulationControls {
             .add_ele("tr")
             .add_ele("td")
             .add_ele("table", { classes: "dims_probabilities" });
+        const dims_probabilities_table2 = table
+            .add_ele("tr")
+            .add_ele("td")
+            .add_ele("table", { classes: "dims_probabilities2" });
         const steps_slicing_seed_table = table
             .add_ele("tr")
             .add_ele("td")
@@ -160,7 +164,7 @@ export class SimulationControls {
         }
         {
             let id = ele_id + "probabilities";
-            const tr = dims_probabilities_table.add_ele("tr", { id: id });
+            const tr = dims_probabilities_table2.add_ele("tr", { id: id });
             for (const [label, thing] of [
                 ["p_0", "p_initial"],
                 ["u_x", "u_x"],
@@ -172,7 +176,7 @@ export class SimulationControls {
                 }).set_content(label + ":");
                 td.add_input_text(thing, "0", {
                     id: this.ele_id + thing,
-                    classes: "text_inputs probabilities_inputs",
+                    classes: "text_inputs probabilities_inputs probabilities_input_" + label,
                 });
             }
         }
@@ -187,11 +191,11 @@ export class SimulationControls {
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(name, {
-                    classes: "text_labels steps_etc_labels",
+                    classes: "text_labels steps_etc steps_etc_labels",
                 }).set_content(label + ":");
                 td.add_input_text(name, value, {
                     id: this.ele_id + name,
-                    classes: "text_inputs steps_etc_inputs",
+                    classes: "text_inputs steps_etc steps_etc_inputs steps_etc_input_" + name,
                 });
             }
         }
@@ -208,11 +212,32 @@ export class SimulationControls {
             ]) {
                 const td = tr.add_ele("td");
                 td.add_label(ele_id + "seed_" + name, {
-                    classes: "radio_labels ic_labels ic_label_" + name,
+                    classes: "radio_labels ic ic_labels ic_label_" + name,
                 }).set_content(value);
                 td.add_input_radio(id, name, true, null, {
                     id: ele_id + "seed_" + name,
-                    classes: "radio_buttons ic_inputs ic_input_" + name,
+                    classes: "radio_buttons ic ic_inputs ic_input_" + name,
+                });
+            }
+        }
+        // Growth scheme: simple / staggered
+        {
+            let id = ele_id + "growth_scheme";
+            const tr = simple_staggered_table.add_ele("tr", { id: id });
+            for (const [name, value] of [
+                ["simple", "Simple"],
+                ["staggered", "Staggered"],
+            ]) {
+                const td = tr.add_ele("td");
+                // Using value not name because we want upper case
+                td.add_label(ele_id + name, {
+                    classes: "radio_labels growth_scheme growth_scheme_labels growth_scheme_label_" +
+                        name,
+                }).set_content(value + ":");
+                td.add_input_radio(id, value, true, null, {
+                    id: ele_id + name,
+                    classes: "radio_buttons growth_scheme growth_scheme_inputs growth_scheme_input_" +
+                        name,
                 });
             }
         }
@@ -233,25 +258,6 @@ export class SimulationControls {
             }
             else {
                 console.log(`NOT creating dropdown menu for empty presets`);
-            }
-        }
-        // Simple / staggered
-        {
-            let id = ele_id + "growth_scheme";
-            const tr = simple_staggered_table.add_ele("tr", { id: id });
-            for (const [name, value] of [
-                ["simple", "Simple"],
-                ["staggered", "Staggered"],
-            ]) {
-                const td = tr.add_ele("td");
-                // Using value not name because we want upper case
-                td.add_label(ele_id + name, {
-                    classes: "radio_labels growth_scheme_labels growth_scheme_label_" + name,
-                }).set_content(value + ":");
-                td.add_input_radio(id, value, true, null, {
-                    id: ele_id + name,
-                    classes: "radio_buttons growth_scheme_inputs growth_scheme_input_" + name,
-                });
             }
         }
         // Run / save
