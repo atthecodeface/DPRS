@@ -325,13 +325,13 @@ export class SimulationControls {
       ]) {
         const td = tr.add_ele("td");
         // Using value not name because we want upper case
+        td.add_label(ele_id + name, {
+          classes: "growth_scheme_label growth_scheme_label_" + name,
+        }).set_content(value! + ":");
         td.add_input_radio(id, value!, true, null, {
           id: ele_id + name,
-          classes: "sim_controls_radio " + name,
+          classes: "growth_scheme_radio growth_scheme_radio_" + name,
         });
-        td.add_label(ele_id + name, {
-          classes: "sim_controls_label " + name,
-        }).set_content(value!);
       }
     }
 

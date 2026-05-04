@@ -71,6 +71,15 @@ div.md-container div div.md-content article.md-content__inner {
             padding-right: 10px;
         }
 
+        .growth_scheme_radio_labels {
+            padding-right: 1px;
+        }
+
+        .growth_scheme_radio_buttons {
+            padding-left: 0px;
+            padding-right: 10px;
+        }
+
         .presets_menu_label {
             padding-right: 6px;
         }
