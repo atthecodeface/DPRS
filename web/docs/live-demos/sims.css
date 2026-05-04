@@ -38,6 +38,7 @@ div.md-container div div.md-content article.md-content__inner {
       margin-right: 20px;
       padding: 5px;
       width: 6ch;
+      font-size: 0.75rem;
     }
 
     /* probability text input */
