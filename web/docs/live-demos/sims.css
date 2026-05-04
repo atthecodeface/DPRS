@@ -31,23 +31,13 @@ div.md-container div div.md-content article.md-content__inner {
       padding-top: 8px;
     }
 
-    table.seed td {
-      input {
-        margin-top: 10px;
-        margin-right: 7px;
-      }
-    }
-
-    .sim_controls_inputs {
+    /* Text-entry inputs */
+    .text_inputs {
       border: 1px solid rgb(142, 142, 207);
       margin-left: 5px;
       margin-right: 20px;
       padding: 5px;
-    }
-
-    /* nx/ny/nz text input */
-    .dims_inputs {
-        width: 6ch;
+      width: 6ch;
     }
 
     /* probability text input */
@@ -55,33 +45,18 @@ div.md-container div div.md-content article.md-content__inner {
       width: 8ch;
     }
 
-    /* steps/sampling/seed text input */
-    .stepsetc_inputs {
-      width: 6ch;
-    }
-
-    /* edge etc labels */
-    .ic_radio_labels {
+    .radio_labels {
       padding-right: 1px;
     }
 
-    /* edge etc radio buttons */
-    .ic_radio_buttons {
+    .radio_buttons {
       padding-left: 0px;
       padding-right: 10px;
     }
 
-    .growth_scheme_radio_labels {
-      padding-right: 1px;
-    }
-
-    .growth_scheme_radio_buttons {
-      padding-left: 0px;
-      padding-right: 10px;
-    }
-
-    .presets_menu_label {
-      padding-right: 6px;
+    .presets {
+      margin-top: 0px;
+      margin-bottom: 5px;
     }
 
     .presets_menu {
@@ -89,31 +64,28 @@ div.md-container div div.md-content article.md-content__inner {
       border: 1px solid rgb(83, 83, 83);
       font-size: 0.75rem;
     }
-  }
 
-  /* For the 'Run Simulation', 'Save Simulation' and the media control buttons */
-  input.controls {
-    border-radius: 5px;
-    padding-left: 0px;
-    border: 1px solid rgb(83, 83, 83);
-  }
+    .presets_menu_label {
+      padding-right: 6px;
+    }
 
-  /* For the 'Run Simulation', 'Save Simulation' */
-  input.controls.simulation {
-    /* display: flex; */
-    /* justify-content: center; */
-    width: 40%;
-    text-align: center;
-    /* vertical-align: middle; */
-    margin-left: 60px;
-    margin-top: 10px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    font-size: 105%;
-  }
+    /* For the 'Run Simulation', 'Save Simulation' */
+    .simulation {
+      border-radius: 5px;
+      padding-left: 0px;
+      border: 1px solid rgb(83, 83, 83);
+      width: 40%;
+      text-align: center;
+      margin-left: 60px;
+      margin-top: 10px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      font-size: 105%;
+    }
 
-  input.controls.simulation.save_simulation {
-    display: none;
+    .simulation.save_simulation {
+      display: none;
+    }
   }
 
   #VisualizationControls table:not([class]) {
